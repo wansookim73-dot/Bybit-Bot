@@ -1,0 +1,29 @@
+import os
+from dotenv import load_dotenv
+
+load_dotenv()
+
+# === API 설정 (직접 입력 필요) ===
+BYBIT_API_KEY = "여기에_API_KEY_입력
+BYBIT_SECRET_KEY = "여기에_SECRET_KEY_입력"
+DRY_RUN = False
+
+# === 기본 설정 ===
+EXCHANGE_ID = "bybit"
+SYMBOL = "BTC/USDT"
+LEVERAGE = 7
+
+# === 전략 파라미터 ===
+INITIAL_SEED_USDT = 600.0
+GRID_SPLIT_COUNT = 20
+ATR_MULTIPLIER = 0.3
+MIN_GRID_GAP = 150.0  # [안전장치] 최소 그리드 간격
+
+# === 타임아웃 ===
+GRID_TIMEOUT_SEC = 60.0
+ESCAPE_TIMEOUT_SEC = 1.0
+
+API_TIMEOUT = 30
+MAX_RETRIES = 5
+LOG_FILE_PATH = "data/bot.log"
+STATE_FILE_PATH = "data/bot_state.json"
