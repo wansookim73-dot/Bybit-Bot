@@ -3544,3 +3544,1146 @@
 [2025-12-01 16:30:13] [INFO] main: [Status] Mode=NORMAL, Price=84554.5, Line=-1
 [2025-12-01 16:30:14] [INFO] main: [Status] Mode=NORMAL, Price=84554.4, Line=-1
 [2025-12-01 16:30:15] [INFO] main: [Status] Mode=NORMAL, Price=84562.9, Line=-1
+[2025-12-01 16:58:58] [WARNING] exchange_api: 🚀 [REAL] 실전 매매 모드입니다.
+[2025-12-01 16:58:58] [INFO] state_manager: 상태 로드: {'mode': 'NORMAL', 'p_center': 84769.6, 'p_gap': 353.3, 'atr_value': 0, 'total_balance': 600.0, 'last_long_line': -1, 'last_short_line': -1}
+[2025-12-01 17:00:19] [WARNING] exchange_api: 🚀 [REAL] 실전 매매 모드입니다.
+[2025-12-01 17:00:19] [INFO] state_manager: 상태 로드: {'mode': 'NORMAL', 'p_center': 84769.6, 'p_gap': 353.3, 'atr_value': 0, 'total_balance': 600.0, 'last_long_line': -1, 'last_short_line': -1}
+[2025-12-01 17:00:19] [INFO] main: 🤖 Bybit Wave Bot v10.2 FINAL Starting...
+[2025-12-01 17:00:20] [ERROR] exchange_api: API Error (set_leverage): bybit setLeverage() only support linear and inverse market
+[2025-12-01 17:00:20] [ERROR] exchange_api: API Error (set_position_mode): bybit {"retCode":10001,"retMsg":"inverse in uta cannot switch position mode","result":{},"retExtInfo":{},"time":1764608420538}
+[2025-12-01 17:00:23] [INFO] main: [Status] Mode=NORMAL, Price=84552.4, Line=-1
+[2025-12-01 17:00:23] [ERROR] main: Loop Error: GridLogic.check_tp_signal() missing 1 required positional argument: 'p_gap'
+[2025-12-01 17:00:28] [INFO] main: [Status] Mode=NORMAL, Price=84564.7, Line=-1
+[2025-12-01 17:00:28] [ERROR] main: Loop Error: GridLogic.check_tp_signal() missing 1 required positional argument: 'p_gap'
+[2025-12-01 17:00:33] [INFO] main: [Status] Mode=NORMAL, Price=84534.5, Line=-1
+[2025-12-01 17:00:33] [ERROR] main: Loop Error: GridLogic.check_tp_signal() missing 1 required positional argument: 'p_gap'
+[2025-12-01 17:00:38] [INFO] main: [Status] Mode=NORMAL, Price=84576.7, Line=-1
+[2025-12-01 17:00:38] [ERROR] main: Loop Error: GridLogic.check_tp_signal() missing 1 required positional argument: 'p_gap'
+[2025-12-01 17:00:44] [INFO] main: [Status] Mode=NORMAL, Price=84617.8, Line=0
+[2025-12-01 17:00:44] [ERROR] main: Loop Error: GridLogic.check_tp_signal() missing 1 required positional argument: 'p_gap'
+[2025-12-01 17:00:49] [INFO] main: [Status] Mode=NORMAL, Price=84569.0, Line=-1
+[2025-12-01 17:00:49] [ERROR] main: Loop Error: GridLogic.check_tp_signal() missing 1 required positional argument: 'p_gap'
+[2025-12-01 17:00:54] [INFO] main: [Status] Mode=NORMAL, Price=84575.3, Line=-1
+[2025-12-01 17:00:54] [ERROR] main: Loop Error: GridLogic.check_tp_signal() missing 1 required positional argument: 'p_gap'
+[2025-12-01 17:00:59] [INFO] main: [Status] Mode=NORMAL, Price=84571.7, Line=-1
+[2025-12-01 17:00:59] [ERROR] main: Loop Error: GridLogic.check_tp_signal() missing 1 required positional argument: 'p_gap'
+[2025-12-01 17:01:04] [INFO] main: [Status] Mode=NORMAL, Price=84648.7, Line=0
+[2025-12-01 17:01:04] [ERROR] main: Loop Error: GridLogic.check_tp_signal() missing 1 required positional argument: 'p_gap'
+[2025-12-01 17:01:10] [INFO] main: [Status] Mode=NORMAL, Price=84672.5, Line=0
+[2025-12-01 17:01:10] [ERROR] main: Loop Error: GridLogic.check_tp_signal() missing 1 required positional argument: 'p_gap'
+[2025-12-01 17:01:15] [INFO] main: [Status] Mode=NORMAL, Price=84690.0, Line=0
+[2025-12-01 17:01:15] [ERROR] main: Loop Error: GridLogic.check_tp_signal() missing 1 required positional argument: 'p_gap'
+[2025-12-01 17:01:20] [INFO] main: [Status] Mode=NORMAL, Price=84699.9, Line=0
+[2025-12-01 17:01:20] [ERROR] main: Loop Error: GridLogic.check_tp_signal() missing 1 required positional argument: 'p_gap'
+[2025-12-01 17:01:25] [INFO] main: [Status] Mode=NORMAL, Price=84674.6, Line=0
+[2025-12-01 17:01:25] [ERROR] main: Loop Error: GridLogic.check_tp_signal() missing 1 required positional argument: 'p_gap'
+[2025-12-01 17:01:31] [INFO] main: [Status] Mode=NORMAL, Price=84671.0, Line=0
+[2025-12-01 17:01:31] [ERROR] main: Loop Error: GridLogic.check_tp_signal() missing 1 required positional argument: 'p_gap'
+[2025-12-01 17:01:36] [INFO] main: [Status] Mode=NORMAL, Price=84692.6, Line=0
+[2025-12-01 17:01:36] [ERROR] main: Loop Error: GridLogic.check_tp_signal() missing 1 required positional argument: 'p_gap'
+[2025-12-01 17:01:41] [INFO] main: [Status] Mode=NORMAL, Price=84696.0, Line=0
+[2025-12-01 17:01:41] [ERROR] main: Loop Error: GridLogic.check_tp_signal() missing 1 required positional argument: 'p_gap'
+[2025-12-01 17:01:46] [INFO] main: [Status] Mode=NORMAL, Price=84713.9, Line=0
+[2025-12-01 17:01:46] [ERROR] main: Loop Error: GridLogic.check_tp_signal() missing 1 required positional argument: 'p_gap'
+[2025-12-01 17:01:52] [INFO] main: [Status] Mode=NORMAL, Price=84726.3, Line=0
+[2025-12-01 17:01:52] [ERROR] main: Loop Error: GridLogic.check_tp_signal() missing 1 required positional argument: 'p_gap'
+[2025-12-01 17:01:57] [INFO] main: [Status] Mode=NORMAL, Price=84733.5, Line=0
+[2025-12-01 17:01:57] [ERROR] main: Loop Error: GridLogic.check_tp_signal() missing 1 required positional argument: 'p_gap'
+[2025-12-01 17:02:02] [INFO] main: [Status] Mode=NORMAL, Price=84693.5, Line=0
+[2025-12-01 17:02:02] [ERROR] main: Loop Error: GridLogic.check_tp_signal() missing 1 required positional argument: 'p_gap'
+[2025-12-01 17:02:07] [INFO] main: [Status] Mode=NORMAL, Price=84699.9, Line=0
+[2025-12-01 17:02:07] [ERROR] main: Loop Error: GridLogic.check_tp_signal() missing 1 required positional argument: 'p_gap'
+[2025-12-01 17:02:13] [INFO] main: [Status] Mode=NORMAL, Price=84688.8, Line=0
+[2025-12-01 17:02:13] [ERROR] main: Loop Error: GridLogic.check_tp_signal() missing 1 required positional argument: 'p_gap'
+[2025-12-01 17:02:18] [INFO] main: [Status] Mode=NORMAL, Price=84646.8, Line=0
+[2025-12-01 17:02:18] [ERROR] main: Loop Error: GridLogic.check_tp_signal() missing 1 required positional argument: 'p_gap'
+[2025-12-01 17:02:23] [INFO] main: [Status] Mode=NORMAL, Price=84578.8, Line=-1
+[2025-12-01 17:02:23] [ERROR] main: Loop Error: GridLogic.check_tp_signal() missing 1 required positional argument: 'p_gap'
+[2025-12-01 17:02:28] [INFO] main: [Status] Mode=NORMAL, Price=84561.9, Line=-1
+[2025-12-01 17:02:28] [ERROR] main: Loop Error: GridLogic.check_tp_signal() missing 1 required positional argument: 'p_gap'
+[2025-12-01 17:02:34] [INFO] main: [Status] Mode=NORMAL, Price=84562.0, Line=-1
+[2025-12-01 17:02:34] [ERROR] main: Loop Error: GridLogic.check_tp_signal() missing 1 required positional argument: 'p_gap'
+[2025-12-01 17:02:39] [INFO] main: [Status] Mode=NORMAL, Price=84602.3, Line=0
+[2025-12-01 17:02:39] [ERROR] main: Loop Error: GridLogic.check_tp_signal() missing 1 required positional argument: 'p_gap'
+[2025-12-01 17:02:44] [INFO] main: [Status] Mode=NORMAL, Price=84583.3, Line=-1
+[2025-12-01 17:02:44] [ERROR] main: Loop Error: GridLogic.check_tp_signal() missing 1 required positional argument: 'p_gap'
+[2025-12-01 17:02:49] [INFO] main: [Status] Mode=NORMAL, Price=84569.5, Line=-1
+[2025-12-01 17:02:49] [ERROR] main: Loop Error: GridLogic.check_tp_signal() missing 1 required positional argument: 'p_gap'
+[2025-12-01 17:02:54] [INFO] main: [Status] Mode=NORMAL, Price=84562.0, Line=-1
+[2025-12-01 17:02:54] [ERROR] main: Loop Error: GridLogic.check_tp_signal() missing 1 required positional argument: 'p_gap'
+[2025-12-01 17:03:00] [INFO] main: [Status] Mode=NORMAL, Price=84574.8, Line=-1
+[2025-12-01 17:03:00] [ERROR] main: Loop Error: GridLogic.check_tp_signal() missing 1 required positional argument: 'p_gap'
+[2025-12-01 17:03:05] [INFO] main: [Status] Mode=NORMAL, Price=84595.2, Line=0
+[2025-12-01 17:03:05] [ERROR] main: Loop Error: GridLogic.check_tp_signal() missing 1 required positional argument: 'p_gap'
+[2025-12-01 17:03:10] [INFO] main: [Status] Mode=NORMAL, Price=84558.5, Line=-1
+[2025-12-01 17:03:10] [ERROR] main: Loop Error: GridLogic.check_tp_signal() missing 1 required positional argument: 'p_gap'
+[2025-12-01 17:03:15] [INFO] main: [Status] Mode=NORMAL, Price=84542.9, Line=-1
+[2025-12-01 17:03:15] [ERROR] main: Loop Error: GridLogic.check_tp_signal() missing 1 required positional argument: 'p_gap'
+[2025-12-01 17:03:21] [INFO] main: [Status] Mode=NORMAL, Price=84530.1, Line=-1
+[2025-12-01 17:03:21] [ERROR] main: Loop Error: GridLogic.check_tp_signal() missing 1 required positional argument: 'p_gap'
+[2025-12-01 17:03:26] [INFO] main: [Status] Mode=NORMAL, Price=84534.3, Line=-1
+[2025-12-01 17:03:26] [ERROR] main: Loop Error: GridLogic.check_tp_signal() missing 1 required positional argument: 'p_gap'
+[2025-12-01 17:03:31] [INFO] main: [Status] Mode=NORMAL, Price=84575.2, Line=-1
+[2025-12-01 17:03:31] [ERROR] main: Loop Error: GridLogic.check_tp_signal() missing 1 required positional argument: 'p_gap'
+[2025-12-01 17:03:36] [INFO] main: [Status] Mode=NORMAL, Price=84562.3, Line=-1
+[2025-12-01 17:03:36] [ERROR] main: Loop Error: GridLogic.check_tp_signal() missing 1 required positional argument: 'p_gap'
+[2025-12-01 17:03:42] [INFO] main: [Status] Mode=NORMAL, Price=84561.0, Line=-1
+[2025-12-01 17:03:42] [ERROR] main: Loop Error: GridLogic.check_tp_signal() missing 1 required positional argument: 'p_gap'
+[2025-12-01 17:03:47] [INFO] main: [Status] Mode=NORMAL, Price=84540.2, Line=-1
+[2025-12-01 17:03:47] [ERROR] main: Loop Error: GridLogic.check_tp_signal() missing 1 required positional argument: 'p_gap'
+[2025-12-01 17:03:52] [INFO] main: [Status] Mode=NORMAL, Price=84564.0, Line=-1
+[2025-12-01 17:03:52] [ERROR] main: Loop Error: GridLogic.check_tp_signal() missing 1 required positional argument: 'p_gap'
+[2025-12-01 17:03:57] [INFO] main: [Status] Mode=NORMAL, Price=84578.5, Line=-1
+[2025-12-01 17:03:57] [ERROR] main: Loop Error: GridLogic.check_tp_signal() missing 1 required positional argument: 'p_gap'
+[2025-12-01 17:04:03] [INFO] main: [Status] Mode=NORMAL, Price=84594.3, Line=0
+[2025-12-01 17:04:03] [ERROR] main: Loop Error: GridLogic.check_tp_signal() missing 1 required positional argument: 'p_gap'
+[2025-12-01 17:04:26] [WARNING] exchange_api: 🚀 [REAL] 실전 매매 모드입니다.
+[2025-12-01 17:04:26] [INFO] state_manager: 상태 로드: {'mode': 'NORMAL', 'p_center': 84769.6, 'p_gap': 353.3, 'atr_value': 0, 'total_balance': 600.0, 'last_long_line': -1, 'last_short_line': -1}
+[2025-12-01 17:04:26] [INFO] main: 🤖 Bybit Wave Bot v10.2 FINAL Starting...
+[2025-12-01 17:04:28] [ERROR] exchange_api: API Error (set_leverage): bybit setLeverage() only support linear and inverse market
+[2025-12-01 17:04:28] [ERROR] exchange_api: API Error (set_position_mode): bybit {"retCode":10001,"retMsg":"inverse in uta cannot switch position mode","result":{},"retExtInfo":{},"time":1764608668131}
+[2025-12-01 17:04:30] [INFO] main: [Status] Mode=NORMAL, Price=84686.8, Line=0
+[2025-12-01 17:04:30] [ERROR] main: Main Loop Error: GridLogic.check_tp_signal() missing 1 required positional argument: 'p_gap'
+[2025-12-01 17:04:35] [INFO] main: [Status] Mode=NORMAL, Price=84708.0, Line=0
+[2025-12-01 17:04:35] [ERROR] main: Main Loop Error: GridLogic.check_tp_signal() missing 1 required positional argument: 'p_gap'
+[2025-12-01 17:04:41] [INFO] main: [Status] Mode=NORMAL, Price=84701.3, Line=0
+[2025-12-01 17:04:41] [ERROR] main: Main Loop Error: GridLogic.check_tp_signal() missing 1 required positional argument: 'p_gap'
+[2025-12-01 17:05:59] [WARNING] exchange_api: 🚀 [REAL] 실전 매매 모드입니다.
+[2025-12-01 17:05:59] [INFO] state_manager: 상태 로드: {'mode': 'NORMAL', 'p_center': 84769.6, 'p_gap': 353.3, 'atr_value': 0, 'total_balance': 600.0, 'last_long_line': -1, 'last_short_line': -1}
+[2025-12-01 17:05:59] [INFO] main: 🤖 Bybit Wave Bot v10.2 FINAL Starting...
+[2025-12-01 17:06:00] [ERROR] exchange_api: API Error (set_leverage): bybit setLeverage() only support linear and inverse market
+[2025-12-01 17:06:00] [ERROR] exchange_api: API Error (set_position_mode): bybit {"retCode":10001,"retMsg":"inverse in uta cannot switch position mode","result":{},"retExtInfo":{},"time":1764608760569}
+[2025-12-01 17:06:03] [INFO] main: [Status] Mode=NORMAL, Price=84759.9, Line=0
+[2025-12-01 17:06:04] [INFO] main: [Status] Mode=NORMAL, Price=84744.6, Line=0
+[2025-12-01 17:06:05] [INFO] main: [Status] Mode=NORMAL, Price=84744.6, Line=0
+[2025-12-01 17:06:06] [INFO] main: [Status] Mode=NORMAL, Price=84744.6, Line=0
+[2025-12-01 17:06:08] [INFO] main: [Status] Mode=NORMAL, Price=84744.6, Line=0
+[2025-12-01 17:06:09] [INFO] main: [Status] Mode=NORMAL, Price=84759.3, Line=0
+[2025-12-01 17:06:10] [INFO] main: [Status] Mode=NORMAL, Price=84759.3, Line=0
+[2025-12-01 17:06:11] [INFO] main: [Status] Mode=NORMAL, Price=84777.4, Line=0
+[2025-12-01 17:06:13] [INFO] main: [Status] Mode=NORMAL, Price=84766.7, Line=0
+[2025-12-01 17:06:14] [INFO] main: [Status] Mode=NORMAL, Price=84762.6, Line=0
+[2025-12-01 17:06:15] [INFO] main: [Status] Mode=NORMAL, Price=84762.6, Line=0
+[2025-12-01 17:06:16] [INFO] main: [Status] Mode=NORMAL, Price=84760.2, Line=0
+[2025-12-01 17:06:17] [INFO] main: [Status] Mode=NORMAL, Price=84760.2, Line=0
+[2025-12-01 17:06:19] [INFO] main: [Status] Mode=NORMAL, Price=84774.9, Line=0
+[2025-12-01 17:06:20] [INFO] main: [Status] Mode=NORMAL, Price=84776.7, Line=0
+[2025-12-01 17:06:21] [INFO] main: [Status] Mode=NORMAL, Price=84780.0, Line=0
+[2025-12-01 17:06:22] [INFO] main: [Status] Mode=NORMAL, Price=84780.0, Line=0
+[2025-12-01 17:06:24] [INFO] main: [Status] Mode=NORMAL, Price=84789.7, Line=0
+[2025-12-01 17:06:25] [INFO] main: [Status] Mode=NORMAL, Price=84782.5, Line=0
+[2025-12-01 17:06:26] [INFO] main: [Status] Mode=NORMAL, Price=84782.5, Line=0
+[2025-12-01 17:06:27] [INFO] main: [Status] Mode=NORMAL, Price=84782.5, Line=0
+[2025-12-01 17:06:29] [INFO] main: [Status] Mode=NORMAL, Price=84782.5, Line=0
+[2025-12-01 17:06:30] [INFO] main: [Status] Mode=NORMAL, Price=84782.5, Line=0
+[2025-12-01 17:06:31] [INFO] main: [Status] Mode=NORMAL, Price=84782.5, Line=0
+[2025-12-01 17:06:32] [INFO] main: [Status] Mode=NORMAL, Price=84782.5, Line=0
+[2025-12-01 17:06:33] [INFO] main: [Status] Mode=NORMAL, Price=84782.5, Line=0
+[2025-12-01 17:06:35] [INFO] main: [Status] Mode=NORMAL, Price=84782.4, Line=0
+[2025-12-01 17:06:36] [INFO] main: [Status] Mode=NORMAL, Price=84782.5, Line=0
+[2025-12-01 17:06:37] [INFO] main: [Status] Mode=NORMAL, Price=84779.9, Line=0
+[2025-12-01 17:06:38] [INFO] main: [Status] Mode=NORMAL, Price=84772.6, Line=0
+[2025-12-01 17:06:40] [INFO] main: [Status] Mode=NORMAL, Price=84772.6, Line=0
+[2025-12-01 17:06:41] [INFO] main: [Status] Mode=NORMAL, Price=84772.6, Line=0
+[2025-12-01 17:06:42] [INFO] main: [Status] Mode=NORMAL, Price=84772.6, Line=0
+[2025-12-01 17:06:43] [INFO] main: [Status] Mode=NORMAL, Price=84779.0, Line=0
+[2025-12-01 17:06:45] [INFO] main: [Status] Mode=NORMAL, Price=84774.5, Line=0
+[2025-12-01 17:06:46] [INFO] main: [Status] Mode=NORMAL, Price=84774.4, Line=0
+[2025-12-01 17:06:47] [INFO] main: [Status] Mode=NORMAL, Price=84774.5, Line=0
+[2025-12-01 17:06:48] [INFO] main: [Status] Mode=NORMAL, Price=84787.2, Line=0
+[2025-12-01 17:06:49] [INFO] main: [Status] Mode=NORMAL, Price=84787.2, Line=0
+[2025-12-01 17:06:51] [INFO] main: [Status] Mode=NORMAL, Price=84787.2, Line=0
+[2025-12-01 17:06:52] [INFO] main: [Status] Mode=NORMAL, Price=84793.8, Line=0
+[2025-12-01 17:06:53] [INFO] main: [Status] Mode=NORMAL, Price=84793.8, Line=0
+[2025-12-01 17:06:54] [INFO] main: [Status] Mode=NORMAL, Price=84787.2, Line=0
+[2025-12-01 17:06:56] [INFO] main: [Status] Mode=NORMAL, Price=84793.8, Line=0
+[2025-12-01 17:06:57] [INFO] main: [Status] Mode=NORMAL, Price=84802.5, Line=0
+[2025-12-01 17:06:58] [INFO] main: [Status] Mode=NORMAL, Price=84807.7, Line=0
+[2025-12-01 17:06:59] [INFO] main: [Status] Mode=NORMAL, Price=84803.6, Line=0
+[2025-12-01 17:07:01] [INFO] main: [Status] Mode=NORMAL, Price=84831.4, Line=0
+[2025-12-01 17:07:02] [INFO] main: [Status] Mode=NORMAL, Price=84842.8, Line=0
+[2025-12-01 17:07:03] [INFO] main: [Status] Mode=NORMAL, Price=84874.9, Line=0
+[2025-12-01 17:07:04] [INFO] main: [Status] Mode=NORMAL, Price=84871.0, Line=0
+[2025-12-01 17:07:06] [INFO] main: [Status] Mode=NORMAL, Price=84869.5, Line=0
+[2025-12-01 17:07:07] [INFO] main: [Status] Mode=NORMAL, Price=84847.7, Line=0
+[2025-12-01 17:07:08] [INFO] main: [Status] Mode=NORMAL, Price=84842.7, Line=0
+[2025-12-01 17:07:09] [INFO] main: [Status] Mode=NORMAL, Price=84842.8, Line=0
+[2025-12-01 17:07:10] [INFO] main: [Status] Mode=NORMAL, Price=84842.8, Line=0
+[2025-12-01 17:07:12] [INFO] main: [Status] Mode=NORMAL, Price=84837.3, Line=0
+[2025-12-01 17:07:13] [INFO] main: [Status] Mode=NORMAL, Price=84845.0, Line=0
+[2025-12-01 17:07:14] [INFO] main: [Status] Mode=NORMAL, Price=84844.9, Line=0
+[2025-12-01 17:07:15] [INFO] main: [Status] Mode=NORMAL, Price=84856.8, Line=0
+[2025-12-01 17:07:17] [INFO] main: [Status] Mode=NORMAL, Price=84858.5, Line=0
+[2025-12-01 17:07:18] [INFO] main: [Status] Mode=NORMAL, Price=84858.6, Line=0
+[2025-12-01 17:07:19] [INFO] main: [Status] Mode=NORMAL, Price=84858.6, Line=0
+[2025-12-01 17:07:20] [INFO] main: [Status] Mode=NORMAL, Price=84856.0, Line=0
+[2025-12-01 17:07:22] [INFO] main: [Status] Mode=NORMAL, Price=84855.9, Line=0
+[2025-12-01 17:07:23] [INFO] main: [Status] Mode=NORMAL, Price=84855.9, Line=0
+[2025-12-01 17:07:24] [INFO] main: [Status] Mode=NORMAL, Price=84867.8, Line=0
+[2025-12-01 17:07:25] [INFO] main: [Status] Mode=NORMAL, Price=84878.2, Line=0
+[2025-12-01 17:07:26] [INFO] main: [Status] Mode=NORMAL, Price=84878.3, Line=0
+[2025-12-01 17:07:28] [INFO] main: [Status] Mode=NORMAL, Price=84883.2, Line=0
+[2025-12-01 17:07:29] [INFO] main: [Status] Mode=NORMAL, Price=84899.8, Line=0
+[2025-12-01 17:07:30] [INFO] main: [Status] Mode=NORMAL, Price=84911.6, Line=0
+[2025-12-01 17:07:31] [INFO] main: [Status] Mode=NORMAL, Price=84896.3, Line=0
+[2025-12-01 17:07:33] [INFO] main: [Status] Mode=NORMAL, Price=84888.5, Line=0
+[2025-12-01 17:07:34] [INFO] main: [Status] Mode=NORMAL, Price=84888.5, Line=0
+[2025-12-01 17:07:35] [INFO] main: [Status] Mode=NORMAL, Price=84877.8, Line=0
+[2025-12-01 17:07:36] [INFO] main: [Status] Mode=NORMAL, Price=84885.1, Line=0
+[2025-12-01 17:07:38] [INFO] main: [Status] Mode=NORMAL, Price=84902.4, Line=0
+[2025-12-01 17:07:39] [INFO] main: [Status] Mode=NORMAL, Price=84902.4, Line=0
+[2025-12-01 17:07:40] [INFO] main: [Status] Mode=NORMAL, Price=84924.1, Line=0
+[2025-12-01 17:07:41] [INFO] main: [Status] Mode=NORMAL, Price=84916.1, Line=0
+[2025-12-01 17:07:43] [INFO] main: [Status] Mode=NORMAL, Price=84916.1, Line=0
+[2025-12-01 17:07:43] [WARNING] exchange_api: 🚀 [REAL] 실전 매매 모드입니다.
+[2025-12-01 17:07:43] [INFO] state_manager: 상태 로드: {'mode': 'NORMAL', 'p_center': 84769.6, 'p_gap': 353.3, 'atr_value': 0, 'total_balance': 600.0, 'last_long_line': -1, 'last_short_line': -1}
+[2025-12-01 17:07:43] [INFO] main: 🤖 Bybit Wave Bot v10.2 FINAL Starting...
+[2025-12-01 17:07:44] [INFO] main: [Status] Mode=NORMAL, Price=84922.8, Line=0
+[2025-12-01 17:07:44] [ERROR] exchange_api: API Error (set_leverage): bybit setLeverage() only support linear and inverse market
+[2025-12-01 17:07:44] [ERROR] exchange_api: API Error (set_position_mode): bybit {"retCode":10001,"retMsg":"inverse in uta cannot switch position mode","result":{},"retExtInfo":{},"time":1764608864987}
+[2025-12-01 17:07:45] [INFO] main: [Status] Mode=NORMAL, Price=84907.7, Line=0
+[2025-12-01 17:07:46] [INFO] main: [Status] Mode=NORMAL, Price=84907.7, Line=0
+[2025-12-01 17:07:47] [INFO] main: [Status] Mode=NORMAL, Price=84907.7, Line=0
+[2025-12-01 17:07:47] [INFO] main: [Status] Mode=NORMAL, Price=84942.6, Line=0
+[2025-12-01 17:07:48] [INFO] main: [Status] Mode=NORMAL, Price=84950.0, Line=1
+[2025-12-01 17:07:49] [INFO] main: [Status] Mode=NORMAL, Price=84950.0, Line=1
+[2025-12-01 17:07:49] [INFO] main: [Status] Mode=NORMAL, Price=84940.8, Line=0
+[2025-12-01 17:07:50] [INFO] main: [Status] Mode=NORMAL, Price=84935.9, Line=0
+[2025-12-01 17:07:51] [INFO] main: [Status] Mode=NORMAL, Price=84929.2, Line=0
+[2025-12-01 17:07:51] [INFO] main: [Status] Mode=NORMAL, Price=84925.5, Line=0
+[2025-12-01 17:07:52] [INFO] main: [Status] Mode=NORMAL, Price=84920.0, Line=0
+[2025-12-01 17:07:53] [INFO] main: [Status] Mode=NORMAL, Price=84908.7, Line=0
+[2025-12-01 17:07:54] [INFO] main: [Status] Mode=NORMAL, Price=84911.6, Line=0
+[2025-12-01 17:07:56] [INFO] main: [Status] Mode=NORMAL, Price=84913.2, Line=0
+[2025-12-01 17:07:57] [INFO] main: [Status] Mode=NORMAL, Price=84913.3, Line=0
+[2025-12-01 17:07:58] [INFO] main: [Status] Mode=NORMAL, Price=84913.3, Line=0
+[2025-12-01 17:07:59] [INFO] main: [Status] Mode=NORMAL, Price=84913.2, Line=0
+[2025-12-01 17:08:01] [INFO] main: [Status] Mode=NORMAL, Price=84924.0, Line=0
+[2025-12-01 17:08:02] [INFO] main: [Status] Mode=NORMAL, Price=84910.9, Line=0
+[2025-12-01 17:08:03] [INFO] main: [Status] Mode=NORMAL, Price=84908.4, Line=0
+[2025-12-01 17:08:04] [INFO] main: [Status] Mode=NORMAL, Price=84911.0, Line=0
+[2025-12-01 17:08:06] [INFO] main: [Status] Mode=NORMAL, Price=84905.0, Line=0
+[2025-12-01 17:08:07] [INFO] main: [Status] Mode=NORMAL, Price=84911.0, Line=0
+[2025-12-01 17:08:08] [INFO] main: [Status] Mode=NORMAL, Price=84900.0, Line=0
+[2025-12-01 17:08:09] [INFO] main: [Status] Mode=NORMAL, Price=84885.3, Line=0
+[2025-12-01 17:08:10] [INFO] main: [Status] Mode=NORMAL, Price=84885.3, Line=0
+[2025-12-01 17:08:12] [INFO] main: [Status] Mode=NORMAL, Price=84880.0, Line=0
+[2025-12-01 17:08:13] [INFO] main: [Status] Mode=NORMAL, Price=84879.4, Line=0
+[2025-12-01 17:08:14] [INFO] main: [Status] Mode=NORMAL, Price=84872.4, Line=0
+[2025-12-01 17:08:15] [INFO] main: [Status] Mode=NORMAL, Price=84863.3, Line=0
+[2025-12-01 17:08:17] [INFO] main: [Status] Mode=NORMAL, Price=84862.5, Line=0
+[2025-12-01 17:08:18] [INFO] main: [Status] Mode=NORMAL, Price=84862.6, Line=0
+[2025-12-01 17:08:19] [INFO] main: [Status] Mode=NORMAL, Price=84850.0, Line=0
+[2025-12-01 17:08:20] [INFO] main: [Status] Mode=NORMAL, Price=84835.0, Line=0
+[2025-12-01 17:08:22] [INFO] main: [Status] Mode=NORMAL, Price=84835.1, Line=0
+[2025-12-01 17:08:23] [INFO] main: [Status] Mode=NORMAL, Price=84834.1, Line=0
+[2025-12-01 17:08:24] [INFO] main: [Status] Mode=NORMAL, Price=84834.0, Line=0
+[2025-12-01 17:08:25] [INFO] main: [Status] Mode=NORMAL, Price=84838.8, Line=0
+[2025-12-01 17:08:26] [INFO] main: [Status] Mode=NORMAL, Price=84841.1, Line=0
+[2025-12-01 17:08:28] [INFO] main: [Status] Mode=NORMAL, Price=84843.0, Line=0
+[2025-12-01 17:08:29] [INFO] main: [Status] Mode=NORMAL, Price=84848.8, Line=0
+[2025-12-01 17:08:30] [INFO] main: [Status] Mode=NORMAL, Price=84858.2, Line=0
+[2025-12-01 17:08:31] [INFO] main: [Status] Mode=NORMAL, Price=84858.2, Line=0
+[2025-12-01 17:08:33] [INFO] main: [Status] Mode=NORMAL, Price=84848.8, Line=0
+[2025-12-01 17:08:34] [INFO] main: [Status] Mode=NORMAL, Price=84856.5, Line=0
+[2025-12-01 17:08:35] [INFO] main: [Status] Mode=NORMAL, Price=84857.2, Line=0
+[2025-12-01 17:08:36] [INFO] main: [Status] Mode=NORMAL, Price=84881.7, Line=0
+[2025-12-01 17:08:38] [INFO] main: [Status] Mode=NORMAL, Price=84881.7, Line=0
+[2025-12-01 17:08:39] [INFO] main: [Status] Mode=NORMAL, Price=84881.7, Line=0
+[2025-12-01 17:08:40] [INFO] main: [Status] Mode=NORMAL, Price=84881.7, Line=0
+[2025-12-01 17:08:41] [INFO] main: [Status] Mode=NORMAL, Price=84881.8, Line=0
+[2025-12-01 17:08:42] [INFO] main: [Status] Mode=NORMAL, Price=84881.8, Line=0
+[2025-12-01 17:08:44] [INFO] main: [Status] Mode=NORMAL, Price=84890.0, Line=0
+[2025-12-01 17:08:45] [INFO] main: [Status] Mode=NORMAL, Price=84898.6, Line=0
+[2025-12-01 17:08:46] [INFO] main: [Status] Mode=NORMAL, Price=84908.9, Line=0
+[2025-12-01 17:08:47] [INFO] main: [Status] Mode=NORMAL, Price=84897.1, Line=0
+[2025-12-01 17:08:49] [INFO] main: [Status] Mode=NORMAL, Price=84897.1, Line=0
+[2025-12-01 17:08:50] [INFO] main: [Status] Mode=NORMAL, Price=84897.1, Line=0
+[2025-12-01 17:08:51] [INFO] main: [Status] Mode=NORMAL, Price=84897.1, Line=0
+[2025-12-01 17:08:52] [INFO] main: [Status] Mode=NORMAL, Price=84908.6, Line=0
+[2025-12-01 17:08:54] [INFO] main: [Status] Mode=NORMAL, Price=84908.6, Line=0
+[2025-12-01 17:08:55] [INFO] main: [Status] Mode=NORMAL, Price=84914.5, Line=0
+[2025-12-01 17:08:56] [INFO] main: [Status] Mode=NORMAL, Price=84916.1, Line=0
+[2025-12-01 17:08:57] [INFO] main: [Status] Mode=NORMAL, Price=84917.0, Line=0
+[2025-12-01 17:08:58] [INFO] main: [Status] Mode=NORMAL, Price=84917.0, Line=0
+[2025-12-01 17:09:00] [INFO] main: [Status] Mode=NORMAL, Price=84917.0, Line=0
+[2025-12-01 17:09:01] [INFO] main: [Status] Mode=NORMAL, Price=84897.0, Line=0
+[2025-12-01 17:09:02] [INFO] main: [Status] Mode=NORMAL, Price=84897.0, Line=0
+[2025-12-01 17:09:03] [INFO] main: [Status] Mode=NORMAL, Price=84897.1, Line=0
+[2025-12-01 17:09:05] [INFO] main: [Status] Mode=NORMAL, Price=84913.8, Line=0
+[2025-12-01 17:09:06] [INFO] main: [Status] Mode=NORMAL, Price=84913.8, Line=0
+[2025-12-01 17:09:07] [INFO] main: [Status] Mode=NORMAL, Price=84897.1, Line=0
+[2025-12-01 17:09:08] [INFO] main: [Status] Mode=NORMAL, Price=84895.7, Line=0
+[2025-12-01 17:09:10] [INFO] main: [Status] Mode=NORMAL, Price=84905.2, Line=0
+[2025-12-01 17:09:11] [INFO] main: [Status] Mode=NORMAL, Price=84899.2, Line=0
+[2025-12-01 17:09:12] [INFO] main: [Status] Mode=NORMAL, Price=84895.1, Line=0
+[2025-12-01 17:09:13] [INFO] main: [Status] Mode=NORMAL, Price=84895.1, Line=0
+[2025-12-01 17:09:14] [INFO] main: [Status] Mode=NORMAL, Price=84895.1, Line=0
+[2025-12-01 17:09:16] [INFO] main: [Status] Mode=NORMAL, Price=84848.4, Line=0
+[2025-12-01 17:09:17] [INFO] main: [Status] Mode=NORMAL, Price=84833.4, Line=0
+[2025-12-01 17:09:18] [INFO] main: [Status] Mode=NORMAL, Price=84820.2, Line=0
+[2025-12-01 17:09:19] [INFO] main: [Status] Mode=NORMAL, Price=84871.5, Line=0
+[2025-12-01 17:09:21] [INFO] main: [Status] Mode=NORMAL, Price=84864.1, Line=0
+[2025-12-01 17:09:22] [INFO] main: [Status] Mode=NORMAL, Price=84864.1, Line=0
+[2025-12-01 17:09:23] [INFO] main: [Status] Mode=NORMAL, Price=84871.6, Line=0
+[2025-12-01 17:09:24] [INFO] main: [Status] Mode=NORMAL, Price=84885.9, Line=0
+[2025-12-01 17:09:26] [INFO] main: [Status] Mode=NORMAL, Price=84885.9, Line=0
+[2025-12-01 17:09:27] [INFO] main: [Status] Mode=NORMAL, Price=84888.2, Line=0
+[2025-12-01 17:09:28] [INFO] main: [Status] Mode=NORMAL, Price=84895.3, Line=0
+[2025-12-01 17:09:29] [INFO] main: [Status] Mode=NORMAL, Price=84865.7, Line=0
+[2025-12-01 17:09:30] [INFO] main: [Status] Mode=NORMAL, Price=84865.7, Line=0
+[2025-12-01 17:09:32] [INFO] main: [Status] Mode=NORMAL, Price=84822.0, Line=0
+[2025-12-01 17:09:33] [INFO] main: [Status] Mode=NORMAL, Price=84813.1, Line=0
+[2025-12-01 17:09:34] [INFO] main: [Status] Mode=NORMAL, Price=84829.9, Line=0
+[2025-12-01 17:09:35] [INFO] main: [Status] Mode=NORMAL, Price=84827.9, Line=0
+[2025-12-01 17:09:37] [INFO] main: [Status] Mode=NORMAL, Price=84823.7, Line=0
+[2025-12-01 17:09:38] [INFO] main: [Status] Mode=NORMAL, Price=84823.7, Line=0
+[2025-12-01 17:09:39] [INFO] main: [Status] Mode=NORMAL, Price=84823.6, Line=0
+[2025-12-01 17:09:40] [INFO] main: [Status] Mode=NORMAL, Price=84823.9, Line=0
+[2025-12-01 17:09:42] [INFO] main: [Status] Mode=NORMAL, Price=84823.9, Line=0
+[2025-12-01 17:09:43] [INFO] main: [Status] Mode=NORMAL, Price=84823.7, Line=0
+[2025-12-01 17:09:44] [INFO] main: [Status] Mode=NORMAL, Price=84823.6, Line=0
+[2025-12-01 17:09:45] [INFO] main: [Status] Mode=NORMAL, Price=84820.0, Line=0
+[2025-12-01 17:09:46] [INFO] main: [Status] Mode=NORMAL, Price=84812.8, Line=0
+[2025-12-01 17:09:48] [INFO] main: [Status] Mode=NORMAL, Price=84789.5, Line=0
+[2025-12-01 17:09:49] [INFO] main: [Status] Mode=NORMAL, Price=84788.3, Line=0
+[2025-12-01 17:09:50] [INFO] main: [Status] Mode=NORMAL, Price=84772.4, Line=0
+[2025-12-01 17:09:51] [INFO] main: [Status] Mode=NORMAL, Price=84782.2, Line=0
+[2025-12-01 17:09:53] [INFO] main: [Status] Mode=NORMAL, Price=84772.2, Line=0
+[2025-12-01 17:09:54] [INFO] main: [Status] Mode=NORMAL, Price=84750.0, Line=0
+[2025-12-01 17:09:55] [INFO] main: [Status] Mode=NORMAL, Price=84749.7, Line=0
+[2025-12-01 17:09:56] [INFO] main: [Status] Mode=NORMAL, Price=84749.7, Line=0
+[2025-12-01 17:09:58] [INFO] main: [Status] Mode=NORMAL, Price=84761.9, Line=0
+[2025-12-01 17:09:59] [INFO] main: [Status] Mode=NORMAL, Price=84761.9, Line=0
+[2025-12-01 17:10:00] [INFO] main: [Status] Mode=NORMAL, Price=84769.2, Line=0
+[2025-12-01 17:10:01] [INFO] main: [Status] Mode=NORMAL, Price=84782.1, Line=0
+[2025-12-01 17:10:02] [INFO] main: [Status] Mode=NORMAL, Price=84768.9, Line=0
+[2025-12-01 17:10:04] [INFO] main: [Status] Mode=NORMAL, Price=84777.6, Line=0
+[2025-12-01 17:10:05] [INFO] main: [Status] Mode=NORMAL, Price=84796.3, Line=0
+[2025-12-01 17:10:06] [INFO] main: [Status] Mode=NORMAL, Price=84778.2, Line=0
+[2025-12-01 17:10:07] [INFO] main: [Status] Mode=NORMAL, Price=84795.1, Line=0
+[2025-12-01 17:10:09] [INFO] main: [Status] Mode=NORMAL, Price=84795.0, Line=0
+[2025-12-01 17:10:10] [INFO] main: [Status] Mode=NORMAL, Price=84795.1, Line=0
+[2025-12-01 17:10:11] [INFO] main: [Status] Mode=NORMAL, Price=84795.0, Line=0
+[2025-12-01 17:10:12] [INFO] main: [Status] Mode=NORMAL, Price=84784.6, Line=0
+[2025-12-01 17:10:14] [INFO] main: [Status] Mode=NORMAL, Price=84757.8, Line=0
+[2025-12-01 17:10:15] [INFO] main: [Status] Mode=NORMAL, Price=84757.6, Line=0
+[2025-12-01 17:10:16] [INFO] main: [Status] Mode=NORMAL, Price=84757.7, Line=0
+[2025-12-01 17:10:17] [INFO] main: [Status] Mode=NORMAL, Price=84753.3, Line=0
+[2025-12-01 17:10:19] [INFO] main: [Status] Mode=NORMAL, Price=84753.0, Line=0
+[2025-12-01 17:10:20] [INFO] main: [Status] Mode=NORMAL, Price=84749.7, Line=0
+[2025-12-01 17:10:21] [INFO] main: [Status] Mode=NORMAL, Price=84740.0, Line=0
+[2025-12-01 17:10:22] [INFO] main: [Status] Mode=NORMAL, Price=84739.9, Line=0
+[2025-12-01 17:10:23] [INFO] main: [Status] Mode=NORMAL, Price=84739.9, Line=0
+[2025-12-01 17:10:25] [INFO] main: [Status] Mode=NORMAL, Price=84723.2, Line=0
+[2025-12-01 17:10:26] [INFO] main: [Status] Mode=NORMAL, Price=84722.2, Line=0
+[2025-12-01 17:10:27] [INFO] main: [Status] Mode=NORMAL, Price=84731.0, Line=0
+[2025-12-01 17:10:28] [INFO] main: [Status] Mode=NORMAL, Price=84731.0, Line=0
+[2025-12-01 17:10:30] [INFO] main: [Status] Mode=NORMAL, Price=84731.0, Line=0
+[2025-12-01 17:10:31] [INFO] main: [Status] Mode=NORMAL, Price=84731.0, Line=0
+[2025-12-01 17:10:32] [INFO] main: [Status] Mode=NORMAL, Price=84720.0, Line=0
+[2025-12-01 17:10:33] [INFO] main: [Status] Mode=NORMAL, Price=84720.0, Line=0
+[2025-12-01 17:10:35] [INFO] main: [Status] Mode=NORMAL, Price=84694.7, Line=0
+[2025-12-01 17:10:36] [INFO] main: [Status] Mode=NORMAL, Price=84674.3, Line=0
+[2025-12-01 17:10:37] [INFO] main: [Status] Mode=NORMAL, Price=84670.3, Line=0
+[2025-12-01 17:10:38] [INFO] main: [Status] Mode=NORMAL, Price=84686.5, Line=0
+[2025-12-01 17:10:39] [INFO] main: [Status] Mode=NORMAL, Price=84680.9, Line=0
+[2025-12-01 17:10:41] [INFO] main: [Status] Mode=NORMAL, Price=84651.0, Line=0
+[2025-12-01 17:10:42] [INFO] main: [Status] Mode=NORMAL, Price=84646.1, Line=0
+[2025-12-01 17:10:43] [INFO] main: [Status] Mode=NORMAL, Price=84659.9, Line=0
+[2025-12-01 17:10:44] [INFO] main: [Status] Mode=NORMAL, Price=84651.0, Line=0
+[2025-12-01 17:10:46] [INFO] main: [Status] Mode=NORMAL, Price=84630.1, Line=0
+[2025-12-01 17:10:47] [INFO] main: [Status] Mode=NORMAL, Price=84630.0, Line=0
+[2025-12-01 17:10:48] [INFO] main: [Status] Mode=NORMAL, Price=84642.9, Line=0
+[2025-12-01 17:10:49] [INFO] main: [Status] Mode=NORMAL, Price=84643.5, Line=0
+[2025-12-01 17:10:51] [INFO] main: [Status] Mode=NORMAL, Price=84630.1, Line=0
+[2025-12-01 17:10:52] [INFO] main: [Status] Mode=NORMAL, Price=84630.0, Line=0
+[2025-12-01 17:10:53] [INFO] main: [Status] Mode=NORMAL, Price=84644.6, Line=0
+[2025-12-01 17:10:54] [INFO] main: [Status] Mode=NORMAL, Price=84644.6, Line=0
+[2025-12-01 17:10:55] [INFO] main: [Status] Mode=NORMAL, Price=84644.6, Line=0
+[2025-12-01 17:10:57] [INFO] main: [Status] Mode=NORMAL, Price=84644.6, Line=0
+[2025-12-01 17:10:58] [INFO] main: [Status] Mode=NORMAL, Price=84630.9, Line=0
+[2025-12-01 17:10:59] [INFO] main: [Status] Mode=NORMAL, Price=84630.9, Line=0
+[2025-12-01 17:11:00] [INFO] main: [Status] Mode=NORMAL, Price=84630.8, Line=0
+[2025-12-01 17:11:02] [INFO] main: [Status] Mode=NORMAL, Price=84645.0, Line=0
+[2025-12-01 17:11:03] [INFO] main: [Status] Mode=NORMAL, Price=84645.0, Line=0
+[2025-12-01 17:11:04] [INFO] main: [Status] Mode=NORMAL, Price=84661.9, Line=0
+[2025-12-01 17:11:05] [INFO] main: [Status] Mode=NORMAL, Price=84653.9, Line=0
+[2025-12-01 17:11:07] [INFO] main: [Status] Mode=NORMAL, Price=84653.8, Line=0
+[2025-12-01 17:11:08] [INFO] main: [Status] Mode=NORMAL, Price=84653.9, Line=0
+[2025-12-01 17:11:09] [INFO] main: [Status] Mode=NORMAL, Price=84658.1, Line=0
+[2025-12-01 17:11:10] [INFO] main: [Status] Mode=NORMAL, Price=84666.0, Line=0
+[2025-12-01 17:11:11] [INFO] main: [Status] Mode=NORMAL, Price=84666.0, Line=0
+[2025-12-01 17:11:13] [INFO] main: [Status] Mode=NORMAL, Price=84665.9, Line=0
+[2025-12-01 17:11:14] [INFO] main: [Status] Mode=NORMAL, Price=84678.3, Line=0
+[2025-12-01 17:11:15] [INFO] main: [Status] Mode=NORMAL, Price=84684.8, Line=0
+[2025-12-01 17:11:16] [INFO] main: [Status] Mode=NORMAL, Price=84670.5, Line=0
+[2025-12-01 17:11:18] [INFO] main: [Status] Mode=NORMAL, Price=84670.4, Line=0
+[2025-12-01 17:11:19] [INFO] main: [Status] Mode=NORMAL, Price=84670.5, Line=0
+[2025-12-01 17:11:20] [INFO] main: [Status] Mode=NORMAL, Price=84683.9, Line=0
+[2025-12-01 17:11:21] [INFO] main: [Status] Mode=NORMAL, Price=84694.3, Line=0
+[2025-12-01 17:11:23] [INFO] main: [Status] Mode=NORMAL, Price=84694.2, Line=0
+[2025-12-01 17:11:24] [INFO] main: [Status] Mode=NORMAL, Price=84682.6, Line=0
+[2025-12-01 17:11:25] [INFO] main: [Status] Mode=NORMAL, Price=84682.6, Line=0
+[2025-12-01 17:11:26] [INFO] main: [Status] Mode=NORMAL, Price=84693.8, Line=0
+[2025-12-01 17:11:27] [INFO] main: [Status] Mode=NORMAL, Price=84693.7, Line=0
+[2025-12-01 17:11:29] [INFO] main: [Status] Mode=NORMAL, Price=84693.7, Line=0
+[2025-12-01 17:11:30] [INFO] main: [Status] Mode=NORMAL, Price=84693.7, Line=0
+[2025-12-01 17:11:31] [INFO] main: [Status] Mode=NORMAL, Price=84693.6, Line=0
+[2025-12-01 17:11:32] [INFO] main: [Status] Mode=NORMAL, Price=84696.2, Line=0
+[2025-12-01 17:11:34] [INFO] main: [Status] Mode=NORMAL, Price=84710.2, Line=0
+[2025-12-01 17:11:35] [INFO] main: [Status] Mode=NORMAL, Price=84722.3, Line=0
+[2025-12-01 17:11:36] [INFO] main: [Status] Mode=NORMAL, Price=84701.7, Line=0
+[2025-12-01 17:11:37] [INFO] main: [Status] Mode=NORMAL, Price=84712.6, Line=0
+[2025-12-01 17:11:39] [INFO] main: [Status] Mode=NORMAL, Price=84712.6, Line=0
+[2025-12-01 17:11:40] [INFO] main: [Status] Mode=NORMAL, Price=84712.6, Line=0
+[2025-12-01 17:11:41] [INFO] main: [Status] Mode=NORMAL, Price=84717.4, Line=0
+[2025-12-01 17:11:42] [INFO] main: [Status] Mode=NORMAL, Price=84717.4, Line=0
+[2025-12-01 17:11:43] [INFO] main: [Status] Mode=NORMAL, Price=84717.3, Line=0
+[2025-12-01 17:11:45] [INFO] main: [Status] Mode=NORMAL, Price=84717.4, Line=0
+[2025-12-01 17:11:46] [INFO] main: [Status] Mode=NORMAL, Price=84725.5, Line=0
+[2025-12-01 17:11:47] [INFO] main: [Status] Mode=NORMAL, Price=84714.1, Line=0
+[2025-12-01 17:11:48] [INFO] main: [Status] Mode=NORMAL, Price=84714.2, Line=0
+[2025-12-01 17:11:50] [INFO] main: [Status] Mode=NORMAL, Price=84714.2, Line=0
+[2025-12-01 17:11:51] [INFO] main: [Status] Mode=NORMAL, Price=84714.2, Line=0
+[2025-12-01 17:11:52] [INFO] main: [Status] Mode=NORMAL, Price=84714.1, Line=0
+[2025-12-01 17:11:53] [INFO] main: [Status] Mode=NORMAL, Price=84714.2, Line=0
+[2025-12-01 17:11:55] [INFO] main: [Status] Mode=NORMAL, Price=84722.2, Line=0
+[2025-12-01 17:11:56] [INFO] main: [Status] Mode=NORMAL, Price=84726.4, Line=0
+[2025-12-01 17:11:57] [INFO] main: [Status] Mode=NORMAL, Price=84726.7, Line=0
+[2025-12-01 17:11:58] [INFO] main: [Status] Mode=NORMAL, Price=84726.7, Line=0
+[2025-12-01 17:11:59] [INFO] main: [Status] Mode=NORMAL, Price=84726.6, Line=0
+[2025-12-01 17:12:01] [INFO] main: [Status] Mode=NORMAL, Price=84761.2, Line=0
+[2025-12-01 17:12:02] [INFO] main: [Status] Mode=NORMAL, Price=84776.3, Line=0
+[2025-12-01 17:12:03] [INFO] main: [Status] Mode=NORMAL, Price=84764.4, Line=0
+[2025-12-01 17:12:04] [INFO] main: [Status] Mode=NORMAL, Price=84756.0, Line=0
+[2025-12-01 17:12:06] [INFO] main: [Status] Mode=NORMAL, Price=84733.1, Line=0
+[2025-12-01 17:12:07] [INFO] main: [Status] Mode=NORMAL, Price=84726.6, Line=0
+[2025-12-01 17:12:08] [INFO] main: [Status] Mode=NORMAL, Price=84726.5, Line=0
+[2025-12-01 17:12:09] [INFO] main: [Status] Mode=NORMAL, Price=84726.6, Line=0
+[2025-12-01 17:12:11] [INFO] main: [Status] Mode=NORMAL, Price=84738.2, Line=0
+[2025-12-01 17:12:12] [INFO] main: [Status] Mode=NORMAL, Price=84734.3, Line=0
+[2025-12-01 17:12:13] [INFO] main: [Status] Mode=NORMAL, Price=84734.3, Line=0
+[2025-12-01 17:12:14] [INFO] main: [Status] Mode=NORMAL, Price=84747.6, Line=0
+[2025-12-01 17:12:15] [INFO] main: [Status] Mode=NORMAL, Price=84747.5, Line=0
+[2025-12-01 17:12:17] [INFO] main: [Status] Mode=NORMAL, Price=84783.2, Line=0
+[2025-12-01 17:12:18] [INFO] main: [Status] Mode=NORMAL, Price=84789.4, Line=0
+[2025-12-01 17:12:19] [INFO] main: [Status] Mode=NORMAL, Price=84795.2, Line=0
+[2025-12-01 17:12:20] [INFO] main: [Status] Mode=NORMAL, Price=84795.1, Line=0
+[2025-12-01 17:12:22] [INFO] main: [Status] Mode=NORMAL, Price=84793.6, Line=0
+[2025-12-01 17:12:23] [INFO] main: [Status] Mode=NORMAL, Price=84793.6, Line=0
+[2025-12-01 17:12:24] [INFO] main: [Status] Mode=NORMAL, Price=84787.2, Line=0
+[2025-12-01 17:12:25] [INFO] main: [Status] Mode=NORMAL, Price=84778.1, Line=0
+[2025-12-01 17:12:27] [INFO] main: [Status] Mode=NORMAL, Price=84778.1, Line=0
+[2025-12-01 17:12:28] [INFO] main: [Status] Mode=NORMAL, Price=84778.1, Line=0
+[2025-12-01 17:12:29] [INFO] main: [Status] Mode=NORMAL, Price=84778.0, Line=0
+[2025-12-01 17:12:30] [INFO] main: [Status] Mode=NORMAL, Price=84786.0, Line=0
+[2025-12-01 17:12:32] [INFO] main: [Status] Mode=NORMAL, Price=84786.5, Line=0
+[2025-12-01 17:12:33] [INFO] main: [Status] Mode=NORMAL, Price=84780.5, Line=0
+[2025-12-01 17:12:34] [INFO] main: [Status] Mode=NORMAL, Price=84770.1, Line=0
+[2025-12-01 17:12:35] [INFO] main: [Status] Mode=NORMAL, Price=84764.1, Line=0
+[2025-12-01 17:12:36] [INFO] main: [Status] Mode=NORMAL, Price=84764.2, Line=0
+[2025-12-01 17:12:38] [INFO] main: [Status] Mode=NORMAL, Price=84770.1, Line=0
+[2025-12-01 17:12:39] [INFO] main: [Status] Mode=NORMAL, Price=84770.1, Line=0
+[2025-12-01 17:12:40] [INFO] main: [Status] Mode=NORMAL, Price=84766.1, Line=0
+[2025-12-01 17:12:41] [INFO] main: [Status] Mode=NORMAL, Price=84761.3, Line=0
+[2025-12-01 17:12:43] [INFO] main: [Status] Mode=NORMAL, Price=84761.3, Line=0
+[2025-12-01 17:12:44] [INFO] main: [Status] Mode=NORMAL, Price=84765.2, Line=0
+[2025-12-01 17:12:45] [INFO] main: [Status] Mode=NORMAL, Price=84786.0, Line=0
+[2025-12-01 17:12:46] [INFO] main: [Status] Mode=NORMAL, Price=84785.9, Line=0
+[2025-12-01 17:12:48] [INFO] main: [Status] Mode=NORMAL, Price=84778.2, Line=0
+[2025-12-01 17:12:49] [INFO] main: [Status] Mode=NORMAL, Price=84778.3, Line=0
+[2025-12-01 17:12:50] [INFO] main: [Status] Mode=NORMAL, Price=84778.3, Line=0
+[2025-12-01 17:12:51] [INFO] main: [Status] Mode=NORMAL, Price=84785.9, Line=0
+[2025-12-01 17:12:52] [INFO] main: [Status] Mode=NORMAL, Price=84786.0, Line=0
+[2025-12-01 17:12:54] [INFO] main: [Status] Mode=NORMAL, Price=84785.0, Line=0
+[2025-12-01 17:12:55] [INFO] main: [Status] Mode=NORMAL, Price=84785.9, Line=0
+[2025-12-01 17:12:56] [INFO] main: [Status] Mode=NORMAL, Price=84786.0, Line=0
+[2025-12-01 17:12:57] [INFO] main: [Status] Mode=NORMAL, Price=84778.9, Line=0
+[2025-12-01 17:12:59] [INFO] main: [Status] Mode=NORMAL, Price=84774.0, Line=0
+[2025-12-01 17:13:00] [INFO] main: [Status] Mode=NORMAL, Price=84774.1, Line=0
+[2025-12-01 17:13:01] [INFO] main: [Status] Mode=NORMAL, Price=84764.1, Line=0
+[2025-12-01 17:13:02] [INFO] main: [Status] Mode=NORMAL, Price=84771.1, Line=0
+[2025-12-01 17:13:04] [INFO] main: [Status] Mode=NORMAL, Price=84769.4, Line=0
+[2025-12-01 17:13:05] [INFO] main: [Status] Mode=NORMAL, Price=84745.4, Line=0
+[2025-12-01 17:13:06] [INFO] main: [Status] Mode=NORMAL, Price=84750.9, Line=0
+[2025-12-01 17:13:07] [INFO] main: [Status] Mode=NORMAL, Price=84739.4, Line=0
+[2025-12-01 17:13:08] [INFO] main: [Status] Mode=NORMAL, Price=84739.4, Line=0
+[2025-12-01 17:13:10] [INFO] main: [Status] Mode=NORMAL, Price=84728.2, Line=0
+[2025-12-01 17:13:11] [INFO] main: [Status] Mode=NORMAL, Price=84728.2, Line=0
+[2025-12-01 17:13:12] [INFO] main: [Status] Mode=NORMAL, Price=84728.2, Line=0
+[2025-12-01 17:13:13] [INFO] main: [Status] Mode=NORMAL, Price=84728.8, Line=0
+[2025-12-01 17:13:15] [INFO] main: [Status] Mode=NORMAL, Price=84716.4, Line=0
+[2025-12-01 17:13:16] [INFO] main: [Status] Mode=NORMAL, Price=84705.7, Line=0
+[2025-12-01 17:13:17] [INFO] main: [Status] Mode=NORMAL, Price=84710.1, Line=0
+[2025-12-01 17:13:18] [INFO] main: [Status] Mode=NORMAL, Price=84702.4, Line=0
+[2025-12-01 17:13:20] [INFO] main: [Status] Mode=NORMAL, Price=84695.6, Line=0
+[2025-12-01 17:13:21] [INFO] main: [Status] Mode=NORMAL, Price=84695.6, Line=0
+[2025-12-01 17:13:22] [INFO] main: [Status] Mode=NORMAL, Price=84701.6, Line=0
+[2025-12-01 17:13:23] [INFO] main: [Status] Mode=NORMAL, Price=84704.6, Line=0
+[2025-12-01 17:13:24] [INFO] main: [Status] Mode=NORMAL, Price=84710.8, Line=0
+[2025-12-01 17:13:26] [INFO] main: [Status] Mode=NORMAL, Price=84710.8, Line=0
+[2025-12-01 17:13:27] [INFO] main: [Status] Mode=NORMAL, Price=84710.7, Line=0
+[2025-12-01 17:13:28] [INFO] main: [Status] Mode=NORMAL, Price=84684.2, Line=0
+[2025-12-01 17:13:29] [INFO] main: [Status] Mode=NORMAL, Price=84683.8, Line=0
+[2025-12-01 17:13:31] [INFO] main: [Status] Mode=NORMAL, Price=84700.3, Line=0
+[2025-12-01 17:13:32] [INFO] main: [Status] Mode=NORMAL, Price=84708.5, Line=0
+[2025-12-01 17:13:33] [INFO] main: [Status] Mode=NORMAL, Price=84714.0, Line=0
+[2025-12-01 17:13:34] [INFO] main: [Status] Mode=NORMAL, Price=84716.2, Line=0
+[2025-12-01 17:13:36] [INFO] main: [Status] Mode=NORMAL, Price=84711.2, Line=0
+[2025-12-01 17:13:37] [INFO] main: [Status] Mode=NORMAL, Price=84711.3, Line=0
+[2025-12-01 17:13:38] [INFO] main: [Status] Mode=NORMAL, Price=84711.2, Line=0
+[2025-12-01 17:13:39] [INFO] main: [Status] Mode=NORMAL, Price=84702.5, Line=0
+[2025-12-01 17:13:40] [INFO] main: [Status] Mode=NORMAL, Price=84695.0, Line=0
+[2025-12-01 17:13:42] [INFO] main: [Status] Mode=NORMAL, Price=84688.2, Line=0
+[2025-12-01 17:13:43] [INFO] main: [Status] Mode=NORMAL, Price=84683.9, Line=0
+[2025-12-01 17:13:44] [INFO] main: [Status] Mode=NORMAL, Price=84683.9, Line=0
+[2025-12-01 17:13:45] [INFO] main: [Status] Mode=NORMAL, Price=84684.0, Line=0
+[2025-12-01 17:13:47] [INFO] main: [Status] Mode=NORMAL, Price=84684.0, Line=0
+[2025-12-01 17:13:48] [INFO] main: [Status] Mode=NORMAL, Price=84675.1, Line=0
+[2025-12-01 17:13:49] [INFO] main: [Status] Mode=NORMAL, Price=84670.6, Line=0
+[2025-12-01 17:13:50] [INFO] main: [Status] Mode=NORMAL, Price=84650.0, Line=0
+[2025-12-01 17:13:52] [INFO] main: [Status] Mode=NORMAL, Price=84646.6, Line=0
+[2025-12-01 17:13:53] [INFO] main: [Status] Mode=NORMAL, Price=84646.7, Line=0
+[2025-12-01 17:13:54] [INFO] main: [Status] Mode=NORMAL, Price=84646.6, Line=0
+[2025-12-01 17:13:55] [INFO] main: [Status] Mode=NORMAL, Price=84646.7, Line=0
+[2025-12-01 17:13:56] [INFO] main: [Status] Mode=NORMAL, Price=84638.2, Line=0
+[2025-12-01 17:13:58] [INFO] main: [Status] Mode=NORMAL, Price=84600.6, Line=0
+[2025-12-01 17:13:59] [INFO] main: [Status] Mode=NORMAL, Price=84607.1, Line=0
+[2025-12-01 17:14:00] [INFO] main: [Status] Mode=NORMAL, Price=84622.5, Line=0
+[2025-12-01 17:14:01] [INFO] main: [Status] Mode=NORMAL, Price=84626.9, Line=0
+[2025-12-01 17:14:03] [INFO] main: [Status] Mode=NORMAL, Price=84608.1, Line=0
+[2025-12-01 17:14:04] [INFO] main: [Status] Mode=NORMAL, Price=84595.6, Line=0
+[2025-12-01 17:14:05] [INFO] main: [Status] Mode=NORMAL, Price=84582.8, Line=-1
+[2025-12-01 17:14:06] [INFO] main: [Status] Mode=NORMAL, Price=84582.7, Line=-1
+[2025-12-01 17:14:08] [INFO] main: [Status] Mode=NORMAL, Price=84582.8, Line=-1
+[2025-12-01 17:14:09] [INFO] main: [Status] Mode=NORMAL, Price=84582.7, Line=-1
+[2025-12-01 17:14:10] [INFO] main: [Status] Mode=NORMAL, Price=84582.7, Line=-1
+[2025-12-01 17:14:11] [INFO] main: [Status] Mode=NORMAL, Price=84582.7, Line=-1
+[2025-12-01 17:14:13] [INFO] main: [Status] Mode=NORMAL, Price=84591.0, Line=-1
+[2025-12-01 17:14:14] [INFO] main: [Status] Mode=NORMAL, Price=84585.1, Line=-1
+[2025-12-01 17:14:15] [INFO] main: [Status] Mode=NORMAL, Price=84591.1, Line=-1
+[2025-12-01 17:14:16] [INFO] main: [Status] Mode=NORMAL, Price=84591.8, Line=-1
+[2025-12-01 17:14:17] [INFO] main: [Status] Mode=NORMAL, Price=84590.2, Line=-1
+[2025-12-01 17:14:19] [INFO] main: [Status] Mode=NORMAL, Price=84579.7, Line=-1
+[2025-12-01 17:14:20] [INFO] main: [Status] Mode=NORMAL, Price=84579.7, Line=-1
+[2025-12-01 17:14:21] [INFO] main: [Status] Mode=NORMAL, Price=84579.8, Line=-1
+[2025-12-01 17:14:22] [INFO] main: [Status] Mode=NORMAL, Price=84579.7, Line=-1
+[2025-12-01 17:14:24] [INFO] main: [Status] Mode=NORMAL, Price=84579.8, Line=-1
+[2025-12-01 17:14:25] [INFO] main: [Status] Mode=NORMAL, Price=84574.6, Line=-1
+[2025-12-01 17:14:26] [INFO] main: [Status] Mode=NORMAL, Price=84574.5, Line=-1
+[2025-12-01 17:14:27] [INFO] main: [Status] Mode=NORMAL, Price=84578.4, Line=-1
+[2025-12-01 17:14:29] [INFO] main: [Status] Mode=NORMAL, Price=84584.2, Line=-1
+[2025-12-01 17:14:30] [INFO] main: [Status] Mode=NORMAL, Price=84568.0, Line=-1
+[2025-12-01 17:14:31] [INFO] main: [Status] Mode=NORMAL, Price=84555.1, Line=-1
+[2025-12-01 17:14:32] [INFO] main: [Status] Mode=NORMAL, Price=84556.8, Line=-1
+[2025-12-01 17:14:33] [INFO] main: [Status] Mode=NORMAL, Price=84556.8, Line=-1
+[2025-12-01 17:14:35] [INFO] main: [Status] Mode=NORMAL, Price=84543.2, Line=-1
+[2025-12-01 17:14:36] [INFO] main: [Status] Mode=NORMAL, Price=84544.1, Line=-1
+[2025-12-01 17:14:37] [INFO] main: [Status] Mode=NORMAL, Price=84543.2, Line=-1
+[2025-12-01 17:14:38] [INFO] main: [Status] Mode=NORMAL, Price=84547.3, Line=-1
+[2025-12-01 17:14:40] [INFO] main: [Status] Mode=NORMAL, Price=84547.4, Line=-1
+[2025-12-01 17:14:41] [INFO] main: [Status] Mode=NORMAL, Price=84570.9, Line=-1
+[2025-12-01 17:14:42] [INFO] main: [Status] Mode=NORMAL, Price=84564.0, Line=-1
+[2025-12-01 17:14:43] [INFO] main: [Status] Mode=NORMAL, Price=84552.2, Line=-1
+[2025-12-01 17:14:45] [INFO] main: [Status] Mode=NORMAL, Price=84541.9, Line=-1
+[2025-12-01 17:14:46] [INFO] main: [Status] Mode=NORMAL, Price=84541.8, Line=-1
+[2025-12-01 17:14:47] [INFO] main: [Status] Mode=NORMAL, Price=84526.9, Line=-1
+[2025-12-01 17:14:48] [INFO] main: [Status] Mode=NORMAL, Price=84526.8, Line=-1
+[2025-12-01 17:14:49] [INFO] main: [Status] Mode=NORMAL, Price=84526.9, Line=-1
+[2025-12-01 17:14:51] [INFO] main: [Status] Mode=NORMAL, Price=84526.8, Line=-1
+[2025-12-01 17:14:52] [INFO] main: [Status] Mode=NORMAL, Price=84526.8, Line=-1
+[2025-12-01 17:14:53] [INFO] main: [Status] Mode=NORMAL, Price=84526.7, Line=-1
+[2025-12-01 17:14:54] [INFO] main: [Status] Mode=NORMAL, Price=84528.0, Line=-1
+[2025-12-01 17:14:56] [INFO] main: [Status] Mode=NORMAL, Price=84527.9, Line=-1
+[2025-12-01 17:14:57] [INFO] main: [Status] Mode=NORMAL, Price=84524.8, Line=-1
+[2025-12-01 17:14:58] [INFO] main: [Status] Mode=NORMAL, Price=84529.1, Line=-1
+[2025-12-01 17:14:59] [INFO] main: [Status] Mode=NORMAL, Price=84529.2, Line=-1
+[2025-12-01 17:15:01] [INFO] main: [Status] Mode=NORMAL, Price=84529.2, Line=-1
+[2025-12-01 17:15:02] [INFO] main: [Status] Mode=NORMAL, Price=84516.2, Line=-1
+[2025-12-01 17:15:03] [INFO] main: [Status] Mode=NORMAL, Price=84515.8, Line=-1
+[2025-12-01 17:15:04] [INFO] main: [Status] Mode=NORMAL, Price=84503.8, Line=-1
+[2025-12-01 17:15:05] [INFO] main: [Status] Mode=NORMAL, Price=84496.3, Line=-1
+[2025-12-01 17:15:07] [INFO] main: [Status] Mode=NORMAL, Price=84496.3, Line=-1
+[2025-12-01 17:15:08] [INFO] main: [Status] Mode=NORMAL, Price=84492.0, Line=-1
+[2025-12-01 17:15:09] [INFO] main: [Status] Mode=NORMAL, Price=84495.5, Line=-1
+[2025-12-01 17:15:10] [INFO] main: [Status] Mode=NORMAL, Price=84498.8, Line=-1
+[2025-12-01 17:15:12] [INFO] main: [Status] Mode=NORMAL, Price=84503.7, Line=-1
+[2025-12-01 17:15:13] [INFO] main: [Status] Mode=NORMAL, Price=84503.8, Line=-1
+[2025-12-01 17:15:14] [INFO] main: [Status] Mode=NORMAL, Price=84492.0, Line=-1
+[2025-12-01 17:15:15] [INFO] main: [Status] Mode=NORMAL, Price=84502.6, Line=-1
+[2025-12-01 17:15:17] [INFO] main: [Status] Mode=NORMAL, Price=84460.0, Line=-1
+[2025-12-01 17:15:18] [INFO] main: [Status] Mode=NORMAL, Price=84460.0, Line=-1
+[2025-12-01 17:15:19] [INFO] main: [Status] Mode=NORMAL, Price=84451.0, Line=-1
+[2025-12-01 17:15:20] [INFO] main: [Status] Mode=NORMAL, Price=84435.0, Line=-1
+[2025-12-01 17:15:21] [INFO] main: [Status] Mode=NORMAL, Price=84441.6, Line=-1
+[2025-12-01 17:15:23] [INFO] main: [Status] Mode=NORMAL, Price=84441.7, Line=-1
+[2025-12-01 17:15:24] [INFO] main: [Status] Mode=NORMAL, Price=84441.4, Line=-1
+[2025-12-01 17:15:25] [INFO] main: [Status] Mode=NORMAL, Price=84441.3, Line=-1
+[2025-12-01 17:15:26] [INFO] main: [Status] Mode=NORMAL, Price=84419.9, Line=-1
+[2025-12-01 17:15:28] [INFO] main: [Status] Mode=NORMAL, Price=84425.2, Line=-1
+[2025-12-01 17:15:29] [INFO] main: [Status] Mode=NORMAL, Price=84441.3, Line=-1
+[2025-12-01 17:15:30] [INFO] main: [Status] Mode=NORMAL, Price=84441.3, Line=-1
+[2025-12-01 17:15:31] [INFO] main: [Status] Mode=NORMAL, Price=84452.2, Line=-1
+[2025-12-01 17:15:33] [INFO] main: [Status] Mode=NORMAL, Price=84460.3, Line=-1
+[2025-12-01 17:15:34] [INFO] main: [Status] Mode=NORMAL, Price=84452.6, Line=-1
+[2025-12-01 17:15:35] [INFO] main: [Status] Mode=NORMAL, Price=84453.8, Line=-1
+[2025-12-01 17:15:36] [INFO] main: [Status] Mode=NORMAL, Price=84448.0, Line=-1
+[2025-12-01 17:15:37] [INFO] main: [Status] Mode=NORMAL, Price=84443.1, Line=-1
+[2025-12-01 17:15:39] [INFO] main: [Status] Mode=NORMAL, Price=84443.0, Line=-1
+[2025-12-01 17:15:40] [INFO] main: [Status] Mode=NORMAL, Price=84436.7, Line=-1
+[2025-12-01 17:15:41] [INFO] main: [Status] Mode=NORMAL, Price=84429.3, Line=-1
+[2025-12-01 17:15:42] [INFO] main: [Status] Mode=NORMAL, Price=84428.6, Line=-1
+[2025-12-01 17:15:44] [INFO] main: [Status] Mode=NORMAL, Price=84418.4, Line=-1
+[2025-12-01 17:15:45] [INFO] main: [Status] Mode=NORMAL, Price=84408.8, Line=-1
+[2025-12-01 17:15:46] [INFO] main: [Status] Mode=NORMAL, Price=84415.0, Line=-1
+[2025-12-01 17:15:47] [INFO] main: [Status] Mode=NORMAL, Price=84428.6, Line=-1
+[2025-12-01 17:15:49] [INFO] main: [Status] Mode=NORMAL, Price=84428.6, Line=-1
+[2025-12-01 17:15:50] [INFO] main: [Status] Mode=NORMAL, Price=84428.6, Line=-1
+[2025-12-01 17:15:51] [INFO] main: [Status] Mode=NORMAL, Price=84428.6, Line=-1
+[2025-12-01 17:15:52] [INFO] main: [Status] Mode=NORMAL, Price=84428.6, Line=-1
+[2025-12-01 17:15:53] [INFO] main: [Status] Mode=NORMAL, Price=84428.5, Line=-1
+[2025-12-01 17:15:55] [INFO] main: [Status] Mode=NORMAL, Price=84437.8, Line=-1
+[2025-12-01 17:15:56] [INFO] main: [Status] Mode=NORMAL, Price=84427.3, Line=-1
+[2025-12-01 17:15:57] [INFO] main: [Status] Mode=NORMAL, Price=84427.2, Line=-1
+[2025-12-01 17:15:58] [INFO] main: [Status] Mode=NORMAL, Price=84427.3, Line=-1
+[2025-12-01 17:16:00] [INFO] main: [Status] Mode=NORMAL, Price=84427.3, Line=-1
+[2025-12-01 17:16:01] [INFO] main: [Status] Mode=NORMAL, Price=84427.2, Line=-1
+[2025-12-01 17:16:02] [INFO] main: [Status] Mode=NORMAL, Price=84427.1, Line=-1
+[2025-12-01 17:16:03] [INFO] main: [Status] Mode=NORMAL, Price=84427.1, Line=-1
+[2025-12-01 17:16:05] [INFO] main: [Status] Mode=NORMAL, Price=84427.1, Line=-1
+[2025-12-01 17:16:06] [INFO] main: [Status] Mode=NORMAL, Price=84418.1, Line=-1
+[2025-12-01 17:16:07] [INFO] main: [Status] Mode=NORMAL, Price=84427.6, Line=-1
+[2025-12-01 17:16:08] [INFO] main: [Status] Mode=NORMAL, Price=84448.0, Line=-1
+[2025-12-01 17:16:09] [INFO] main: [Status] Mode=NORMAL, Price=84454.2, Line=-1
+[2025-12-01 17:16:11] [INFO] main: [Status] Mode=NORMAL, Price=84449.9, Line=-1
+[2025-12-01 17:16:12] [INFO] main: [Status] Mode=NORMAL, Price=84439.9, Line=-1
+[2025-12-01 17:16:13] [INFO] main: [Status] Mode=NORMAL, Price=84438.8, Line=-1
+[2025-12-01 17:16:14] [INFO] main: [Status] Mode=NORMAL, Price=84435.5, Line=-1
+[2025-12-01 17:16:16] [INFO] main: [Status] Mode=NORMAL, Price=84430.1, Line=-1
+[2025-12-01 17:16:17] [INFO] main: [Status] Mode=NORMAL, Price=84412.9, Line=-1
+[2025-12-01 17:16:18] [INFO] main: [Status] Mode=NORMAL, Price=84422.0, Line=-1
+[2025-12-01 17:16:19] [INFO] main: [Status] Mode=NORMAL, Price=84422.1, Line=-1
+[2025-12-01 17:16:21] [INFO] main: [Status] Mode=NORMAL, Price=84424.6, Line=-1
+[2025-12-01 17:16:22] [INFO] main: [Status] Mode=NORMAL, Price=84439.8, Line=-1
+[2025-12-01 17:16:23] [INFO] main: [Status] Mode=NORMAL, Price=84439.9, Line=-1
+[2025-12-01 17:16:24] [INFO] main: [Status] Mode=NORMAL, Price=84463.7, Line=-1
+[2025-12-01 17:16:25] [INFO] main: [Status] Mode=NORMAL, Price=84448.9, Line=-1
+[2025-12-01 17:16:27] [INFO] main: [Status] Mode=NORMAL, Price=84466.4, Line=-1
+[2025-12-01 17:16:28] [INFO] main: [Status] Mode=NORMAL, Price=84459.3, Line=-1
+[2025-12-01 17:16:29] [INFO] main: [Status] Mode=NORMAL, Price=84459.4, Line=-1
+[2025-12-01 17:16:30] [INFO] main: [Status] Mode=NORMAL, Price=84465.0, Line=-1
+[2025-12-01 17:16:32] [INFO] main: [Status] Mode=NORMAL, Price=84469.9, Line=-1
+[2025-12-01 17:16:33] [INFO] main: [Status] Mode=NORMAL, Price=84484.3, Line=-1
+[2025-12-01 17:16:34] [INFO] main: [Status] Mode=NORMAL, Price=84484.3, Line=-1
+[2025-12-01 17:16:35] [INFO] main: [Status] Mode=NORMAL, Price=84484.2, Line=-1
+[2025-12-01 17:16:37] [INFO] main: [Status] Mode=NORMAL, Price=84484.5, Line=-1
+[2025-12-01 17:16:38] [INFO] main: [Status] Mode=NORMAL, Price=84498.1, Line=-1
+[2025-12-01 17:16:39] [INFO] main: [Status] Mode=NORMAL, Price=84527.8, Line=-1
+[2025-12-01 17:16:40] [INFO] main: [Status] Mode=NORMAL, Price=84532.4, Line=-1
+[2025-12-01 17:16:41] [INFO] main: [Status] Mode=NORMAL, Price=84543.9, Line=-1
+[2025-12-01 17:16:43] [INFO] main: [Status] Mode=NORMAL, Price=84541.9, Line=-1
+[2025-12-01 17:16:44] [INFO] main: [Status] Mode=NORMAL, Price=84552.1, Line=-1
+[2025-12-01 17:16:45] [INFO] main: [Status] Mode=NORMAL, Price=84560.4, Line=-1
+[2025-12-01 17:16:46] [INFO] main: [Status] Mode=NORMAL, Price=84552.6, Line=-1
+[2025-12-01 17:16:48] [INFO] main: [Status] Mode=NORMAL, Price=84559.9, Line=-1
+[2025-12-01 17:16:49] [INFO] main: [Status] Mode=NORMAL, Price=84584.6, Line=-1
+[2025-12-01 17:16:50] [INFO] main: [Status] Mode=NORMAL, Price=84584.6, Line=-1
+[2025-12-01 17:16:51] [INFO] main: [Status] Mode=NORMAL, Price=84577.3, Line=-1
+[2025-12-01 17:16:53] [INFO] main: [Status] Mode=NORMAL, Price=84577.3, Line=-1
+[2025-12-01 17:16:54] [INFO] main: [Status] Mode=NORMAL, Price=84578.9, Line=-1
+[2025-12-01 17:16:55] [INFO] main: [Status] Mode=NORMAL, Price=84587.7, Line=-1
+[2025-12-01 17:16:56] [INFO] main: [Status] Mode=NORMAL, Price=84590.5, Line=-1
+[2025-12-01 17:16:57] [INFO] main: [Status] Mode=NORMAL, Price=84590.4, Line=-1
+[2025-12-01 17:16:59] [INFO] main: [Status] Mode=NORMAL, Price=84598.9, Line=0
+[2025-12-01 17:17:00] [INFO] main: [Status] Mode=NORMAL, Price=84606.2, Line=0
+[2025-12-01 17:17:01] [INFO] main: [Status] Mode=NORMAL, Price=84577.2, Line=-1
+[2025-12-01 17:17:02] [INFO] main: [Status] Mode=NORMAL, Price=84587.6, Line=-1
+[2025-12-01 17:17:04] [INFO] main: [Status] Mode=NORMAL, Price=84588.5, Line=-1
+[2025-12-01 17:17:05] [INFO] main: [Status] Mode=NORMAL, Price=84573.1, Line=-1
+[2025-12-01 17:17:06] [INFO] main: [Status] Mode=NORMAL, Price=84573.1, Line=-1
+[2025-12-01 17:17:07] [INFO] main: [Status] Mode=NORMAL, Price=84578.6, Line=-1
+[2025-12-01 17:17:09] [INFO] main: [Status] Mode=NORMAL, Price=84578.7, Line=-1
+[2025-12-01 17:17:10] [INFO] main: [Status] Mode=NORMAL, Price=84578.8, Line=-1
+[2025-12-01 17:17:11] [INFO] main: [Status] Mode=NORMAL, Price=84573.1, Line=-1
+[2025-12-01 17:17:12] [INFO] main: [Status] Mode=NORMAL, Price=84573.1, Line=-1
+[2025-12-01 17:17:13] [INFO] main: [Status] Mode=NORMAL, Price=84573.1, Line=-1
+[2025-12-01 17:17:15] [INFO] main: [Status] Mode=NORMAL, Price=84582.0, Line=-1
+[2025-12-01 17:17:16] [INFO] main: [Status] Mode=NORMAL, Price=84586.3, Line=-1
+[2025-12-01 17:17:17] [INFO] main: [Status] Mode=NORMAL, Price=84625.3, Line=0
+[2025-12-01 17:17:18] [INFO] main: [Status] Mode=NORMAL, Price=84621.2, Line=0
+[2025-12-01 17:17:19] [WARNING] exchange_api: 🚀 [REAL] 실전 매매 모드입니다.
+[2025-12-01 17:17:19] [INFO] state_manager: 상태 로드: {'mode': 'NORMAL', 'p_center': 84769.6, 'p_gap': 353.3, 'atr_value': 0, 'total_balance': 600.0, 'last_long_line': None, 'last_short_line': None}
+[2025-12-01 17:17:19] [INFO] main: 🤖 Bybit Wave Bot v10.3 FINAL Starting...
+[2025-12-01 17:17:20] [INFO] main: [Status] Mode=NORMAL, Price=84654.5, Line=0
+[2025-12-01 17:17:20] [ERROR] exchange_api: API Error (set_leverage): bybit setLeverage() only support linear and inverse market
+[2025-12-01 17:17:20] [ERROR] exchange_api: API Error (set_position_mode): bybit {"retCode":10001,"retMsg":"inverse in uta cannot switch position mode","result":{},"retExtInfo":{},"time":1764609440718}
+[2025-12-01 17:17:21] [INFO] main: [Status] Mode=NORMAL, Price=84631.5, Line=0
+[2025-12-01 17:17:22] [INFO] main: [Status] Mode=NORMAL, Price=84617.3, Line=0
+[2025-12-01 17:17:23] [INFO] main: [Status] Mode=NORMAL, Price=84625.5, Line=0
+[2025-12-01 17:17:23] [INFO] main: 🆕 Start-up Entry (Initial Entry)
+[2025-12-01 17:17:23] [INFO] order_manager: [Order] Maker Only: Side=1, P=84625.5, Q=0.001
+[2025-12-01 17:17:23] [INFO] main: [Status] Mode=NORMAL, Price=84625.5, Line=0
+[2025-12-01 17:17:25] [INFO] main: [Status] Mode=NORMAL, Price=84621.2, Line=0
+[2025-12-01 17:17:26] [INFO] main: [Status] Mode=NORMAL, Price=84621.2, Line=0
+[2025-12-01 17:17:27] [INFO] main: [Status] Mode=NORMAL, Price=84621.2, Line=0
+[2025-12-01 17:17:28] [INFO] main: [Status] Mode=NORMAL, Price=84598.8, Line=0
+[2025-12-01 17:17:29] [INFO] main: [Status] Mode=NORMAL, Price=84586.8, Line=-1
+[2025-12-01 17:17:31] [INFO] main: [Status] Mode=NORMAL, Price=84586.9, Line=-1
+[2025-12-01 17:17:32] [INFO] main: [Status] Mode=NORMAL, Price=84586.8, Line=-1
+[2025-12-01 17:17:33] [INFO] main: [Status] Mode=NORMAL, Price=84573.0, Line=-1
+[2025-12-01 17:17:34] [INFO] main: [Status] Mode=NORMAL, Price=84573.1, Line=-1
+[2025-12-01 17:17:36] [INFO] main: [Status] Mode=NORMAL, Price=84574.8, Line=-1
+[2025-12-01 17:17:37] [INFO] main: [Status] Mode=NORMAL, Price=84579.9, Line=-1
+[2025-12-01 17:17:38] [INFO] main: [Status] Mode=NORMAL, Price=84580.0, Line=-1
+[2025-12-01 17:17:39] [INFO] main: [Status] Mode=NORMAL, Price=84579.9, Line=-1
+[2025-12-01 17:17:41] [INFO] main: [Status] Mode=NORMAL, Price=84578.6, Line=-1
+[2025-12-01 17:17:42] [INFO] main: [Status] Mode=NORMAL, Price=84598.7, Line=0
+[2025-12-01 17:17:43] [INFO] main: [Status] Mode=NORMAL, Price=84592.5, Line=-1
+[2025-12-01 17:17:44] [INFO] main: [Status] Mode=NORMAL, Price=84592.6, Line=-1
+[2025-12-01 17:17:45] [INFO] main: [Status] Mode=NORMAL, Price=84592.5, Line=-1
+[2025-12-01 17:17:47] [INFO] main: [Status] Mode=NORMAL, Price=84616.2, Line=0
+[2025-12-01 17:17:48] [INFO] main: [Status] Mode=NORMAL, Price=84644.4, Line=0
+[2025-12-01 17:17:49] [INFO] main: [Status] Mode=NORMAL, Price=84643.1, Line=0
+[2025-12-01 17:17:50] [INFO] main: [Status] Mode=NORMAL, Price=84643.1, Line=0
+[2025-12-01 17:17:52] [INFO] main: [Status] Mode=NORMAL, Price=84643.1, Line=0
+[2025-12-01 17:17:53] [INFO] main: [Status] Mode=NORMAL, Price=84650.1, Line=0
+[2025-12-01 17:17:54] [INFO] main: [Status] Mode=NORMAL, Price=84650.0, Line=0
+[2025-12-01 17:17:55] [INFO] main: [Status] Mode=NORMAL, Price=84659.9, Line=0
+[2025-12-01 17:17:57] [INFO] main: [Status] Mode=NORMAL, Price=84652.5, Line=0
+[2025-12-01 17:17:58] [INFO] main: [Status] Mode=NORMAL, Price=84628.4, Line=0
+[2025-12-01 17:17:59] [INFO] main: [Status] Mode=NORMAL, Price=84628.8, Line=0
+[2025-12-01 17:18:00] [INFO] main: [Status] Mode=NORMAL, Price=84628.8, Line=0
+[2025-12-01 17:18:01] [INFO] main: [Status] Mode=NORMAL, Price=84639.8, Line=0
+[2025-12-01 17:18:03] [INFO] main: [Status] Mode=NORMAL, Price=84609.6, Line=0
+[2025-12-01 17:18:04] [INFO] main: [Status] Mode=NORMAL, Price=84639.3, Line=0
+[2025-12-01 17:18:05] [INFO] main: [Status] Mode=NORMAL, Price=84638.7, Line=0
+[2025-12-01 17:18:06] [INFO] main: [Status] Mode=NORMAL, Price=84643.6, Line=0
+[2025-12-01 17:18:08] [INFO] main: [Status] Mode=NORMAL, Price=84643.6, Line=0
+[2025-12-01 17:18:09] [INFO] main: [Status] Mode=NORMAL, Price=84649.5, Line=0
+[2025-12-01 17:18:10] [INFO] main: [Status] Mode=NORMAL, Price=84649.9, Line=0
+[2025-12-01 17:18:11] [INFO] main: [Status] Mode=NORMAL, Price=84642.5, Line=0
+[2025-12-01 17:18:13] [INFO] main: [Status] Mode=NORMAL, Price=84641.5, Line=0
+[2025-12-01 17:18:14] [INFO] main: [Status] Mode=NORMAL, Price=84690.7, Line=0
+[2025-12-01 17:18:15] [INFO] main: [Status] Mode=NORMAL, Price=84701.6, Line=0
+[2025-12-01 17:18:16] [INFO] main: [Status] Mode=NORMAL, Price=84684.4, Line=0
+[2025-12-01 17:18:17] [INFO] main: [Status] Mode=NORMAL, Price=84680.1, Line=0
+[2025-12-01 17:18:19] [INFO] main: [Status] Mode=NORMAL, Price=84666.7, Line=0
+[2025-12-01 17:18:20] [INFO] main: [Status] Mode=NORMAL, Price=84655.0, Line=0
+[2025-12-01 17:18:21] [INFO] main: [Status] Mode=NORMAL, Price=84651.3, Line=0
+[2025-12-01 17:18:22] [INFO] main: [Status] Mode=NORMAL, Price=84651.2, Line=0
+[2025-12-01 17:18:23] [ERROR] exchange_api: API Error (cancel_order): bybit {"retCode":110001,"retMsg":"order not exists or too late to cancel","result":{},"retExtInfo":{},"time":1764609503373}
+[2025-12-01 17:18:23] [INFO] order_manager: [Timeout] 잔량 0.0010개 취소 (Maker Only)
+[2025-12-01 17:18:23] [INFO] order_manager: [Order] Maker Only: Side=3, P=84625.5, Q=0.001
+[2025-12-01 17:18:24] [INFO] main: [Status] Mode=NORMAL, Price=84658.9, Line=0
+[2025-12-01 17:18:25] [INFO] main: [Status] Mode=NORMAL, Price=84659.3, Line=0
+[2025-12-01 17:18:26] [INFO] main: [Status] Mode=NORMAL, Price=84667.0, Line=0
+[2025-12-01 17:18:27] [INFO] main: [Status] Mode=NORMAL, Price=84651.6, Line=0
+[2025-12-01 17:18:29] [INFO] main: [Status] Mode=NORMAL, Price=84640.8, Line=0
+[2025-12-01 17:18:30] [INFO] main: [Status] Mode=NORMAL, Price=84625.3, Line=0
+[2025-12-01 17:18:31] [INFO] main: [Status] Mode=NORMAL, Price=84625.3, Line=0
+[2025-12-01 17:18:32] [INFO] main: [Status] Mode=NORMAL, Price=84625.3, Line=0
+[2025-12-01 17:18:33] [INFO] main: [Status] Mode=NORMAL, Price=84625.2, Line=0
+[2025-12-01 17:18:35] [INFO] main: [Status] Mode=NORMAL, Price=84625.3, Line=0
+[2025-12-01 17:18:36] [INFO] main: [Status] Mode=NORMAL, Price=84636.0, Line=0
+[2025-12-01 17:18:37] [INFO] main: [Status] Mode=NORMAL, Price=84649.4, Line=0
+[2025-12-01 17:18:38] [INFO] main: [Status] Mode=NORMAL, Price=84665.1, Line=0
+[2025-12-01 17:18:40] [INFO] main: [Status] Mode=NORMAL, Price=84663.2, Line=0
+[2025-12-01 17:18:41] [INFO] main: [Status] Mode=NORMAL, Price=84656.6, Line=0
+[2025-12-01 17:18:42] [INFO] main: [Status] Mode=NORMAL, Price=84656.6, Line=0
+[2025-12-01 17:18:43] [INFO] main: [Status] Mode=NORMAL, Price=84656.5, Line=0
+[2025-12-01 17:18:45] [INFO] main: [Status] Mode=NORMAL, Price=84650.5, Line=0
+[2025-12-01 17:18:46] [INFO] main: [Status] Mode=NORMAL, Price=84656.4, Line=0
+[2025-12-01 17:18:47] [INFO] main: [Status] Mode=NORMAL, Price=84656.5, Line=0
+[2025-12-01 17:18:48] [INFO] main: [Status] Mode=NORMAL, Price=84656.6, Line=0
+[2025-12-01 17:18:50] [INFO] main: [Status] Mode=NORMAL, Price=84641.4, Line=0
+[2025-12-01 17:18:51] [INFO] main: [Status] Mode=NORMAL, Price=84634.1, Line=0
+[2025-12-01 17:18:52] [INFO] main: [Status] Mode=NORMAL, Price=84624.5, Line=0
+[2025-12-01 17:18:53] [INFO] main: [Status] Mode=NORMAL, Price=84624.5, Line=0
+[2025-12-01 17:18:54] [INFO] main: [Status] Mode=NORMAL, Price=84611.9, Line=0
+[2025-12-01 17:18:56] [INFO] main: [Status] Mode=NORMAL, Price=84614.4, Line=0
+[2025-12-01 17:18:57] [INFO] main: [Status] Mode=NORMAL, Price=84612.6, Line=0
+[2025-12-01 17:18:58] [INFO] main: [Status] Mode=NORMAL, Price=84612.4, Line=0
+[2025-12-01 17:18:59] [INFO] main: [Status] Mode=NORMAL, Price=84584.5, Line=-1
+[2025-12-01 17:19:01] [INFO] main: [Status] Mode=NORMAL, Price=84586.8, Line=-1
+[2025-12-01 17:19:02] [INFO] main: [Status] Mode=NORMAL, Price=84579.9, Line=-1
+[2025-12-01 17:19:03] [INFO] main: [Status] Mode=NORMAL, Price=84573.4, Line=-1
+[2025-12-01 17:19:04] [INFO] main: [Status] Mode=NORMAL, Price=84569.6, Line=-1
+[2025-12-01 17:19:05] [INFO] main: [Status] Mode=NORMAL, Price=84568.6, Line=-1
+[2025-12-01 17:19:07] [INFO] main: [Status] Mode=NORMAL, Price=84568.7, Line=-1
+[2025-12-01 17:19:08] [INFO] main: [Status] Mode=NORMAL, Price=84587.1, Line=-1
+[2025-12-01 17:19:09] [INFO] main: [Status] Mode=NORMAL, Price=84583.6, Line=-1
+[2025-12-01 17:19:10] [INFO] main: [Status] Mode=NORMAL, Price=84587.1, Line=-1
+[2025-12-01 17:19:12] [INFO] main: [Status] Mode=NORMAL, Price=84587.1, Line=-1
+[2025-12-01 17:19:13] [INFO] main: [Status] Mode=NORMAL, Price=84582.1, Line=-1
+[2025-12-01 17:19:14] [INFO] main: [Status] Mode=NORMAL, Price=84582.1, Line=-1
+[2025-12-01 17:19:15] [INFO] main: [Status] Mode=NORMAL, Price=84590.2, Line=-1
+[2025-12-01 17:19:17] [INFO] main: [Status] Mode=NORMAL, Price=84590.1, Line=-1
+[2025-12-01 17:19:18] [INFO] main: [Status] Mode=NORMAL, Price=84584.2, Line=-1
+[2025-12-01 17:19:19] [INFO] main: [Status] Mode=NORMAL, Price=84590.2, Line=-1
+[2025-12-01 17:19:20] [INFO] main: [Status] Mode=NORMAL, Price=84571.5, Line=-1
+[2025-12-01 17:19:22] [INFO] main: [Status] Mode=NORMAL, Price=84567.0, Line=-1
+[2025-12-01 17:19:23] [INFO] main: [Status] Mode=NORMAL, Price=84567.1, Line=-1
+[2025-12-01 17:19:23] [ERROR] exchange_api: API Error (cancel_order): bybit {"retCode":110001,"retMsg":"order not exists or too late to cancel","result":{},"retExtInfo":{},"time":1764609563654}
+[2025-12-01 17:19:23] [INFO] order_manager: [Timeout] 잔량 0.0010개 취소 (Maker Only)
+[2025-12-01 17:19:24] [INFO] main: [Status] Mode=NORMAL, Price=84583.8, Line=-1
+[2025-12-01 17:19:25] [INFO] main: [Status] Mode=NORMAL, Price=84583.9, Line=-1
+[2025-12-01 17:19:25] [WARNING] main: 🧹 State Cleanup: Positions are zero, clearing old line history to force fresh entry.
+[2025-12-01 17:19:25] [INFO] main: 🆕 Start-up Entry (Initial Entry)
+[2025-12-01 17:19:25] [INFO] order_manager: [Order] Maker Only: Side=1, P=84583.9, Q=0.001
+[2025-12-01 17:19:25] [INFO] main: [Status] Mode=NORMAL, Price=84583.9, Line=-1
+[2025-12-01 17:19:26] [INFO] main: [Status] Mode=NORMAL, Price=84575.7, Line=-1
+[2025-12-01 17:19:28] [INFO] main: [Status] Mode=NORMAL, Price=84575.8, Line=-1
+[2025-12-01 17:19:29] [INFO] main: [Status] Mode=NORMAL, Price=84575.7, Line=-1
+[2025-12-01 17:19:30] [INFO] main: [Status] Mode=NORMAL, Price=84589.4, Line=-1
+[2025-12-01 17:19:31] [INFO] main: [Status] Mode=NORMAL, Price=84589.4, Line=-1
+[2025-12-01 17:19:33] [INFO] main: [Status] Mode=NORMAL, Price=84589.4, Line=-1
+[2025-12-01 17:19:34] [INFO] main: [Status] Mode=NORMAL, Price=84593.0, Line=0
+[2025-12-01 17:19:35] [INFO] main: [Status] Mode=NORMAL, Price=84598.4, Line=0
+[2025-12-01 17:19:36] [INFO] main: [Status] Mode=NORMAL, Price=84600.0, Line=0
+[2025-12-01 17:19:37] [INFO] main: [Status] Mode=NORMAL, Price=84599.9, Line=0
+[2025-12-01 17:19:39] [INFO] main: [Status] Mode=NORMAL, Price=84600.0, Line=0
+[2025-12-01 17:19:40] [INFO] main: [Status] Mode=NORMAL, Price=84599.9, Line=0
+[2025-12-01 17:19:41] [INFO] main: [Status] Mode=NORMAL, Price=84599.9, Line=0
+[2025-12-01 17:19:42] [INFO] main: [Status] Mode=NORMAL, Price=84602.7, Line=0
+[2025-12-01 17:19:44] [INFO] main: [Status] Mode=NORMAL, Price=84626.0, Line=0
+[2025-12-01 17:19:45] [INFO] main: [Status] Mode=NORMAL, Price=84626.1, Line=0
+[2025-12-01 17:19:46] [INFO] main: [Status] Mode=NORMAL, Price=84635.9, Line=0
+[2025-12-01 17:19:47] [INFO] main: [Status] Mode=NORMAL, Price=84638.2, Line=0
+[2025-12-01 17:19:49] [INFO] main: [Status] Mode=NORMAL, Price=84638.2, Line=0
+[2025-12-01 17:19:50] [INFO] main: [Status] Mode=NORMAL, Price=84648.0, Line=0
+[2025-12-01 17:19:51] [INFO] main: [Status] Mode=NORMAL, Price=84648.0, Line=0
+[2025-12-01 17:19:52] [INFO] main: [Status] Mode=NORMAL, Price=84647.9, Line=0
+[2025-12-01 17:19:53] [INFO] main: [Status] Mode=NORMAL, Price=84648.0, Line=0
+[2025-12-01 17:19:55] [INFO] main: [Status] Mode=NORMAL, Price=84648.0, Line=0
+[2025-12-01 17:19:56] [INFO] main: [Status] Mode=NORMAL, Price=84648.0, Line=0
+[2025-12-01 17:19:57] [INFO] main: [Status] Mode=NORMAL, Price=84647.9, Line=0
+[2025-12-01 17:19:58] [INFO] main: [Status] Mode=NORMAL, Price=84648.0, Line=0
+[2025-12-01 17:20:00] [INFO] main: [Status] Mode=NORMAL, Price=84648.0, Line=0
+[2025-12-01 17:20:01] [INFO] main: [Status] Mode=NORMAL, Price=84658.1, Line=0
+[2025-12-01 17:20:02] [INFO] main: [Status] Mode=NORMAL, Price=84654.0, Line=0
+[2025-12-01 17:20:03] [INFO] main: [Status] Mode=NORMAL, Price=84654.0, Line=0
+[2025-12-01 17:20:05] [INFO] main: [Status] Mode=NORMAL, Price=84654.1, Line=0
+[2025-12-01 17:20:06] [INFO] main: [Status] Mode=NORMAL, Price=84658.1, Line=0
+[2025-12-01 17:20:07] [INFO] main: [Status] Mode=NORMAL, Price=84629.9, Line=0
+[2025-12-01 17:20:08] [INFO] main: [Status] Mode=NORMAL, Price=84673.4, Line=0
+[2025-12-01 17:20:10] [INFO] main: [Status] Mode=NORMAL, Price=84673.8, Line=0
+[2025-12-01 17:20:11] [INFO] main: [Status] Mode=NORMAL, Price=84661.2, Line=0
+[2025-12-01 17:20:12] [INFO] main: [Status] Mode=NORMAL, Price=84661.1, Line=0
+[2025-12-01 17:20:13] [INFO] main: [Status] Mode=NORMAL, Price=84668.6, Line=0
+[2025-12-01 17:20:14] [INFO] main: [Status] Mode=NORMAL, Price=84676.3, Line=0
+[2025-12-01 17:20:16] [INFO] main: [Status] Mode=NORMAL, Price=84658.7, Line=0
+[2025-12-01 17:20:17] [INFO] main: [Status] Mode=NORMAL, Price=84670.6, Line=0
+[2025-12-01 17:20:18] [INFO] main: [Status] Mode=NORMAL, Price=84679.0, Line=0
+[2025-12-01 17:20:19] [INFO] main: [Status] Mode=NORMAL, Price=84695.7, Line=0
+[2025-12-01 17:20:21] [INFO] main: [Status] Mode=NORMAL, Price=84699.0, Line=0
+[2025-12-01 17:20:22] [INFO] main: [Status] Mode=NORMAL, Price=84700.0, Line=0
+[2025-12-01 17:20:23] [INFO] main: [Status] Mode=NORMAL, Price=84705.4, Line=0
+[2025-12-01 17:20:24] [INFO] main: [Status] Mode=NORMAL, Price=84705.4, Line=0
+[2025-12-01 17:20:25] [ERROR] exchange_api: API Error (cancel_order): bybit {"retCode":110001,"retMsg":"order not exists or too late to cancel","result":{},"retExtInfo":{},"time":1764609625172}
+[2025-12-01 17:20:25] [INFO] order_manager: [Timeout] 잔량 0.0010개 취소 (Maker Only)
+[2025-12-01 17:20:25] [INFO] order_manager: [Order] Maker Only: Side=3, P=84583.9, Q=0.001
+[2025-12-01 17:20:26] [INFO] main: [Status] Mode=NORMAL, Price=84700.0, Line=0
+[2025-12-01 17:20:27] [INFO] main: [Status] Mode=NORMAL, Price=84700.0, Line=0
+[2025-12-01 17:20:28] [INFO] main: [Status] Mode=NORMAL, Price=84699.9, Line=0
+[2025-12-01 17:20:29] [INFO] main: [Status] Mode=NORMAL, Price=84699.0, Line=0
+[2025-12-01 17:20:30] [INFO] main: [Status] Mode=NORMAL, Price=84682.2, Line=0
+[2025-12-01 17:20:32] [INFO] main: [Status] Mode=NORMAL, Price=84682.2, Line=0
+[2025-12-01 17:20:33] [INFO] main: [Status] Mode=NORMAL, Price=84680.0, Line=0
+[2025-12-01 17:20:34] [INFO] main: [Status] Mode=NORMAL, Price=84680.0, Line=0
+[2025-12-01 17:20:35] [INFO] main: [Status] Mode=NORMAL, Price=84680.0, Line=0
+[2025-12-01 17:20:37] [INFO] main: [Status] Mode=NORMAL, Price=84683.7, Line=0
+[2025-12-01 17:20:38] [INFO] main: [Status] Mode=NORMAL, Price=84687.1, Line=0
+[2025-12-01 17:20:39] [INFO] main: [Status] Mode=NORMAL, Price=84672.9, Line=0
+[2025-12-01 17:20:40] [INFO] main: [Status] Mode=NORMAL, Price=84672.9, Line=0
+[2025-12-01 17:20:42] [INFO] main: [Status] Mode=NORMAL, Price=84672.9, Line=0
+[2025-12-01 17:20:43] [INFO] main: [Status] Mode=NORMAL, Price=84665.1, Line=0
+[2025-12-01 17:20:44] [INFO] main: [Status] Mode=NORMAL, Price=84664.4, Line=0
+[2025-12-01 17:20:45] [INFO] main: [Status] Mode=NORMAL, Price=84664.3, Line=0
+[2025-12-01 17:20:46] [INFO] main: [Status] Mode=NORMAL, Price=84672.9, Line=0
+[2025-12-01 17:20:48] [INFO] main: [Status] Mode=NORMAL, Price=84690.3, Line=0
+[2025-12-01 17:20:49] [INFO] main: [Status] Mode=NORMAL, Price=84690.4, Line=0
+[2025-12-01 17:20:50] [INFO] main: [Status] Mode=NORMAL, Price=84690.4, Line=0
+[2025-12-01 17:20:51] [INFO] main: [Status] Mode=NORMAL, Price=84690.4, Line=0
+[2025-12-01 17:20:53] [INFO] main: [Status] Mode=NORMAL, Price=84690.4, Line=0
+[2025-12-01 17:20:54] [INFO] main: [Status] Mode=NORMAL, Price=84690.4, Line=0
+[2025-12-01 17:20:55] [INFO] main: [Status] Mode=NORMAL, Price=84690.5, Line=0
+[2025-12-01 17:20:56] [INFO] main: [Status] Mode=NORMAL, Price=84690.4, Line=0
+[2025-12-01 17:20:58] [INFO] main: [Status] Mode=NORMAL, Price=84690.5, Line=0
+[2025-12-01 17:20:59] [INFO] main: [Status] Mode=NORMAL, Price=84690.5, Line=0
+[2025-12-01 17:21:00] [INFO] main: [Status] Mode=NORMAL, Price=84690.4, Line=0
+[2025-12-01 17:21:01] [INFO] main: [Status] Mode=NORMAL, Price=84705.3, Line=0
+[2025-12-01 17:21:02] [INFO] main: [Status] Mode=NORMAL, Price=84705.3, Line=0
+[2025-12-01 17:21:04] [INFO] main: [Status] Mode=NORMAL, Price=84737.7, Line=0
+[2025-12-01 17:21:05] [INFO] main: [Status] Mode=NORMAL, Price=84730.6, Line=0
+[2025-12-01 17:21:06] [INFO] main: [Status] Mode=NORMAL, Price=84740.0, Line=0
+[2025-12-01 17:21:07] [INFO] main: [Status] Mode=NORMAL, Price=84740.0, Line=0
+[2025-12-01 17:21:09] [INFO] main: [Status] Mode=NORMAL, Price=84730.6, Line=0
+[2025-12-01 17:21:10] [INFO] main: [Status] Mode=NORMAL, Price=84740.0, Line=0
+[2025-12-01 17:21:11] [INFO] main: [Status] Mode=NORMAL, Price=84734.0, Line=0
+[2025-12-01 17:21:12] [INFO] main: [Status] Mode=NORMAL, Price=84740.0, Line=0
+[2025-12-01 17:21:14] [INFO] main: [Status] Mode=NORMAL, Price=84734.0, Line=0
+[2025-12-01 17:21:15] [INFO] main: [Status] Mode=NORMAL, Price=84721.8, Line=0
+[2025-12-01 17:21:16] [INFO] main: [Status] Mode=NORMAL, Price=84720.1, Line=0
+[2025-12-01 17:21:17] [INFO] main: [Status] Mode=NORMAL, Price=84720.1, Line=0
+[2025-12-01 17:21:18] [INFO] main: [Status] Mode=NORMAL, Price=84705.4, Line=0
+[2025-12-01 17:21:20] [INFO] main: [Status] Mode=NORMAL, Price=84705.4, Line=0
+[2025-12-01 17:21:21] [INFO] main: [Status] Mode=NORMAL, Price=84705.3, Line=0
+[2025-12-01 17:21:22] [INFO] main: [Status] Mode=NORMAL, Price=84716.8, Line=0
+[2025-12-01 17:21:23] [INFO] main: [Status] Mode=NORMAL, Price=84716.9, Line=0
+[2025-12-01 17:21:25] [INFO] main: [Status] Mode=NORMAL, Price=84716.9, Line=0
+[2025-12-01 17:21:25] [ERROR] exchange_api: API Error (cancel_order): bybit {"retCode":110001,"retMsg":"order not exists or too late to cancel","result":{},"retExtInfo":{},"time":1764609685454}
+[2025-12-01 17:21:25] [INFO] order_manager: [Timeout] 잔량 0.0010개 취소 (Maker Only)
+[2025-12-01 17:21:26] [INFO] main: [Status] Mode=NORMAL, Price=84720.9, Line=0
+[2025-12-01 17:21:26] [INFO] main: [Status] Mode=NORMAL, Price=84733.8, Line=0
+[2025-12-01 17:21:26] [WARNING] main: 🧹 State Cleanup: Positions are zero, clearing old line history to force fresh entry.
+[2025-12-01 17:21:26] [INFO] main: 🆕 Start-up Entry (Initial Entry)
+[2025-12-01 17:21:26] [INFO] order_manager: [Order] Maker Only: Side=1, P=84733.8, Q=0.001
+[2025-12-01 17:21:27] [INFO] main: [Status] Mode=NORMAL, Price=84744.4, Line=0
+[2025-12-01 17:21:28] [INFO] main: [Status] Mode=NORMAL, Price=84744.5, Line=0
+[2025-12-01 17:21:30] [INFO] main: [Status] Mode=NORMAL, Price=84738.3, Line=0
+[2025-12-01 17:21:31] [INFO] main: [Status] Mode=NORMAL, Price=84734.5, Line=0
+[2025-12-01 17:21:32] [INFO] main: [Status] Mode=NORMAL, Price=84734.0, Line=0
+[2025-12-01 17:21:33] [INFO] main: [Status] Mode=NORMAL, Price=84744.5, Line=0
+[2025-12-01 17:21:34] [INFO] main: [Status] Mode=NORMAL, Price=84747.0, Line=0
+[2025-12-01 17:21:36] [INFO] main: [Status] Mode=NORMAL, Price=84742.5, Line=0
+[2025-12-01 17:21:37] [INFO] main: [Status] Mode=NORMAL, Price=84742.6, Line=0
+[2025-12-01 17:21:38] [INFO] main: [Status] Mode=NORMAL, Price=84734.8, Line=0
+[2025-12-01 17:21:39] [INFO] main: [Status] Mode=NORMAL, Price=84734.0, Line=0
+[2025-12-01 17:21:41] [WARNING] exchange_api: 🚀 [REAL] Trade Mode
+[2025-12-01 17:21:41] [INFO] main: 🤖 Bybit Wave Bot v10.3 FINAL Starting...
+[2025-12-01 17:21:44] [INFO] main: ✅ Init: Center=84718.0, Gap=376.6
+[2025-12-01 17:21:45] [INFO] main: [Status] Mode=NORMAL, Price=84718.0, Line=0
+[2025-12-01 17:21:45] [INFO] main: 🆕 Start-up Entry (Initial Entry)
+[2025-12-01 17:21:45] [INFO] order_manager: [Order] Maker Only: Side=1, P=84718.0, Q=0.001
+[2025-12-01 17:22:45] [ERROR] main: Main Loop Error: 'BybitAPI' object has no attribute '_safe_request'
+[2025-12-01 17:22:50] [INFO] main: [Status] Mode=NORMAL, Price=84841.7, Line=0
+[2025-12-01 17:22:50] [INFO] main: 🆕 Start-up Entry (Initial Entry)
+[2025-12-01 17:22:50] [INFO] order_manager: [Order] Maker Only: Side=1, P=84841.7, Q=0.001
+[2025-12-01 17:23:50] [ERROR] main: Main Loop Error: 'BybitAPI' object has no attribute '_safe_request'
+[2025-12-01 17:23:56] [INFO] main: [Status] Mode=NORMAL, Price=84749.1, Line=0
+[2025-12-01 17:23:56] [INFO] main: 🆕 Start-up Entry (Initial Entry)
+[2025-12-01 17:23:56] [INFO] order_manager: [Order] Maker Only: Side=1, P=84749.1, Q=0.001
+[2025-12-01 17:24:42] [WARNING] exchange_api: 🚀 [REAL] Trade Mode
+[2025-12-01 17:24:42] [INFO] main: 🤖 Bybit Wave Bot v10.2 FINAL Starting...
+[2025-12-01 17:24:46] [INFO] main: ✅ Init: Center=84819.9, Gap=376.6
+[2025-12-01 17:24:46] [INFO] main: [Status] Mode=NORMAL, Price=84820.0, Line=0
+[2025-12-01 17:24:46] [INFO] main: 🆕 Start-up Entry (Initial Entry)
+[2025-12-01 17:24:46] [INFO] order_manager: [Order] Maker Only: Side=1, P=84820.0, Q=0.001
+[2025-12-01 17:25:46] [ERROR] main: Main Loop Error: 'BybitAPI' object has no attribute '_safe_request'
+[2025-12-01 17:25:52] [INFO] main: [Status] Mode=NORMAL, Price=84835.0, Line=0
+[2025-12-01 17:25:52] [INFO] main: 🆕 Start-up Entry (Initial Entry)
+[2025-12-01 17:25:52] [INFO] order_manager: [Order] Maker Only: Side=1, P=84835.0, Q=0.001
+[2025-12-01 17:26:52] [ERROR] main: Main Loop Error: 'BybitAPI' object has no attribute '_safe_request'
+[2025-12-01 17:26:57] [INFO] main: [Status] Mode=NORMAL, Price=84860.4, Line=0
+[2025-12-01 17:26:57] [INFO] main: 🆕 Start-up Entry (Initial Entry)
+[2025-12-01 17:26:57] [INFO] order_manager: [Order] Maker Only: Side=1, P=84860.4, Q=0.001
+[2025-12-01 17:29:12] [WARNING] exchange_api: 🚀 [REAL] Trade Mode
+[2025-12-01 17:29:12] [INFO] state_manager: 상태 로드: {'mode': 'NORMAL', 'p_center': 84819.9, 'p_gap': 376.5, 'atr_value': 0, 'total_balance': 600.0, 'last_long_line': None, 'last_short_line': None}
+[2025-12-01 17:29:12] [INFO] main: 🤖 Bybit Wave Bot v10.2 FINAL Starting...
+[2025-12-01 17:29:15] [INFO] main: [Status] Mode=NORMAL, Price=84974.9, Line=0
+[2025-12-01 17:29:15] [INFO] main: 🆕 Start-up Entry (Initial Entry)
+[2025-12-01 17:29:15] [INFO] order_manager: [Order] Maker Only: Side=1, P=84974.9, Q=0.001
+[2025-12-01 17:30:16] [ERROR] main: Main Loop Error: 'BybitAPI' object has no attribute '_safe_request'
+[2025-12-01 17:30:21] [INFO] main: [Status] Mode=NORMAL, Price=84918.6, Line=0
+[2025-12-01 17:30:21] [INFO] main: 🆕 Start-up Entry (Initial Entry)
+[2025-12-01 17:30:21] [INFO] order_manager: [Order] Maker Only: Side=1, P=84918.6, Q=0.001
+[2025-12-01 17:31:21] [ERROR] main: Main Loop Error: 'BybitAPI' object has no attribute '_safe_request'
+[2025-12-01 17:31:26] [INFO] main: [Status] Mode=NORMAL, Price=84760.0, Line=0
+[2025-12-01 17:31:26] [INFO] main: 🆕 Start-up Entry (Initial Entry)
+[2025-12-01 17:31:26] [INFO] order_manager: [Order] Maker Only: Side=1, P=84760.0, Q=0.001
+[2025-12-01 17:32:26] [ERROR] main: Main Loop Error: 'BybitAPI' object has no attribute '_safe_request'
+[2025-12-01 17:32:32] [INFO] main: [Status] Mode=NORMAL, Price=84702.0, Line=0
+[2025-12-01 17:32:32] [INFO] main: 🆕 Start-up Entry (Initial Entry)
+[2025-12-01 17:32:32] [INFO] order_manager: [Order] Maker Only: Side=1, P=84702.0, Q=0.001
+[2025-12-01 17:33:32] [ERROR] main: Main Loop Error: 'BybitAPI' object has no attribute '_safe_request'
+[2025-12-01 17:33:37] [INFO] main: [Status] Mode=NORMAL, Price=84676.1, Line=0
+[2025-12-01 17:33:37] [INFO] main: 🆕 Start-up Entry (Initial Entry)
+[2025-12-01 17:33:37] [INFO] order_manager: [Order] Maker Only: Side=1, P=84676.1, Q=0.001
+[2025-12-01 17:34:17] [WARNING] exchange_api: 🚀 [REAL] Trade Mode
+[2025-12-01 17:34:17] [INFO] state_manager: 상태 로드: {'mode': 'NORMAL', 'p_center': 84819.9, 'p_gap': 376.5, 'atr_value': 0, 'total_balance': 600.0, 'last_long_line': None, 'last_short_line': None}
+[2025-12-01 17:35:51] [WARNING] exchange_api: 🚀 [REAL] Trade Mode
+[2025-12-01 17:35:51] [INFO] state_manager: 상태 로드: {'mode': 'NORMAL', 'p_center': 84819.9, 'p_gap': 376.5, 'atr_value': 0, 'total_balance': 600.0, 'last_long_line': None, 'last_short_line': None}
+[2025-12-01 17:35:51] [INFO] main: 🤖 Bybit Wave Bot v10.2 FINAL Starting...
+[2025-12-01 17:35:55] [INFO] main: [Status] Mode=NORMAL, Price=84796.6, Line=0
+[2025-12-01 17:35:55] [INFO] main: 🆕 Start-up Entry (Initial Entry)
+[2025-12-01 17:35:55] [INFO] order_manager: [Order] Maker Only: Side=1, P=84796.6, Q=0.001
+[2025-12-01 17:36:55] [ERROR] main: Main Loop Error: 'BybitAPI' object has no attribute '_safe_request'
+[2025-12-01 17:37:00] [INFO] main: [Status] Mode=NORMAL, Price=84852.9, Line=0
+[2025-12-01 17:37:00] [INFO] main: 🆕 Start-up Entry (Initial Entry)
+[2025-12-01 17:37:00] [INFO] order_manager: [Order] Maker Only: Side=1, P=84852.9, Q=0.001
+[2025-12-01 17:38:01] [ERROR] main: Main Loop Error: 'BybitAPI' object has no attribute '_safe_request'
+[2025-12-01 17:38:06] [INFO] main: [Status] Mode=NORMAL, Price=84930.0, Line=0
+[2025-12-01 17:38:06] [INFO] main: 🆕 Start-up Entry (Initial Entry)
+[2025-12-01 17:38:06] [INFO] order_manager: [Order] Maker Only: Side=1, P=84930.0, Q=0.001
+[2025-12-01 17:39:06] [ERROR] main: Main Loop Error: 'BybitAPI' object has no attribute '_safe_request'
+[2025-12-01 17:39:11] [INFO] main: [Status] Mode=NORMAL, Price=84888.3, Line=0
+[2025-12-01 17:39:11] [INFO] main: 🆕 Start-up Entry (Initial Entry)
+[2025-12-01 17:39:11] [INFO] order_manager: [Order] Maker Only: Side=1, P=84888.3, Q=0.001
+[2025-12-01 17:40:11] [ERROR] main: Main Loop Error: 'BybitAPI' object has no attribute '_safe_request'
+[2025-12-01 17:40:16] [INFO] main: [Status] Mode=NORMAL, Price=85013.2, Line=1
+[2025-12-01 17:40:16] [INFO] main: 🆕 Start-up Entry (Initial Entry)
+[2025-12-01 17:40:16] [INFO] order_manager: [Order] Maker Only: Side=1, P=85013.2, Q=0.001
+[2025-12-01 17:41:17] [ERROR] main: Main Loop Error: 'BybitAPI' object has no attribute '_safe_request'
+[2025-12-01 17:41:22] [INFO] main: [Status] Mode=NORMAL, Price=84977.9, Line=0
+[2025-12-01 17:41:22] [INFO] main: 🆕 Start-up Entry (Initial Entry)
+[2025-12-01 17:41:22] [INFO] order_manager: [Order] Maker Only: Side=1, P=84977.9, Q=0.001
+[2025-12-01 17:42:22] [ERROR] main: Main Loop Error: 'BybitAPI' object has no attribute '_safe_request'
+[2025-12-01 17:42:27] [INFO] main: [Status] Mode=NORMAL, Price=84970.0, Line=0
+[2025-12-01 17:42:27] [INFO] main: 🆕 Start-up Entry (Initial Entry)
+[2025-12-01 17:42:27] [INFO] order_manager: [Order] Maker Only: Side=1, P=84970.0, Q=0.001
+[2025-12-01 17:43:27] [ERROR] main: Main Loop Error: 'BybitAPI' object has no attribute '_safe_request'
+[2025-12-01 17:43:32] [INFO] main: [Status] Mode=NORMAL, Price=85003.8, Line=0
+[2025-12-01 17:43:32] [INFO] main: 🆕 Start-up Entry (Initial Entry)
+[2025-12-01 17:43:32] [INFO] order_manager: [Order] Maker Only: Side=1, P=85003.8, Q=0.001
+[2025-12-01 17:43:57] [WARNING] exchange_api: 🚀 [REAL] Trade Mode
+[2025-12-01 17:43:57] [INFO] state_manager: 상태 로드: {'mode': 'NORMAL', 'p_center': 84819.9, 'p_gap': 376.5, 'atr_value': 0, 'total_balance': 600.0, 'last_long_line': None, 'last_short_line': None}
+[2025-12-01 17:43:57] [INFO] main: 🤖 Bybit Wave Bot v10.2 FINAL Starting...
+[2025-12-01 17:44:01] [INFO] main: [Status] Mode=NORMAL, Price=85089.9, Line=1
+[2025-12-01 17:44:01] [INFO] main: 🆕 Start-up Entry (Initial Entry)
+[2025-12-01 17:44:01] [INFO] order_manager: [Order] Maker Only: Side=1, P=85089.9, Q=0.001
+[2025-12-01 17:45:01] [ERROR] main: Main Loop Error: 'BybitAPI' object has no attribute '_safe_request'
+[2025-12-01 17:45:06] [INFO] main: [Status] Mode=NORMAL, Price=85166.2, Line=1
+[2025-12-01 17:45:06] [INFO] main: 🆕 Start-up Entry (Initial Entry)
+[2025-12-01 17:45:06] [INFO] order_manager: [Order] Maker Only: Side=1, P=85166.2, Q=0.001
+[2025-12-01 17:46:06] [ERROR] main: Main Loop Error: 'BybitAPI' object has no attribute '_safe_request'
+[2025-12-01 17:46:11] [INFO] main: [Status] Mode=NORMAL, Price=85132.3, Line=1
+[2025-12-01 17:46:11] [INFO] main: 🆕 Start-up Entry (Initial Entry)
+[2025-12-01 17:46:11] [INFO] order_manager: [Order] Maker Only: Side=1, P=85132.3, Q=0.001
+[2025-12-01 17:47:32] [WARNING] exchange_api: 🚀 [REAL] Trade Mode
+[2025-12-01 17:47:32] [INFO] main: 🤖 Bybit Wave Bot v10.2 FINAL Starting...
+[2025-12-01 17:47:36] [INFO] main: ✅ Init: Center=85088.5, Gap=376.6
+[2025-12-01 17:47:36] [INFO] main: [Status] Mode=NORMAL, Price=85098.9, Line=0
+[2025-12-01 17:47:36] [INFO] main: 🆕 Start-up Entry (Initial Entry)
+[2025-12-01 17:47:36] [INFO] order_manager: [Order] Maker Only: Side=1, P=85098.9, Q=0.001
+[2025-12-01 17:48:36] [ERROR] main: Main Loop Error: 'BybitAPI' object has no attribute '_safe_request'
+[2025-12-01 17:48:42] [INFO] main: [Status] Mode=NORMAL, Price=85084.3, Line=0
+[2025-12-01 17:48:42] [INFO] main: 🆕 Start-up Entry (Initial Entry)
+[2025-12-01 17:48:42] [INFO] order_manager: [Order] Maker Only: Side=1, P=85084.3, Q=0.001
+[2025-12-01 17:49:42] [ERROR] main: Main Loop Error: 'BybitAPI' object has no attribute '_safe_request'
+[2025-12-01 17:49:47] [INFO] main: [Status] Mode=NORMAL, Price=85172.9, Line=0
+[2025-12-01 17:49:47] [INFO] main: 🆕 Start-up Entry (Initial Entry)
+[2025-12-01 17:49:47] [INFO] order_manager: [Order] Maker Only: Side=1, P=85172.9, Q=0.001
+[2025-12-01 17:50:47] [ERROR] main: Main Loop Error: 'BybitAPI' object has no attribute '_safe_request'
+[2025-12-01 17:50:52] [INFO] main: [Status] Mode=NORMAL, Price=85023.4, Line=0
+[2025-12-01 17:50:52] [INFO] main: 🆕 Start-up Entry (Initial Entry)
+[2025-12-01 17:50:52] [INFO] order_manager: [Order] Maker Only: Side=1, P=85023.4, Q=0.001
+[2025-12-01 17:51:52] [ERROR] main: Main Loop Error: 'BybitAPI' object has no attribute '_safe_request'
+[2025-12-01 17:51:58] [INFO] main: [Status] Mode=NORMAL, Price=85023.0, Line=0
+[2025-12-01 17:51:58] [INFO] main: 🆕 Start-up Entry (Initial Entry)
+[2025-12-01 17:51:58] [INFO] order_manager: [Order] Maker Only: Side=1, P=85023.0, Q=0.001
+[2025-12-01 17:52:58] [ERROR] main: Main Loop Error: 'BybitAPI' object has no attribute '_safe_request'
+[2025-12-01 17:53:03] [INFO] main: [Status] Mode=NORMAL, Price=85006.9, Line=0
+[2025-12-01 17:53:03] [INFO] main: 🆕 Start-up Entry (Initial Entry)
+[2025-12-01 17:53:03] [INFO] order_manager: [Order] Maker Only: Side=1, P=85006.9, Q=0.001
+[2025-12-01 17:53:19] [WARNING] exchange_api: 🚀 [REAL] Trade Mode
+[2025-12-01 17:53:19] [INFO] state_manager: 상태 로드: {'mode': 'NORMAL', 'p_center': 85088.5, 'p_gap': 376.5, 'atr_value': 0, 'total_balance': 600.0, 'last_long_line': None, 'last_short_line': None}
+[2025-12-01 17:53:19] [INFO] main: 🤖 Bybit Wave Bot v10.2 FINAL Starting...
+[2025-12-01 17:53:23] [INFO] main: [Status] Mode=NORMAL, Price=84991.7, Line=0
+[2025-12-01 17:53:23] [INFO] main: 🆕 Start-up Entry (Initial Entry)
+[2025-12-01 17:53:23] [INFO] order_manager: [Order] Maker Only: Side=1, P=84991.7, Q=0.001
+[2025-12-01 17:54:03] [ERROR] main: Main Loop Error: 'BybitAPI' object has no attribute '_safe_request'
+[2025-12-01 17:54:08] [INFO] main: [Status] Mode=NORMAL, Price=85005.0, Line=0
+[2025-12-01 17:54:08] [INFO] main: 🆕 Start-up Entry (Initial Entry)
+[2025-12-01 17:54:08] [INFO] order_manager: [Order] Maker Only: Side=1, P=85005.0, Q=0.001
+[2025-12-01 17:54:23] [ERROR] main: Main Loop Error: 'BybitAPI' object has no attribute '_safe_request'
+[2025-12-01 17:54:28] [INFO] main: [Status] Mode=NORMAL, Price=85053.9, Line=0
+[2025-12-01 17:54:28] [INFO] main: 🆕 Start-up Entry (Initial Entry)
+[2025-12-01 17:54:28] [INFO] order_manager: [Order] Maker Only: Side=1, P=85053.9, Q=0.001
+[2025-12-01 17:55:08] [ERROR] main: Main Loop Error: 'BybitAPI' object has no attribute '_safe_request'
+[2025-12-01 17:55:14] [INFO] main: [Status] Mode=NORMAL, Price=85075.5, Line=0
+[2025-12-01 17:55:14] [INFO] main: 🆕 Start-up Entry (Initial Entry)
+[2025-12-01 17:55:14] [INFO] order_manager: [Order] Maker Only: Side=1, P=85075.5, Q=0.001
+[2025-12-01 17:55:28] [ERROR] main: Main Loop Error: 'BybitAPI' object has no attribute '_safe_request'
+[2025-12-01 17:55:33] [INFO] main: [Status] Mode=NORMAL, Price=85005.6, Line=0
+[2025-12-01 17:55:33] [INFO] main: 🆕 Start-up Entry (Initial Entry)
+[2025-12-01 17:55:33] [INFO] order_manager: [Order] Maker Only: Side=1, P=85005.6, Q=0.001
+[2025-12-01 17:56:14] [ERROR] main: Main Loop Error: 'BybitAPI' object has no attribute '_safe_request'
+[2025-12-01 17:56:19] [INFO] main: [Status] Mode=NORMAL, Price=84994.7, Line=0
+[2025-12-01 17:56:19] [INFO] main: 🆕 Start-up Entry (Initial Entry)
+[2025-12-01 17:56:19] [INFO] order_manager: [Order] Maker Only: Side=1, P=84994.7, Q=0.001
+[2025-12-01 17:56:33] [ERROR] main: Main Loop Error: 'BybitAPI' object has no attribute '_safe_request'
+[2025-12-01 17:56:39] [INFO] main: [Status] Mode=NORMAL, Price=84925.0, Line=0
+[2025-12-01 17:56:39] [INFO] main: 🆕 Start-up Entry (Initial Entry)
+[2025-12-01 17:56:39] [INFO] order_manager: [Order] Maker Only: Side=1, P=84925.0, Q=0.001
+[2025-12-01 17:57:19] [ERROR] main: Main Loop Error: 'BybitAPI' object has no attribute '_safe_request'
+[2025-12-01 17:57:24] [INFO] main: [Status] Mode=NORMAL, Price=84967.4, Line=0
+[2025-12-01 17:57:24] [INFO] main: 🆕 Start-up Entry (Initial Entry)
+[2025-12-01 17:57:24] [INFO] order_manager: [Order] Maker Only: Side=1, P=84967.4, Q=0.001
+[2025-12-01 17:57:39] [ERROR] main: Main Loop Error: 'BybitAPI' object has no attribute '_safe_request'
+[2025-12-01 17:57:44] [INFO] main: [Status] Mode=NORMAL, Price=84934.1, Line=0
+[2025-12-01 17:57:44] [INFO] main: 🆕 Start-up Entry (Initial Entry)
+[2025-12-01 17:57:44] [INFO] order_manager: [Order] Maker Only: Side=1, P=84934.1, Q=0.001
+[2025-12-01 17:58:44] [ERROR] main: Main Loop Error: 'BybitAPI' object has no attribute '_safe_request'
+[2025-12-01 17:58:49] [INFO] main: [Status] Mode=NORMAL, Price=84914.9, Line=0
+[2025-12-01 17:58:49] [INFO] main: 🆕 Start-up Entry (Initial Entry)
+[2025-12-01 17:58:49] [INFO] order_manager: [Order] Maker Only: Side=1, P=84914.9, Q=0.001
+[2025-12-01 17:59:49] [ERROR] main: Main Loop Error: 'BybitAPI' object has no attribute '_safe_request'
+[2025-12-01 17:59:55] [INFO] main: [Status] Mode=NORMAL, Price=84886.0, Line=-1
+[2025-12-01 17:59:55] [INFO] main: 🆕 Start-up Entry (Initial Entry)
+[2025-12-01 17:59:55] [INFO] order_manager: [Order] Maker Only: Side=1, P=84886.0, Q=0.001
+[2025-12-01 18:00:55] [ERROR] main: Main Loop Error: 'BybitAPI' object has no attribute '_safe_request'
+[2025-12-01 18:01:00] [INFO] main: [Status] Mode=NORMAL, Price=85008.0, Line=0
+[2025-12-01 18:01:00] [INFO] main: 🆕 Start-up Entry (Initial Entry)
+[2025-12-01 18:01:00] [INFO] order_manager: [Order] Maker Only: Side=1, P=85008.0, Q=0.001
+[2025-12-01 18:02:00] [ERROR] main: Main Loop Error: 'BybitAPI' object has no attribute '_safe_request'
+[2025-12-01 18:02:05] [INFO] main: [Status] Mode=NORMAL, Price=85078.8, Line=0
+[2025-12-01 18:02:05] [INFO] main: 🆕 Start-up Entry (Initial Entry)
+[2025-12-01 18:02:05] [INFO] order_manager: [Order] Maker Only: Side=1, P=85078.8, Q=0.001
+[2025-12-01 18:02:22] [WARNING] exchange_api: 🚀 [REAL] Trade Mode
+[2025-12-01 18:02:22] [INFO] main: 🤖 Bybit Wave Bot v10.2 FINAL Starting...
+[2025-12-01 18:02:26] [INFO] main: ✅ Init: Center=85092.0, Gap=376.6
+[2025-12-01 18:02:27] [INFO] main: [Status] Mode=NORMAL, Price=85092.0, Line=0
+[2025-12-01 18:02:27] [INFO] main: 🆕 Start-up Entry (Initial Entry)
+[2025-12-01 18:02:27] [INFO] order_manager: [Order] Maker Only: Side=1, P=85092.0, Q=0.001
+[2025-12-01 18:03:05] [ERROR] main: Main Loop Error: 'BybitAPI' object has no attribute '_safe_request'
+[2025-12-01 18:03:11] [INFO] main: [Status] Mode=NORMAL, Price=85062.7, Line=0
+[2025-12-01 18:03:11] [INFO] main: 🆕 Start-up Entry (Initial Entry)
+[2025-12-01 18:03:11] [INFO] order_manager: [Order] Maker Only: Side=1, P=85062.7, Q=0.001
+[2025-12-01 18:03:27] [ERROR] main: Main Loop Error: 'BybitAPI' object has no attribute '_safe_request'
+[2025-12-01 18:03:32] [INFO] main: [Status] Mode=NORMAL, Price=85026.5, Line=0
+[2025-12-01 18:03:32] [INFO] main: 🆕 Start-up Entry (Initial Entry)
+[2025-12-01 18:03:32] [INFO] order_manager: [Order] Maker Only: Side=1, P=85026.5, Q=0.001
+[2025-12-01 18:04:11] [ERROR] main: Main Loop Error: 'BybitAPI' object has no attribute '_safe_request'
+[2025-12-01 18:04:16] [INFO] main: [Status] Mode=NORMAL, Price=85020.9, Line=0
+[2025-12-01 18:04:16] [INFO] main: 🆕 Start-up Entry (Initial Entry)
+[2025-12-01 18:04:16] [INFO] order_manager: [Order] Maker Only: Side=1, P=85020.9, Q=0.001
+[2025-12-01 18:04:32] [ERROR] main: Main Loop Error: 'BybitAPI' object has no attribute '_safe_request'
+[2025-12-01 18:04:37] [INFO] main: [Status] Mode=NORMAL, Price=84975.5, Line=0
+[2025-12-01 18:04:37] [INFO] main: 🆕 Start-up Entry (Initial Entry)
+[2025-12-01 18:04:37] [INFO] order_manager: [Order] Maker Only: Side=1, P=84975.5, Q=0.001
+[2025-12-01 18:05:16] [ERROR] main: Main Loop Error: 'BybitAPI' object has no attribute '_safe_request'
+[2025-12-01 18:05:37] [ERROR] main: Main Loop Error: 'BybitAPI' object has no attribute '_safe_request'
+[2025-12-01 18:05:43] [INFO] main: [Status] Mode=NORMAL, Price=84951.1, Line=0
+[2025-12-01 18:05:43] [INFO] main: 🆕 Start-up Entry (Initial Entry)
+[2025-12-01 18:05:43] [INFO] order_manager: [Order] Maker Only: Side=1, P=84951.1, Q=0.001
+[2025-12-01 18:08:13] [WARNING] exchange_api: 🚀 [REAL] Trade Mode
+[2025-12-01 18:08:13] [INFO] state_manager: 상태 로드: {'mode': 'NORMAL', 'p_center': 85092.0, 'p_gap': 376.5, 'atr_value': 0, 'total_balance': 600.0, 'last_long_line': None, 'last_short_line': None}
+[2025-12-01 18:08:13] [INFO] main: 🤖 Bybit Wave Bot v10.2 FINAL Starting...
+[2025-12-01 18:08:17] [INFO] main: [Status] Mode=NORMAL, Price=85025.5, Line=0
+[2025-12-01 18:08:17] [INFO] main: 🆕 Start-up Entry (Initial Entry)
+[2025-12-01 18:08:17] [INFO] order_manager: [Order] Maker Only: Side=1, P=85025.5, Q=0.001
+[2025-12-01 18:09:17] [ERROR] main: Main Loop Error: 'BybitAPI' object has no attribute '_safe_request'
+[2025-12-01 18:09:23] [INFO] main: [Status] Mode=NORMAL, Price=84950.0, Line=0
+[2025-12-01 18:09:23] [INFO] main: 🆕 Start-up Entry (Initial Entry)
+[2025-12-01 18:09:23] [INFO] order_manager: [Order] Maker Only: Side=1, P=84950.0, Q=0.001
+[2025-12-01 18:10:23] [ERROR] main: Main Loop Error: 'BybitAPI' object has no attribute '_safe_request'
+[2025-12-01 18:10:28] [INFO] main: [Status] Mode=NORMAL, Price=85026.9, Line=0
+[2025-12-01 18:10:28] [INFO] main: 🆕 Start-up Entry (Initial Entry)
+[2025-12-01 18:10:28] [INFO] order_manager: [Order] Maker Only: Side=1, P=85026.9, Q=0.001
+[2025-12-01 18:11:25] [WARNING] exchange_api: 🚀 [REAL] Trade Mode
+[2025-12-01 18:11:25] [INFO] main: 🤖 Bybit Wave Bot v10.5 FINAL Starting...
+[2025-12-01 18:11:29] [INFO] main: ✅ Init: Center=85068.8, Gap=376.6
+[2025-12-01 18:11:29] [INFO] main: [Status] Mode=NORMAL, Price=85068.8, Line=0
+[2025-12-01 18:11:29] [INFO] main: 🆕 Start-up Entry (Initial Entry)
+[2025-12-01 18:11:29] [INFO] order_manager: [Order] Maker Only: Side=1, P=85068.8, Q=0.001
+[2025-12-01 18:12:29] [ERROR] main: Loop Error: 'BybitAPI' object has no attribute '_safe_request'
+[2025-12-01 18:12:35] [INFO] main: [Status] Mode=NORMAL, Price=85242.1, Line=0
+[2025-12-01 18:12:35] [WARNING] main: 🧹 State Cleanup: Clearing old line memory (Manual Close Detected).
+[2025-12-01 18:12:35] [INFO] main: 🆕 Start-up Entry (Initial Entry)
+[2025-12-01 18:12:35] [INFO] order_manager: [Order] Maker Only: Side=1, P=85242.1, Q=0.001
+[2025-12-01 18:13:35] [ERROR] main: Loop Error: 'BybitAPI' object has no attribute '_safe_request'
+[2025-12-01 18:13:40] [INFO] main: [Status] Mode=NORMAL, Price=85289.5, Line=1
+[2025-12-01 18:13:40] [WARNING] main: 🧹 State Cleanup: Clearing old line memory (Manual Close Detected).
+[2025-12-01 18:13:40] [INFO] main: 🆕 Start-up Entry (Initial Entry)
+[2025-12-01 18:13:40] [INFO] order_manager: [Order] Maker Only: Side=1, P=85289.5, Q=0.001

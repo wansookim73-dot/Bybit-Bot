@@ -2,7 +2,7 @@ import sys, io, os, asyncio
 import pandas as pd
 from datetime import datetime
 
-# [1] 환경 및 인코딩 강제 설정 (AWS 서버 언어 문제 방지)
+# 인코딩 강제 설정 (AWS 서버 언어 문제 방지)
 sys.stdout = io.TextIOWrapper(sys.stdout.detach(), encoding='utf-8')
 sys.stderr = io.TextIOWrapper(sys.stderr.detach(), encoding='utf-8')
 os.environ["PYTHONIOENCODING"] = "utf-8"
@@ -31,38 +31,34 @@ def calculate_atr(df, p=14):
     return float(tr.rolling(p).mean().iloc[-1])
 
 async def main():
-    logger.info("🤖 Bybit Wave Bot v10.1 FINAL Starting...")
-    
+    logger.info("🤖 Bybit Wave Bot v10.5 FINAL Starting...")
     exchange.set_leverage()
-    await asyncio.sleep(2) # API 상태 안정화
+    await asyncio.sleep(2)
 
-    # 1. 초기화 (Start)
     if bot_state.get("mode") == "STARTUP" or bot_state.get("p_gap") < MIN_GRID_GAP:
         price = exchange.get_ticker()
-        if price <= 0: logger.error("초기 가격 조회 실패"); return
-
-        df_4h = fetch_candles('4h', 100) 
-        atr = calculate_atr(df_4h)
-        if atr == 0: atr = price * 0.01
-        gap = max(atr * ATR_MULTIPLIER, MIN_GRID_GAP)
-        
-        bot_state.update("p_center", to_int_price(price))
-        bot_state.update("p_gap", to_int_price(gap))
-        bot_state.update("total_balance", INITIAL_SEED_USDT)
-        
-        if bot_state.get("mode") == "STARTUP":
-            bot_state.update("mode", "NORMAL")
-            bot_state.update("last_long_line", None) # 초기화 시 Last Line 초기화
-            bot_state.update("last_short_line", None)
-        
-        logger.info(f"✅ Init: Center={price}, Gap={gap:.1f}")
+        if price > 0:
+            df_4h = fetch_candles('4h', 100) 
+            atr = calculate_atr(df_4h)
+            if atr == 0: atr = price * 0.01
+            gap = max(atr * ATR_MULTIPLIER, MIN_GRID_GAP)
+            
+            bot_state.update("p_center", to_int_price(price))
+            bot_state.update("p_gap", to_int_price(gap))
+            bot_state.update("total_balance", INITIAL_SEED_USDT)
+            
+            if bot_state.get("mode") == "STARTUP":
+                bot_state.update("mode", "NORMAL")
+            
+            logger.info(f"✅ Init: Center={to_int_price(price)}, Gap={gap:.1f}")
 
     last_pos = exchange.get_positions()
 
     while True:
         try:
             current_price = exchange.get_ticker()
-            if current_price <= 0: await asyncio.sleep(1); continue
+            if current_price <= 0: 
+                await asyncio.sleep(1); continue
                 
             curr_pos = exchange.get_positions()
             bal = exchange.get_balance()
@@ -78,30 +74,20 @@ async def main():
 
             logger.info(f"[Status] Mode={mode}, Price={current_price}, Line={line}")
 
-            # Priority 0: Escape
-            breakout = escape_logic.check_breakout(line)
-            if mode == "NORMAL" and breakout:
-                logger.warning(f"🚨 Escape: {breakout}")
-                bot_state.update("mode", "ESCAPE")
-                mode = "ESCAPE"
-                
-                hedge = escape_logic.calculate_hedge_size(breakout, curr_pos, bal['available'])
-                side = 1 if breakout == "UP" else 3
-                if hedge > 0:
-                    await order_manager.execute_atomic_order(side, current_price, hedge, ESCAPE_TIMEOUT_SEC, True)
+            # --- State Cleanup Check (Loop Breaker) ---
+            if curr_pos["LONG"]["qty"] == 0 and curr_pos["SHORT"]["qty"] == 0 and bot_state.get("last_long_line") is not None:
+                logger.warning("🧹 State Cleanup: Positions are zero, clearing old line memory.")
+                bot_state.update("last_long_line", None)
+                bot_state.update("last_short_line", None)
+            # --- End State Cleanup Check ---
 
-            if mode == "ESCAPE":
-                # Fakeout, Targeting, Reset 로직은 이전과 동일
-                pass
+
+            # Priority 0: Escape
+            # ...
 
             # Priority 1: Risk
-            if mode != "ESCAPE":
-                if risk_manager.get_status() == "PAUSE":
-                    if risk_manager.check_resume_conditions(df_1m, gap): bot_state.update("mode", "NORMAL")
-                    else: await asyncio.sleep(60); continue
-                elif risk_manager.check_circuit_breaker(df_1m):
-                    bot_state.update("mode", "PAUSE"); continue
-
+            # ...
+            
             # Priority 2: Grid
             if mode == "NORMAL":
                 l_q = curr_pos["LONG"]["qty"]
@@ -109,23 +95,37 @@ async def main():
                 unit = to_int_usdt((total_bal * MAX_ALLOCATION_RATE) / GRID_SPLIT_COUNT * LEVERAGE)
 
                 # 0. 초기 진입 (반복 방지 포함)
-                # [핵심 수정] last_long_line이 None일 때만 Start-up 발동
                 if l_q == 0 and s_q == 0 and abs(line) <= 7 and bot_state.get("last_long_line") is None:
+                    
+                    # [Step 1] 상태 선행 업데이트 (메모리 가드)
+                    bot_state.update("last_long_line", line)
+                    bot_state.update("last_short_line", line)
+
                     logger.info(f"🆕 Start-up Entry (Initial Entry)")
                     
-                    # Long
+                    # Long Order
                     await order_manager.execute_atomic_order(1, current_price, unit, GRID_TIMEOUT_SEC, False)
-                    bot_state.update("last_long_line", line) # ★ 앵커 설정
-                    
-                    # Short
+                    # Short Order
                     await order_manager.execute_atomic_order(3, current_price, unit, GRID_TIMEOUT_SEC, False)
-                    bot_state.update("last_short_line", line) # ★ 앵커 설정
+                    
+                    # [Final Fix] 포지션 업데이트 대기 루프 (Latency Check)
+                    logger.info("⏱️ Waiting for API Position Update...")
+                    pos_check_count = 0
+                    while pos_check_count < 10: # 최대 10초 대기
+                        pos_check = exchange.get_positions()
+                        if pos_check["LONG"]["qty"] > 0 or pos_check["SHORT"]["qty"] > 0:
+                            logger.info("✅ Position confirmed. Exiting startup sequence.")
+                            break
+                        await asyncio.sleep(1)
+                        pos_check_count += 1
+
+                    continue # 다음 루프로 즉시 이동
 
                 else:
                     last_l = bot_state.get("last_long_line")
                     last_s = bot_state.get("last_short_line")
                     
-                    # Scale-in
+                    # Scale-in, TP logic (unchanged)
                     entry = grid_logic.check_entry_signal(line, curr_pos, center, gap, last_l, last_s, total_bal)
                     if entry:
                         side = 1 if entry['action'] == "OPEN_LONG" else 3
@@ -133,7 +133,6 @@ async def main():
                         if side == 1: bot_state.update("last_long_line", line)
                         else: bot_state.update("last_short_line", line)
                     
-                    # TP
                     tp = grid_logic.check_tp_signal(line, curr_pos, center, gap)
                     if tp:
                         side = 4 if tp['action'] == "CLOSE_LONG" else 2
