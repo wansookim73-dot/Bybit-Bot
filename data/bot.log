@@ -4687,3 +4687,463 @@
 [2025-12-01 18:13:40] [WARNING] main: 🧹 State Cleanup: Clearing old line memory (Manual Close Detected).
 [2025-12-01 18:13:40] [INFO] main: 🆕 Start-up Entry (Initial Entry)
 [2025-12-01 18:13:40] [INFO] order_manager: [Order] Maker Only: Side=1, P=85289.5, Q=0.001
+[2025-12-01 18:27:23] [WARNING] exchange_api: 🚀 [REAL] Trade Mode
+[2025-12-01 18:27:23] [INFO] state_manager: 상태 로드: {'mode': 'NORMAL', 'p_center': 85068.8, 'p_gap': 376.5, 'atr_value': 0, 'total_balance': 600.0, 'last_long_line': 1, 'last_short_line': 1}
+[2025-12-01 18:27:23] [INFO] main: 🤖 Bybit Wave Bot v10.5 FINAL Starting...
+[2025-12-01 18:27:27] [INFO] main: [Status] Mode=NORMAL, Price=85233.6, Line=0
+[2025-12-01 18:27:27] [WARNING] main: 🧹 State Cleanup: Positions are zero, clearing old line memory.
+[2025-12-01 18:27:27] [INFO] main: 🆕 Start-up Entry (Initial Entry)
+[2025-12-01 18:27:27] [INFO] order_manager: [Order] Maker Only: Side=1, P=85233.6, Q=0.001
+[2025-12-01 18:28:27] [ERROR] main: Loop Error: 'BybitAPI' object has no attribute '_safe_request'
+[2025-12-01 18:28:32] [INFO] main: [Status] Mode=NORMAL, Price=85320.9, Line=1
+[2025-12-01 18:28:32] [WARNING] main: 🧹 State Cleanup: Positions are zero, clearing old line memory.
+[2025-12-01 18:28:32] [INFO] main: 🆕 Start-up Entry (Initial Entry)
+[2025-12-01 18:28:32] [INFO] order_manager: [Order] Maker Only: Side=1, P=85320.9, Q=0.001
+[2025-12-01 18:29:32] [ERROR] main: Loop Error: 'BybitAPI' object has no attribute '_safe_request'
+[2025-12-01 18:29:37] [INFO] main: [Status] Mode=NORMAL, Price=85222.2, Line=0
+[2025-12-01 18:29:37] [WARNING] main: 🧹 State Cleanup: Positions are zero, clearing old line memory.
+[2025-12-01 18:29:37] [INFO] main: 🆕 Start-up Entry (Initial Entry)
+[2025-12-01 18:29:37] [INFO] order_manager: [Order] Maker Only: Side=1, P=85222.2, Q=0.001
+[2025-12-01 18:32:19] [WARNING] exchange_api: 🚀 [REAL] Trade Mode
+[2025-12-01 18:32:19] [INFO] state_manager: 상태 로드: {'mode': 'NORMAL', 'p_center': 85068.8, 'p_gap': 376.5, 'atr_value': 0, 'total_balance': 600.0, 'last_long_line': 0, 'last_short_line': 0}
+[2025-12-01 18:32:19] [INFO] main: 🤖 Bybit Wave Bot v10.6 WS FINAL Starting...
+[2025-12-01 18:32:19] [INFO] main: 🔌 WebSocket Private Stream initiated.
+[2025-12-01 18:32:20] [WARNING] exchange_api: Setup Error (set_leverage): bybit setLeverage() only support linear and inverse market
+[2025-12-01 18:32:20] [WARNING] exchange_api: Setup Error (set_position_mode): bybit {"retCode":10001,"retMsg":"inverse in uta cannot switch position mode","result":{},"retExtInfo":{},"time":1764613940535}
+[2025-12-01 18:32:20] [INFO] websocket_service: WS: Connecting to Private Stream...
+[2025-12-01 18:32:20] [ERROR] websocket_service: WS Fatal Error: AttributeError - 'WebSocketService' object has no attribute 'ws_url'. Reconnecting in 10s.
+[2025-12-01 18:32:23] [ERROR] main: Main Loop Error: name 'time' is not defined
+[2025-12-01 18:32:29] [ERROR] main: Main Loop Error: name 'time' is not defined
+[2025-12-01 18:32:30] [INFO] websocket_service: WS: Connecting to Private Stream...
+[2025-12-01 18:32:30] [ERROR] websocket_service: WS Fatal Error: AttributeError - 'WebSocketService' object has no attribute 'ws_url'. Reconnecting in 10s.
+[2025-12-01 18:32:34] [ERROR] main: Main Loop Error: name 'time' is not defined
+[2025-12-01 18:33:40] [WARNING] exchange_api: 🚀 [REAL] Trade Mode
+[2025-12-01 18:33:40] [INFO] state_manager: 상태 로드: {'mode': 'NORMAL', 'p_center': 85068.8, 'p_gap': 376.5, 'atr_value': 0, 'total_balance': 600.0, 'last_long_line': 0, 'last_short_line': 0}
+[2025-12-01 18:34:54] [WARNING] exchange_api: 🚀 [REAL] Trade Mode
+[2025-12-01 18:34:54] [INFO] state_manager: 상태 로드: {'mode': 'NORMAL', 'p_center': 85068.8, 'p_gap': 376.5, 'atr_value': 0, 'total_balance': 600.0, 'last_long_line': 0, 'last_short_line': 0}
+[2025-12-01 18:34:54] [INFO] main: 🤖 Bybit Wave Bot v10.5 FINAL Starting...
+[2025-12-01 18:34:55] [WARNING] exchange_api: Setup Error (set_leverage): bybit setLeverage() only support linear and inverse market
+[2025-12-01 18:34:55] [WARNING] exchange_api: Setup Error (set_position_mode): bybit {"retCode":10001,"retMsg":"inverse in uta cannot switch position mode","result":{},"retExtInfo":{},"time":1764614095920}
+[2025-12-01 18:34:58] [INFO] main: [Status] Mode=NORMAL, Price=85116.7, Line=0
+[2025-12-01 18:34:58] [WARNING] main: 🧹 State Cleanup: Positions are zero, clearing old line memory.
+[2025-12-01 18:34:58] [INFO] main: 🆕 Start-up Entry (Initial Entry)
+[2025-12-01 18:34:58] [INFO] order_manager: [Order] Maker Only: Side=1, P=85116.7, Q=0.001
+[2025-12-01 18:35:58] [WARNING] exchange_api: Setup Error (cancel_order): bybit {"retCode":110001,"retMsg":"order not exists or too late to cancel","result":{},"retExtInfo":{},"time":1764614158522}
+[2025-12-01 18:35:58] [INFO] order_manager: [Timeout] 잔량 0.0010개 취소 (Maker Only)
+[2025-12-01 18:35:58] [INFO] order_manager: [Order] Maker Only: Side=3, P=85116.7, Q=0.001
+[2025-12-01 18:36:39] [WARNING] exchange_api: 🚀 [REAL] Trade Mode
+[2025-12-01 18:36:39] [INFO] state_manager: 상태 로드: {'mode': 'NORMAL', 'p_center': 85068.8, 'p_gap': 376.5, 'atr_value': 0, 'total_balance': 600.0, 'last_long_line': 0, 'last_short_line': 0}
+[2025-12-01 18:36:39] [INFO] main: 🤖 Bybit Wave Bot v10.5 FINAL Starting...
+[2025-12-01 18:36:40] [WARNING] exchange_api: Setup Error (set_leverage): bybit setLeverage() only support linear and inverse market
+[2025-12-01 18:36:40] [WARNING] exchange_api: Setup Error (set_position_mode): bybit {"retCode":10001,"retMsg":"inverse in uta cannot switch position mode","result":{},"retExtInfo":{},"time":1764614200489}
+[2025-12-01 18:36:43] [INFO] main: [Status] Mode=NORMAL, Price=84940.0, Line=0
+[2025-12-01 18:36:43] [WARNING] main: 🧹 State Cleanup: Positions are zero, clearing old line memory.
+[2025-12-01 18:36:43] [INFO] main: 🆕 Start-up Entry (Initial Entry)
+[2025-12-01 18:36:43] [INFO] order_manager: [Order] Maker Only: Side=1, P=84940.0, Q=0.001
+[2025-12-01 18:37:43] [WARNING] exchange_api: Setup Error (cancel_order): bybit {"retCode":110001,"retMsg":"order not exists or too late to cancel","result":{},"retExtInfo":{},"time":1764614263091}
+[2025-12-01 18:37:43] [INFO] order_manager: [Timeout] 잔량 0.0010개 취소 (Maker Only)
+[2025-12-01 18:37:43] [INFO] order_manager: [Order] Maker Only: Side=3, P=84940.0, Q=0.001
+[2025-12-01 18:38:43] [WARNING] exchange_api: Setup Error (cancel_order): bybit {"retCode":110001,"retMsg":"order not exists or too late to cancel","result":{},"retExtInfo":{},"time":1764614323374}
+[2025-12-01 18:38:43] [INFO] order_manager: [Timeout] 잔량 0.0010개 취소 (Maker Only)
+[2025-12-01 18:38:46] [INFO] main: [Status] Mode=NORMAL, Price=84915.5, Line=0
+[2025-12-01 18:38:46] [WARNING] main: 🧹 State Cleanup: Positions are zero, clearing old line memory.
+[2025-12-01 18:38:46] [INFO] main: 🆕 Start-up Entry (Initial Entry)
+[2025-12-01 18:38:46] [INFO] order_manager: [Order] Maker Only: Side=1, P=84915.5, Q=0.001
+[2025-12-01 18:39:46] [WARNING] exchange_api: Setup Error (cancel_order): bybit {"retCode":110001,"retMsg":"order not exists or too late to cancel","result":{},"retExtInfo":{},"time":1764614386931}
+[2025-12-01 18:39:47] [INFO] order_manager: [Timeout] 잔량 0.0010개 취소 (Maker Only)
+[2025-12-01 18:39:47] [INFO] order_manager: [Order] Maker Only: Side=3, P=84915.5, Q=0.001
+[2025-12-01 18:40:47] [INFO] order_manager: [Timeout] 잔량 0.0010개 취소 (Maker Only)
+[2025-12-01 18:40:50] [INFO] main: [Status] Mode=NORMAL, Price=84815.0, Line=-1
+[2025-12-01 18:40:50] [WARNING] main: 🧹 State Cleanup: Positions are zero, clearing old line memory.
+[2025-12-01 18:40:50] [INFO] main: 🆕 Start-up Entry (Initial Entry)
+[2025-12-01 18:40:50] [INFO] order_manager: [Order] Maker Only: Side=1, P=84815.0, Q=0.001
+[2025-12-01 18:41:18] [WARNING] exchange_api: 🚀 [REAL] Trade Mode
+[2025-12-01 18:41:18] [INFO] state_manager: 상태 로드: {'mode': 'NORMAL', 'p_center': 85068.8, 'p_gap': 376.5, 'atr_value': 0, 'total_balance': 600.0, 'last_long_line': -1, 'last_short_line': -1}
+[2025-12-01 18:41:18] [INFO] main: 🤖 Bybit Wave Bot v10.6 WS Upgrade Starting...
+[2025-12-01 18:41:18] [INFO] main: 🔌 WebSocket Private Stream initiated.
+[2025-12-01 18:41:19] [WARNING] exchange_api: Setup Error (set_leverage): bybit setLeverage() only support linear and inverse market
+[2025-12-01 18:41:19] [WARNING] exchange_api: Setup Error (set_position_mode): bybit {"retCode":10001,"retMsg":"inverse in uta cannot switch position mode","result":{},"retExtInfo":{},"time":1764614479771}
+[2025-12-01 18:41:19] [INFO] websocket_service: WS: Connecting to Private Stream...
+[2025-12-01 18:41:19] [ERROR] websocket_service: WS Fatal Error: AttributeError - 'WebSocketService' object has no attribute 'ws_url'. Reconnecting in 10s.
+[2025-12-01 18:41:22] [INFO] main: [Status] Mode=NORMAL, Price=84759.5, Line=-1
+[2025-12-01 18:41:22] [WARNING] main: 🧹 State Cleanup: Clearing old line memory.
+[2025-12-01 18:41:22] [INFO] main: 🆕 Start-up Entry (Initial Entry)
+[2025-12-01 18:41:22] [INFO] order_manager: [Order] Maker Only: Side=1, P=84759.5, Q=0.001
+[2025-12-01 18:41:29] [INFO] websocket_service: WS: Connecting to Private Stream...
+[2025-12-01 18:41:29] [ERROR] websocket_service: WS Fatal Error: AttributeError - 'WebSocketService' object has no attribute 'ws_url'. Reconnecting in 10s.
+[2025-12-01 18:41:39] [INFO] websocket_service: WS: Connecting to Private Stream...
+[2025-12-01 18:41:39] [ERROR] websocket_service: WS Fatal Error: AttributeError - 'WebSocketService' object has no attribute 'ws_url'. Reconnecting in 10s.
+[2025-12-01 18:41:49] [INFO] websocket_service: WS: Connecting to Private Stream...
+[2025-12-01 18:41:49] [ERROR] websocket_service: WS Fatal Error: AttributeError - 'WebSocketService' object has no attribute 'ws_url'. Reconnecting in 10s.
+[2025-12-01 18:41:59] [INFO] websocket_service: WS: Connecting to Private Stream...
+[2025-12-01 18:41:59] [ERROR] websocket_service: WS Fatal Error: AttributeError - 'WebSocketService' object has no attribute 'ws_url'. Reconnecting in 10s.
+[2025-12-01 18:42:09] [INFO] websocket_service: WS: Connecting to Private Stream...
+[2025-12-01 18:42:09] [ERROR] websocket_service: WS Fatal Error: AttributeError - 'WebSocketService' object has no attribute 'ws_url'. Reconnecting in 10s.
+[2025-12-01 18:42:19] [INFO] websocket_service: WS: Connecting to Private Stream...
+[2025-12-01 18:42:19] [ERROR] websocket_service: WS Fatal Error: AttributeError - 'WebSocketService' object has no attribute 'ws_url'. Reconnecting in 10s.
+[2025-12-01 18:42:23] [WARNING] exchange_api: Setup Error (cancel_order): bybit {"retCode":110001,"retMsg":"order not exists or too late to cancel","result":{},"retExtInfo":{},"time":1764614543146}
+[2025-12-01 18:42:23] [INFO] order_manager: [Timeout] 잔량 0.0010개 취소 (Maker Only)
+[2025-12-01 18:42:23] [INFO] order_manager: [Order] Maker Only: Side=3, P=84759.5, Q=0.001
+[2025-12-01 18:42:50] [WARNING] exchange_api: 🚀 [REAL] Trade Mode
+[2025-12-01 18:42:50] [INFO] state_manager: 상태 로드: {'mode': 'NORMAL', 'p_center': 85068.8, 'p_gap': 376.5, 'atr_value': 0, 'total_balance': 600.0, 'last_long_line': -1, 'last_short_line': -1}
+[2025-12-01 18:42:50] [INFO] main: 🤖 Bybit Wave Bot v10.6 WS Upgrade Starting...
+[2025-12-01 18:43:53] [WARNING] exchange_api: 🚀 [REAL] Trade Mode
+[2025-12-01 18:43:53] [INFO] state_manager: 상태 로드: {'mode': 'NORMAL', 'p_center': 85068.8, 'p_gap': 376.5, 'atr_value': 0, 'total_balance': 600.0, 'last_long_line': -1, 'last_short_line': -1}
+[2025-12-01 18:43:53] [INFO] main: 🤖 Bybit Wave Bot v10.6 WS Upgrade Starting...
+[2025-12-01 18:43:53] [INFO] main: 🔌 WebSocket Private Stream initiated.
+[2025-12-01 18:43:55] [WARNING] exchange_api: Setup Error (set_leverage): bybit setLeverage() only support linear and inverse market
+[2025-12-01 18:43:55] [WARNING] exchange_api: Setup Error (set_position_mode): bybit {"retCode":10001,"retMsg":"inverse in uta cannot switch position mode","result":{},"retExtInfo":{},"time":1764614635158}
+[2025-12-01 18:43:55] [INFO] websocket_service: WS: Connecting to Private Stream...
+[2025-12-01 18:43:55] [INFO] websocket_service: WS: Sent auth message.
+[2025-12-01 18:43:55] [INFO] websocket_service: WS: Subscribed to position, order, and wallet streams.
+[2025-12-01 18:43:58] [INFO] main: [Status] Mode=NORMAL, Price=84688.6, Line=-1
+[2025-12-01 18:43:58] [WARNING] main: 🧹 State Cleanup: Clearing old line memory.
+[2025-12-01 18:43:58] [INFO] main: 🆕 Start-up Entry (Initial Entry)
+[2025-12-01 18:43:58] [INFO] order_manager: [Order] Maker Only: Side=1, P=84688.6, Q=0.001
+[2025-12-01 18:44:54] [ERROR] websocket_service: WS Fatal Error: TimeoutError - . Reconnecting in 10s.
+[2025-12-01 18:44:58] [WARNING] exchange_api: Setup Error (cancel_order): bybit {"retCode":110001,"retMsg":"order not exists or too late to cancel","result":{},"retExtInfo":{},"time":1764614698533}
+[2025-12-01 18:44:58] [INFO] order_manager: [Timeout] 잔량 0.0010개 취소 (Maker Only)
+[2025-12-01 18:44:58] [INFO] order_manager: [Order] Maker Only: Side=3, P=84688.6, Q=0.001
+[2025-12-01 18:45:04] [INFO] websocket_service: WS: Connecting to Private Stream...
+[2025-12-01 18:45:04] [INFO] websocket_service: WS: Sent auth message.
+[2025-12-01 18:45:04] [INFO] websocket_service: WS: Subscribed to position, order, and wallet streams.
+[2025-12-01 18:45:39] [ERROR] websocket_service: WS Fatal Error: TimeoutError - . Reconnecting in 10s.
+[2025-12-01 18:45:49] [INFO] websocket_service: WS: Connecting to Private Stream...
+[2025-12-01 18:45:49] [INFO] websocket_service: WS: Sent auth message.
+[2025-12-01 18:45:49] [INFO] websocket_service: WS: Subscribed to position, order, and wallet streams.
+[2025-12-01 18:45:58] [WARNING] exchange_api: Setup Error (cancel_order): bybit {"retCode":110001,"retMsg":"order not exists or too late to cancel","result":{},"retExtInfo":{},"time":1764614758754}
+[2025-12-01 18:45:58] [INFO] order_manager: [Timeout] 잔량 0.0010개 취소 (Maker Only)
+[2025-12-01 18:46:02] [INFO] main: [Status] Mode=NORMAL, Price=84723.2, Line=-1
+[2025-12-01 18:46:02] [WARNING] main: 🧹 State Cleanup: Clearing old line memory.
+[2025-12-01 18:46:02] [INFO] main: 🆕 Start-up Entry (Initial Entry)
+[2025-12-01 18:46:02] [INFO] order_manager: [Order] Maker Only: Side=1, P=84723.2, Q=0.001
+[2025-12-01 18:46:38] [ERROR] websocket_service: WS Fatal Error: TimeoutError - . Reconnecting in 10s.
+[2025-12-01 18:46:48] [INFO] websocket_service: WS: Connecting to Private Stream...
+[2025-12-01 18:46:48] [INFO] websocket_service: WS: Sent auth message.
+[2025-12-01 18:46:48] [INFO] websocket_service: WS: Subscribed to position, order, and wallet streams.
+[2025-12-01 18:47:02] [WARNING] exchange_api: Setup Error (cancel_order): bybit {"retCode":110001,"retMsg":"order not exists or too late to cancel","result":{},"retExtInfo":{},"time":1764614822142}
+[2025-12-01 18:47:02] [INFO] order_manager: [Timeout] 잔량 0.0010개 취소 (Maker Only)
+[2025-12-01 18:47:02] [INFO] order_manager: [Order] Maker Only: Side=3, P=84723.2, Q=0.001
+[2025-12-01 18:47:37] [ERROR] websocket_service: WS Fatal Error: TimeoutError - . Reconnecting in 10s.
+[2025-12-01 18:47:47] [INFO] websocket_service: WS: Connecting to Private Stream...
+[2025-12-01 18:47:47] [INFO] websocket_service: WS: Sent auth message.
+[2025-12-01 18:47:47] [INFO] websocket_service: WS: Subscribed to position, order, and wallet streams.
+[2025-12-01 18:48:02] [WARNING] exchange_api: Setup Error (cancel_order): bybit {"retCode":110001,"retMsg":"order not exists or too late to cancel","result":{},"retExtInfo":{},"time":1764614882393}
+[2025-12-01 18:48:02] [INFO] order_manager: [Timeout] 잔량 0.0010개 취소 (Maker Only)
+[2025-12-01 18:48:05] [INFO] main: [Status] Mode=NORMAL, Price=84879.6, Line=-1
+[2025-12-01 18:48:05] [WARNING] main: 🧹 State Cleanup: Clearing old line memory.
+[2025-12-01 18:48:05] [INFO] main: 🆕 Start-up Entry (Initial Entry)
+[2025-12-01 18:48:05] [INFO] order_manager: [Order] Maker Only: Side=1, P=84879.6, Q=0.001
+[2025-12-01 18:48:59] [ERROR] websocket_service: WS Fatal Error: TimeoutError - . Reconnecting in 10s.
+[2025-12-01 18:49:05] [WARNING] exchange_api: Setup Error (cancel_order): bybit {"retCode":110001,"retMsg":"order not exists or too late to cancel","result":{},"retExtInfo":{},"time":1764614945770}
+[2025-12-01 18:49:05] [INFO] order_manager: [Timeout] 잔량 0.0010개 취소 (Maker Only)
+[2025-12-01 18:49:05] [INFO] order_manager: [Order] Maker Only: Side=3, P=84879.6, Q=0.001
+[2025-12-01 18:49:09] [INFO] websocket_service: WS: Connecting to Private Stream...
+[2025-12-01 18:49:09] [INFO] websocket_service: WS: Sent auth message.
+[2025-12-01 18:49:09] [INFO] websocket_service: WS: Subscribed to position, order, and wallet streams.
+[2025-12-01 18:49:44] [ERROR] websocket_service: WS Fatal Error: TimeoutError - . Reconnecting in 10s.
+[2025-12-01 18:49:54] [INFO] websocket_service: WS: Connecting to Private Stream...
+[2025-12-01 18:49:54] [INFO] websocket_service: WS: Sent auth message.
+[2025-12-01 18:49:54] [INFO] websocket_service: WS: Subscribed to position, order, and wallet streams.
+[2025-12-01 18:50:06] [INFO] order_manager: [Timeout] 잔량 0.0010개 취소 (Maker Only)
+[2025-12-01 18:50:09] [INFO] main: [Status] Mode=NORMAL, Price=84770.1, Line=-1
+[2025-12-01 18:50:09] [WARNING] main: 🧹 State Cleanup: Clearing old line memory.
+[2025-12-01 18:50:09] [INFO] main: 🆕 Start-up Entry (Initial Entry)
+[2025-12-01 18:50:09] [INFO] order_manager: [Order] Maker Only: Side=1, P=84770.1, Q=0.001
+[2025-12-01 18:50:46] [ERROR] websocket_service: WS Fatal Error: TimeoutError - . Reconnecting in 10s.
+[2025-12-01 18:50:56] [INFO] websocket_service: WS: Connecting to Private Stream...
+[2025-12-01 18:50:56] [INFO] websocket_service: WS: Sent auth message.
+[2025-12-01 18:50:56] [INFO] websocket_service: WS: Subscribed to position, order, and wallet streams.
+[2025-12-01 18:51:09] [WARNING] exchange_api: Setup Error (cancel_order): bybit {"retCode":110001,"retMsg":"order not exists or too late to cancel","result":{},"retExtInfo":{},"time":1764615069392}
+[2025-12-01 18:51:09] [INFO] order_manager: [Timeout] 잔량 0.0010개 취소 (Maker Only)
+[2025-12-01 18:51:09] [INFO] order_manager: [Order] Maker Only: Side=3, P=84770.1, Q=0.001
+[2025-12-01 18:51:44] [ERROR] websocket_service: WS Fatal Error: TimeoutError - . Reconnecting in 10s.
+[2025-12-01 18:51:54] [INFO] websocket_service: WS: Connecting to Private Stream...
+[2025-12-01 18:51:54] [INFO] websocket_service: WS: Sent auth message.
+[2025-12-01 18:51:54] [INFO] websocket_service: WS: Subscribed to position, order, and wallet streams.
+[2025-12-01 18:52:09] [WARNING] exchange_api: Setup Error (cancel_order): bybit {"retCode":110001,"retMsg":"order not exists or too late to cancel","result":{},"retExtInfo":{},"time":1764615129618}
+[2025-12-01 18:52:09] [INFO] order_manager: [Timeout] 잔량 0.0010개 취소 (Maker Only)
+[2025-12-01 18:52:12] [INFO] main: [Status] Mode=NORMAL, Price=84820.0, Line=-1
+[2025-12-01 18:52:12] [WARNING] main: 🧹 State Cleanup: Clearing old line memory.
+[2025-12-01 18:52:12] [INFO] main: 🆕 Start-up Entry (Initial Entry)
+[2025-12-01 18:52:12] [INFO] order_manager: [Order] Maker Only: Side=1, P=84820.0, Q=0.001
+[2025-12-01 18:52:48] [ERROR] websocket_service: WS Fatal Error: TimeoutError - . Reconnecting in 10s.
+[2025-12-01 18:52:58] [INFO] websocket_service: WS: Connecting to Private Stream...
+[2025-12-01 18:52:58] [INFO] websocket_service: WS: Sent auth message.
+[2025-12-01 18:52:58] [INFO] websocket_service: WS: Subscribed to position, order, and wallet streams.
+[2025-12-01 18:53:13] [WARNING] exchange_api: Setup Error (cancel_order): bybit {"retCode":110001,"retMsg":"order not exists or too late to cancel","result":{},"retExtInfo":{},"time":1764615193004}
+[2025-12-01 18:53:13] [INFO] order_manager: [Timeout] 잔량 0.0010개 취소 (Maker Only)
+[2025-12-01 18:53:13] [INFO] order_manager: [Order] Maker Only: Side=3, P=84820.0, Q=0.001
+[2025-12-01 18:53:48] [ERROR] websocket_service: WS Fatal Error: TimeoutError - . Reconnecting in 10s.
+[2025-12-01 18:53:58] [INFO] websocket_service: WS: Connecting to Private Stream...
+[2025-12-01 18:53:58] [INFO] websocket_service: WS: Sent auth message.
+[2025-12-01 18:53:58] [INFO] websocket_service: WS: Subscribed to position, order, and wallet streams.
+[2025-12-01 18:54:13] [INFO] order_manager: [Timeout] 잔량 0.0010개 취소 (Maker Only)
+[2025-12-01 18:54:16] [INFO] main: [Status] Mode=NORMAL, Price=84783.1, Line=-1
+[2025-12-01 18:54:16] [WARNING] main: 🧹 State Cleanup: Clearing old line memory.
+[2025-12-01 18:54:16] [INFO] main: 🆕 Start-up Entry (Initial Entry)
+[2025-12-01 18:54:16] [INFO] order_manager: [Order] Maker Only: Side=1, P=84783.1, Q=0.001
+[2025-12-01 18:54:53] [ERROR] websocket_service: WS Fatal Error: TimeoutError - . Reconnecting in 10s.
+[2025-12-01 18:55:03] [INFO] websocket_service: WS: Connecting to Private Stream...
+[2025-12-01 18:55:03] [INFO] websocket_service: WS: Sent auth message.
+[2025-12-01 18:55:03] [INFO] websocket_service: WS: Subscribed to position, order, and wallet streams.
+[2025-12-01 18:55:36] [WARNING] exchange_api: 🚀 [REAL] Trade Mode
+[2025-12-01 18:55:36] [INFO] state_manager: 상태 로드: {'mode': 'NORMAL', 'p_center': 85068.8, 'p_gap': 376.5, 'atr_value': 0, 'total_balance': 600.0, 'last_long_line': -1, 'last_short_line': -1}
+[2025-12-01 18:55:36] [INFO] main: 🤖 Bybit Wave Bot v10.7 (WSS Fallback) Starting...
+[2025-12-01 18:55:36] [INFO] main: 🔌 WebSocket Private Stream initiated.
+[2025-12-01 18:55:37] [WARNING] exchange_api: Setup Error (set_leverage): bybit setLeverage() only support linear and inverse market
+[2025-12-01 18:55:37] [WARNING] exchange_api: Setup Error (set_position_mode): bybit {"retCode":10001,"retMsg":"inverse in uta cannot switch position mode","result":{},"retExtInfo":{},"time":1764615337523}
+[2025-12-01 18:55:37] [INFO] websocket_service: WS: Connecting to Private Stream...
+[2025-12-01 18:55:37] [INFO] websocket_service: WS: Sent auth message.
+[2025-12-01 18:55:37] [INFO] websocket_service: WS: Subscribed to position, order, and wallet streams.
+[2025-12-01 18:55:40] [WARNING] main: ⚠️ WSS Stale (1764615340.5s). REST fallback.
+[2025-12-01 18:55:40] [INFO] main: [Status] Mode=NORMAL, Price=84959.4, Line=0 | WSS Latency: 1764615340.5s
+[2025-12-01 18:55:40] [WARNING] main: 🧹 State Cleanup: Clearing old line memory.
+[2025-12-01 18:55:40] [INFO] main: 🆕 Start-up Entry (Initial Entry)
+[2025-12-01 18:55:40] [INFO] order_manager: [Order] Maker Only: Side=1, P=84959.4, Q=0.001
+[2025-12-01 18:56:16] [ERROR] websocket_service: WS Fatal Error: TimeoutError - . Reconnecting in 10s.
+[2025-12-01 18:56:26] [INFO] websocket_service: WS: Connecting to Private Stream...
+[2025-12-01 18:56:26] [INFO] websocket_service: WS: Sent auth message.
+[2025-12-01 18:56:26] [INFO] websocket_service: WS: Subscribed to position, order, and wallet streams.
+[2025-12-01 18:56:41] [WARNING] exchange_api: Setup Error (cancel_order): bybit {"retCode":110001,"retMsg":"order not exists or too late to cancel","result":{},"retExtInfo":{},"time":1764615401018}
+[2025-12-01 18:56:41] [INFO] order_manager: [Timeout] 잔량 0.0010개 취소 (Maker Only)
+[2025-12-01 18:56:41] [INFO] order_manager: [Order] Maker Only: Side=3, P=84959.4, Q=0.001
+[2025-12-01 18:57:25] [ERROR] websocket_service: WS Fatal Error: TimeoutError - . Reconnecting in 10s.
+[2025-12-01 18:57:35] [INFO] websocket_service: WS: Connecting to Private Stream...
+[2025-12-01 18:57:35] [INFO] websocket_service: WS: Sent auth message.
+[2025-12-01 18:57:35] [INFO] websocket_service: WS: Subscribed to position, order, and wallet streams.
+[2025-12-01 18:57:41] [WARNING] exchange_api: Setup Error (cancel_order): bybit {"retCode":110001,"retMsg":"order not exists or too late to cancel","result":{},"retExtInfo":{},"time":1764615461242}
+[2025-12-01 18:57:41] [INFO] order_manager: [Timeout] 잔량 0.0010개 취소 (Maker Only)
+[2025-12-01 18:57:44] [WARNING] main: ⚠️ WSS Stale (53.9s). REST fallback.
+[2025-12-01 18:57:44] [INFO] main: [Status] Mode=NORMAL, Price=85169.5, Line=0 | WSS Latency: 53.9s
+[2025-12-01 18:57:44] [WARNING] main: 🧹 State Cleanup: Clearing old line memory.
+[2025-12-01 18:57:44] [INFO] main: 🆕 Start-up Entry (Initial Entry)
+[2025-12-01 18:57:44] [INFO] order_manager: [Order] Maker Only: Side=1, P=85169.5, Q=0.001
+[2025-12-01 18:58:25] [WARNING] exchange_api: 🚀 [REAL] Trade Mode
+[2025-12-01 18:58:25] [INFO] state_manager: 상태 로드: {'mode': 'NORMAL', 'p_center': 85068.8, 'p_gap': 376.5, 'atr_value': 0, 'total_balance': 600.0, 'last_long_line': 0, 'last_short_line': 0}
+[2025-12-01 18:58:25] [INFO] main: 🤖 Bybit Wave Bot v10.7 (WSS Fallback) Starting...
+[2025-12-01 18:58:25] [INFO] main: 🔌 WebSocket Private Stream initiated.
+[2025-12-01 18:58:26] [WARNING] exchange_api: Setup Error (set_leverage): bybit setLeverage() only support linear and inverse market
+[2025-12-01 18:58:26] [WARNING] exchange_api: Setup Error (set_position_mode): bybit {"retCode":10001,"retMsg":"inverse in uta cannot switch position mode","result":{},"retExtInfo":{},"time":1764615506632}
+[2025-12-01 18:58:26] [INFO] websocket_service: WS: Connecting to Private Stream...
+[2025-12-01 18:58:26] [INFO] websocket_service: WS: Sent auth message.
+[2025-12-01 18:58:26] [INFO] websocket_service: WS: Subscribed to position, order, and wallet streams.
+[2025-12-01 18:58:29] [INFO] main: ⏱️ Waiting for initial WSS position snapshot...
+[2025-12-01 18:58:30] [INFO] main: ⏱️ Waiting for initial WSS position snapshot...
+[2025-12-01 18:58:31] [INFO] main: ⏱️ Waiting for initial WSS position snapshot...
+[2025-12-01 18:58:32] [INFO] main: ⏱️ Waiting for initial WSS position snapshot...
+[2025-12-01 18:58:33] [INFO] main: ⏱️ Waiting for initial WSS position snapshot...
+[2025-12-01 18:58:34] [INFO] main: ⏱️ Waiting for initial WSS position snapshot...
+[2025-12-01 18:58:35] [INFO] main: ⏱️ Waiting for initial WSS position snapshot...
+[2025-12-01 18:58:36] [INFO] main: ⏱️ Waiting for initial WSS position snapshot...
+[2025-12-01 18:58:37] [INFO] main: ⏱️ Waiting for initial WSS position snapshot...
+[2025-12-01 18:58:38] [INFO] main: ⏱️ Waiting for initial WSS position snapshot...
+[2025-12-01 18:58:39] [INFO] main: ⏱️ Waiting for initial WSS position snapshot...
+[2025-12-01 18:58:40] [INFO] main: ⏱️ Waiting for initial WSS position snapshot...
+[2025-12-01 18:58:41] [INFO] main: ⏱️ Waiting for initial WSS position snapshot...
+[2025-12-01 18:58:42] [INFO] main: ⏱️ Waiting for initial WSS position snapshot...
+[2025-12-01 18:58:43] [INFO] main: ⏱️ Waiting for initial WSS position snapshot...
+[2025-12-01 18:58:44] [CRITICAL] main: ❌ Initial WSS snapshot failed after 15s. Running with degraded REST-only position data.
+[2025-12-01 18:58:44] [INFO] main: [Status] Mode=NORMAL, Price=85145.5, Line=0 | WSS Latency: 1764615524.7s
+[2025-12-01 18:58:44] [WARNING] main: 🧹 State Cleanup: Clearing old line memory.
+[2025-12-01 18:58:44] [INFO] main: 🆕 Start-up Entry (Initial Entry)
+[2025-12-01 18:58:44] [INFO] order_manager: [Order] Maker Only: Side=1, P=85145.5, Q=0.001
+[2025-12-01 18:59:20] [ERROR] websocket_service: WS Fatal Error: TimeoutError - . Reconnecting in 10s.
+[2025-12-01 18:59:30] [INFO] websocket_service: WS: Connecting to Private Stream...
+[2025-12-01 18:59:30] [INFO] websocket_service: WS: Sent auth message.
+[2025-12-01 18:59:30] [INFO] websocket_service: WS: Subscribed to position, order, and wallet streams.
+[2025-12-01 19:01:26] [WARNING] exchange_api: 🚀 [REAL] Trade Mode
+[2025-12-01 19:01:26] [INFO] state_manager: 상태 로드: {'mode': 'NORMAL', 'p_center': 85068.8, 'p_gap': 376.5, 'atr_value': 0, 'total_balance': 600.0, 'last_long_line': 0, 'last_short_line': 0}
+[2025-12-01 19:01:26] [INFO] main: 🤖 Bybit Wave Bot v10.8 (Maximum Safety / Manual Start) Starting...
+[2025-12-01 19:01:27] [WARNING] exchange_api: Setup Error (set_leverage): bybit setLeverage() only support linear and inverse market
+[2025-12-01 19:01:27] [WARNING] exchange_api: Setup Error (set_position_mode): bybit {"retCode":10001,"retMsg":"inverse in uta cannot switch position mode","result":{},"retExtInfo":{},"time":1764615687485}
+[2025-12-01 19:01:27] [INFO] websocket_service: WS: Connecting to Private Stream...
+[2025-12-01 19:01:27] [INFO] websocket_service: WS: Sent auth message.
+[2025-12-01 19:01:27] [INFO] websocket_service: WS: Subscribed to position, order, and wallet streams.
+[2025-12-01 19:01:30] [ERROR] main: Main Loop Error: name 'time' is not defined
+[2025-12-01 19:01:35] [ERROR] main: Main Loop Error: name 'time' is not defined
+[2025-12-01 19:01:40] [ERROR] main: Main Loop Error: name 'time' is not defined
+[2025-12-01 19:01:45] [ERROR] main: Main Loop Error: name 'time' is not defined
+[2025-12-01 19:01:50] [ERROR] main: Main Loop Error: name 'time' is not defined
+[2025-12-01 19:01:55] [ERROR] main: Main Loop Error: name 'time' is not defined
+[2025-12-01 19:02:00] [ERROR] main: Main Loop Error: name 'time' is not defined
+[2025-12-01 19:02:02] [ERROR] websocket_service: WS Fatal Error: TimeoutError - . Reconnecting in 10s.
+[2025-12-01 19:02:05] [ERROR] main: Main Loop Error: name 'time' is not defined
+[2025-12-01 19:02:10] [ERROR] main: Main Loop Error: name 'time' is not defined
+[2025-12-01 19:02:12] [INFO] websocket_service: WS: Connecting to Private Stream...
+[2025-12-01 19:02:12] [INFO] websocket_service: WS: Sent auth message.
+[2025-12-01 19:02:12] [INFO] websocket_service: WS: Subscribed to position, order, and wallet streams.
+[2025-12-01 19:02:15] [ERROR] main: Main Loop Error: name 'time' is not defined
+[2025-12-01 19:02:20] [ERROR] main: Main Loop Error: name 'time' is not defined
+[2025-12-01 19:02:25] [ERROR] main: Main Loop Error: name 'time' is not defined
+[2025-12-01 19:02:30] [ERROR] main: Main Loop Error: name 'time' is not defined
+[2025-12-01 19:02:35] [ERROR] main: Main Loop Error: name 'time' is not defined
+[2025-12-01 19:02:47] [WARNING] exchange_api: 🚀 [REAL] Trade Mode
+[2025-12-01 19:02:47] [INFO] state_manager: 상태 로드: {'mode': 'NORMAL', 'p_center': 85068.8, 'p_gap': 376.5, 'atr_value': 0, 'total_balance': 600.0, 'last_long_line': 0, 'last_short_line': 0}
+[2025-12-01 19:02:47] [INFO] main: 🤖 Bybit Wave Bot v10.6 WS Upgrade Starting...
+[2025-12-01 19:02:47] [INFO] main: 🔌 WebSocket Private Stream initiated.
+[2025-12-01 19:02:48] [WARNING] exchange_api: Setup Error (set_leverage): bybit setLeverage() only support linear and inverse market
+[2025-12-01 19:02:48] [WARNING] exchange_api: Setup Error (set_position_mode): bybit {"retCode":10001,"retMsg":"inverse in uta cannot switch position mode","result":{},"retExtInfo":{},"time":1764615768489}
+[2025-12-01 19:02:48] [INFO] websocket_service: WS: Connecting to Private Stream...
+[2025-12-01 19:02:48] [INFO] websocket_service: WS: Sent auth message.
+[2025-12-01 19:02:48] [INFO] websocket_service: WS: Subscribed to position, order, and wallet streams.
+[2025-12-01 19:02:51] [WARNING] main: ⚠️ WSS Stale (1764615771.5s). REST fallback.
+[2025-12-01 19:02:51] [INFO] main: [Status] Mode=NORMAL, Price=85090.0, Line=0 | WSS Latency: 1764615771.5s
+[2025-12-01 19:02:51] [WARNING] main: 🧹 State Cleanup: Clearing old line memory.
+[2025-12-01 19:02:51] [INFO] main: 🆕 Start-up Entry (Initial Entry)
+[2025-12-01 19:02:51] [INFO] order_manager: [Order] Maker Only: Side=1, P=85090.0, Q=0.001
+[2025-12-01 19:03:30] [ERROR] websocket_service: WS Fatal Error: TimeoutError - . Reconnecting in 10s.
+[2025-12-01 19:03:40] [INFO] websocket_service: WS: Connecting to Private Stream...
+[2025-12-01 19:03:40] [INFO] websocket_service: WS: Sent auth message.
+[2025-12-01 19:03:40] [INFO] websocket_service: WS: Subscribed to position, order, and wallet streams.
+[2025-12-01 19:03:51] [WARNING] exchange_api: Setup Error (cancel_order): bybit {"retCode":110001,"retMsg":"order not exists or too late to cancel","result":{},"retExtInfo":{},"time":1764615831993}
+[2025-12-01 19:03:52] [INFO] order_manager: [Timeout] 잔량 0.0010개 취소 (Maker Only)
+[2025-12-01 19:03:52] [INFO] order_manager: [Order] Maker Only: Side=3, P=85090.0, Q=0.001
+[2025-12-01 19:04:27] [ERROR] websocket_service: WS Fatal Error: TimeoutError - . Reconnecting in 10s.
+[2025-12-01 19:04:37] [INFO] websocket_service: WS: Connecting to Private Stream...
+[2025-12-01 19:04:37] [INFO] websocket_service: WS: Sent auth message.
+[2025-12-01 19:04:37] [INFO] websocket_service: WS: Subscribed to position, order, and wallet streams.
+[2025-12-01 19:04:52] [WARNING] exchange_api: Setup Error (cancel_order): bybit {"retCode":110001,"retMsg":"order not exists or too late to cancel","result":{},"retExtInfo":{},"time":1764615892225}
+[2025-12-01 19:04:52] [INFO] order_manager: [Timeout] 잔량 0.0010개 취소 (Maker Only)
+[2025-12-01 19:04:55] [WARNING] main: ⚠️ WSS Stale (63.2s). REST fallback.
+[2025-12-01 19:04:55] [INFO] main: [Status] Mode=NORMAL, Price=85102.4, Line=0 | WSS Latency: 63.2s
+[2025-12-01 19:04:55] [WARNING] main: 🧹 State Cleanup: Clearing old line memory.
+[2025-12-01 19:04:55] [INFO] main: 🆕 Start-up Entry (Initial Entry)
+[2025-12-01 19:04:55] [INFO] order_manager: [Order] Maker Only: Side=1, P=85102.4, Q=0.001
+[2025-12-01 19:08:27] [WARNING] exchange_api: 🚀 [REAL] Trade Mode
+[2025-12-01 19:08:27] [INFO] state_manager: 상태 로드: {'mode': 'NORMAL', 'p_center': 85068.8, 'p_gap': 376.5, 'atr_value': 0, 'total_balance': 600.0, 'last_long_line': 0, 'last_short_line': 0}
+[2025-12-01 19:08:27] [INFO] main: 🤖 Bybit Wave Bot v11.0 (Hardened WSS/Fallback) Starting...
+[2025-12-01 19:08:27] [INFO] main: 🔌 WebSocket Private Stream initiated.
+[2025-12-01 19:08:29] [WARNING] exchange_api: Setup Error (set_leverage): bybit setLeverage() only support linear and inverse market
+[2025-12-01 19:08:29] [WARNING] exchange_api: Setup Error (set_position_mode): bybit {"retCode":10001,"retMsg":"inverse in uta cannot switch position mode","result":{},"retExtInfo":{},"time":1764616109197}
+[2025-12-01 19:08:29] [INFO] websocket_service: WS: Connecting to Private Stream...
+[2025-12-01 19:08:29] [INFO] websocket_service: WS: Sent auth message.
+[2025-12-01 19:08:29] [INFO] websocket_service: WS: Subscribed to position, order, and wallet streams.
+[2025-12-01 19:08:31] [WARNING] main: ⚠️ WSS Initial Snapshot Failed (0.0s). REST fallback.
+[2025-12-01 19:08:31] [INFO] main: [Status] Mode=NORMAL, Price=84812.8, Line=-1 | WSS Latency: 1764616111.2s
+[2025-12-01 19:08:31] [WARNING] main: 🧹 State Cleanup: Positions are zero, clearing old line memory.
+[2025-12-01 19:08:31] [INFO] main: 🆕 Start-up Entry (Initial Entry)
+[2025-12-01 19:08:31] [INFO] order_manager: [Order] Maker Only: Side=1, P=84812.8, Q=0.001
+[2025-12-01 19:09:06] [ERROR] websocket_service: WS Fatal Error: TimeoutError - . Reconnecting in 10s.
+[2025-12-01 19:09:16] [INFO] websocket_service: WS: Connecting to Private Stream...
+[2025-12-01 19:09:16] [INFO] websocket_service: WS: Sent auth message.
+[2025-12-01 19:09:16] [INFO] websocket_service: WS: Subscribed to position, order, and wallet streams.
+[2025-12-01 19:09:31] [WARNING] exchange_api: Setup Error (cancel_order): bybit {"retCode":110001,"retMsg":"order not exists or too late to cancel","result":{},"retExtInfo":{},"time":1764616171698}
+[2025-12-01 19:09:31] [INFO] order_manager: [Timeout] 잔량 0.0010개 취소 (Maker Only)
+[2025-12-01 19:09:31] [INFO] order_manager: [Order] Maker Only: Side=3, P=84812.8, Q=0.001
+[2025-12-01 19:20:05] [WARNING] exchange_api: 🚀 [REAL] Trade Mode
+[2025-12-01 19:20:05] [INFO] state_manager: 상태 로드: {'mode': 'NORMAL', 'p_center': 85068.8, 'p_gap': 376.5, 'atr_value': 0, 'total_balance': 600.0, 'last_long_line': -1, 'last_short_line': -1}
+[2025-12-01 19:20:05] [INFO] main: 🤖 Bybit Wave Bot v11.0 (Hardened WSS/Fallback) Starting...
+[2025-12-01 19:21:06] [WARNING] exchange_api: 🚀 [REAL] Trade Mode
+[2025-12-01 19:21:06] [INFO] state_manager: 상태 로드: {'mode': 'NORMAL', 'p_center': 85068.8, 'p_gap': 376.5, 'atr_value': 0, 'total_balance': 600.0, 'last_long_line': -1, 'last_short_line': -1}
+[2025-12-01 19:21:06] [INFO] main: 🤖 Bybit Wave Bot v11.0 (Hardened WSS/Fallback) Starting...
+[2025-12-01 19:21:06] [INFO] main: 🔌 WebSocket Private Stream initiated.
+[2025-12-01 19:21:07] [WARNING] exchange_api: Setup Error (set_leverage): bybit setLeverage() only support linear and inverse market
+[2025-12-01 19:21:07] [WARNING] exchange_api: Setup Error (set_position_mode): bybit {"retCode":10001,"retMsg":"inverse in uta cannot switch position mode","result":{},"retExtInfo":{},"time":1764616867357}
+[2025-12-01 19:21:07] [INFO] websocket_service: WS: Connecting to Private Stream...
+[2025-12-01 19:21:07] [INFO] websocket_service: WS: Sent auth message.
+[2025-12-01 19:21:07] [INFO] websocket_service: WS: Subscribed to position, order, and wallet streams.
+[2025-12-01 19:21:09] [WARNING] main: ⚠️ WSS Initial Snapshot Failed (0.0s). REST fallback.
+[2025-12-01 19:21:09] [INFO] main: [Status] Mode=NORMAL, Price=84760.0, Line=-1 | WSS Latency: 1764616869.4s
+[2025-12-01 19:21:09] [WARNING] main: 🧹 State Cleanup: Positions are zero, clearing old line memory.
+[2025-12-01 19:21:09] [INFO] main: 🆕 Start-up Entry (Initial Entry)
+[2025-12-01 19:21:09] [INFO] order_manager: [Order] Maker Only: Side=1, P=84760.0, Q=0.001
+[2025-12-01 19:21:44] [ERROR] websocket_service: WS Fatal Error: TimeoutError - . Reconnecting in 10s.
+[2025-12-01 19:21:54] [INFO] websocket_service: WS: Connecting to Private Stream...
+[2025-12-01 19:21:54] [INFO] websocket_service: WS: Sent auth message.
+[2025-12-01 19:21:54] [INFO] websocket_service: WS: Subscribed to position, order, and wallet streams.
+[2025-12-01 19:22:09] [WARNING] exchange_api: Setup Error (cancel_order): bybit {"retCode":110001,"retMsg":"order not exists or too late to cancel","result":{},"retExtInfo":{},"time":1764616929859}
+[2025-12-01 19:22:10] [INFO] order_manager: [Timeout] 잔량 0.0010개 취소 (Maker Only)
+[2025-12-01 19:22:10] [INFO] order_manager: [Order] Maker Only: Side=3, P=84760.0, Q=0.001
+[2025-12-01 19:22:45] [ERROR] websocket_service: WS Fatal Error: TimeoutError - . Reconnecting in 10s.
+[2025-12-01 19:22:55] [INFO] websocket_service: WS: Connecting to Private Stream...
+[2025-12-01 19:22:55] [INFO] websocket_service: WS: Sent auth message.
+[2025-12-01 19:22:55] [INFO] websocket_service: WS: Subscribed to position, order, and wallet streams.
+[2025-12-01 19:23:10] [WARNING] exchange_api: Setup Error (cancel_order): bybit {"retCode":110001,"retMsg":"order not exists or too late to cancel","result":{},"retExtInfo":{},"time":1764616990100}
+[2025-12-01 19:23:10] [INFO] order_manager: [Timeout] 잔량 0.0010개 취소 (Maker Only)
+[2025-12-01 19:23:13] [WARNING] main: ⚠️ WSS Stale (63.2s). REST fallback.
+[2025-12-01 19:23:13] [INFO] main: [Status] Mode=NORMAL, Price=84782.2, Line=-1 | WSS Latency: 63.2s
+[2025-12-01 19:23:13] [WARNING] main: 🧹 State Cleanup: Positions are zero, clearing old line memory.
+[2025-12-01 19:23:13] [INFO] main: 🆕 Start-up Entry (Initial Entry)
+[2025-12-01 19:23:13] [INFO] order_manager: [Order] Maker Only: Side=1, P=84782.2, Q=0.001
+[2025-12-01 19:26:00] [WARNING] exchange_api: 🚀 [REAL] Trade Mode
+[2025-12-01 19:26:00] [INFO] main: 🤖 Bybit Wave Bot v11.2 (Final Stability Fix) Starting...
+[2025-12-01 19:26:00] [INFO] main: 🔌 WebSocket Private Stream initiated (Running in background).
+[2025-12-01 19:26:02] [WARNING] exchange_api: Setup Error (set_leverage): bybit setLeverage() only support linear and inverse market
+[2025-12-01 19:26:02] [WARNING] exchange_api: Setup Error (set_position_mode): bybit {"retCode":10001,"retMsg":"inverse in uta cannot switch position mode","result":{},"retExtInfo":{},"time":1764617162347}
+[2025-12-01 19:26:02] [INFO] websocket_service: WS: Connecting to Private Stream...
+[2025-12-01 19:26:02] [INFO] websocket_service: WS: Sent auth message.
+[2025-12-01 19:26:02] [INFO] websocket_service: WS: Subscribed to position, order, and wallet streams.
+[2025-12-01 19:26:04] [INFO] main: ✅ Init: Center=84792.0, Gap=378.7
+[2025-12-01 19:26:04] [WARNING] main: ⚠️ WSS Initial Snapshot Failed. Using REST.
+[2025-12-01 19:26:04] [INFO] main: [Status] Mode=NORMAL, Price=84792.1, Line=0 | WSS Latency: 1764617164.5s
+[2025-12-01 19:26:04] [INFO] main: 🆕 Start-up Entry (Initial Entry)
+[2025-12-01 19:26:04] [INFO] order_manager: [Order] Maker Only: Side=1, P=84792.1, Q=0.001
+[2025-12-01 19:26:40] [ERROR] websocket_service: WS Fatal Error: TimeoutError - . Reconnecting in 10s.
+[2025-12-01 19:26:50] [INFO] websocket_service: WS: Connecting to Private Stream...
+[2025-12-01 19:26:50] [INFO] websocket_service: WS: Sent auth message.
+[2025-12-01 19:26:50] [INFO] websocket_service: WS: Subscribed to position, order, and wallet streams.
+[2025-12-01 19:27:05] [WARNING] exchange_api: Setup Error (cancel_order): bybit {"retCode":110001,"retMsg":"order not exists or too late to cancel","result":{},"retExtInfo":{},"time":1764617225067}
+[2025-12-01 19:27:05] [INFO] order_manager: [Timeout] 잔량 0.0010개 취소 (Maker Only)
+[2025-12-01 19:27:05] [INFO] order_manager: [Order] Maker Only: Side=3, P=84792.1, Q=0.001
+[2025-12-01 19:27:40] [ERROR] websocket_service: WS Fatal Error: TimeoutError - . Reconnecting in 10s.
+[2025-12-01 19:27:50] [INFO] websocket_service: WS: Connecting to Private Stream...
+[2025-12-01 19:27:50] [INFO] websocket_service: WS: Sent auth message.
+[2025-12-01 19:27:50] [INFO] websocket_service: WS: Subscribed to position, order, and wallet streams.
+[2025-12-01 19:28:05] [INFO] order_manager: [Timeout] 잔량 0.0010개 취소 (Maker Only)
+[2025-12-01 19:28:08] [INFO] main: [Status] Mode=NORMAL, Price=84760.1, Line=0 | WSS Latency: 3.2s
+[2025-12-01 19:28:09] [INFO] main: [Status] Mode=NORMAL, Price=84760.0, Line=0 | WSS Latency: 3.6s
+[2025-12-01 19:28:09] [INFO] main: [Status] Mode=NORMAL, Price=84754.3, Line=0 | WSS Latency: 4.0s
+[2025-12-01 19:28:09] [INFO] main: [Status] Mode=NORMAL, Price=84745.8, Line=0 | WSS Latency: 4.4s
+[2025-12-01 19:28:10] [INFO] main: [Status] Mode=NORMAL, Price=84745.8, Line=0 | WSS Latency: 4.9s
+[2025-12-01 19:28:10] [INFO] main: [Status] Mode=NORMAL, Price=84745.8, Line=0 | WSS Latency: 5.3s
+[2025-12-01 19:28:12] [INFO] main: [Status] Mode=NORMAL, Price=84750.5, Line=0 | WSS Latency: 6.5s
+[2025-12-01 19:28:13] [INFO] main: [Status] Mode=NORMAL, Price=84750.5, Line=0 | WSS Latency: 7.7s
+[2025-12-01 19:28:14] [INFO] main: [Status] Mode=NORMAL, Price=84764.5, Line=0 | WSS Latency: 9.0s
+[2025-12-01 19:28:15] [INFO] main: [Status] Mode=NORMAL, Price=84764.4, Line=0 | WSS Latency: 10.2s
+[2025-12-01 19:28:16] [INFO] main: [Status] Mode=NORMAL, Price=84783.1, Line=0 | WSS Latency: 11.4s
+[2025-12-01 19:28:18] [INFO] main: [Status] Mode=NORMAL, Price=84772.8, Line=0 | WSS Latency: 12.7s
+[2025-12-01 19:28:19] [INFO] main: [Status] Mode=NORMAL, Price=84777.9, Line=0 | WSS Latency: 13.9s
+[2025-12-01 19:28:20] [INFO] main: [Status] Mode=NORMAL, Price=84779.8, Line=0 | WSS Latency: 15.1s
+[2025-12-01 19:28:21] [INFO] main: [Status] Mode=NORMAL, Price=84761.6, Line=0 | WSS Latency: 16.4s
+[2025-12-01 19:28:23] [INFO] main: [Status] Mode=NORMAL, Price=84756.3, Line=0 | WSS Latency: 17.6s
+[2025-12-01 19:28:24] [INFO] main: [Status] Mode=NORMAL, Price=84756.3, Line=0 | WSS Latency: 18.8s
+[2025-12-01 19:28:25] [INFO] main: [Status] Mode=NORMAL, Price=84756.2, Line=0 | WSS Latency: 20.1s
+[2025-12-01 19:28:26] [INFO] main: [Status] Mode=NORMAL, Price=84756.2, Line=0 | WSS Latency: 21.3s
+[2025-12-01 19:28:28] [INFO] main: [Status] Mode=NORMAL, Price=84756.3, Line=0 | WSS Latency: 22.5s
+[2025-12-01 19:28:29] [INFO] main: [Status] Mode=NORMAL, Price=84756.3, Line=0 | WSS Latency: 23.8s
+[2025-12-01 19:28:30] [INFO] main: [Status] Mode=NORMAL, Price=84756.3, Line=0 | WSS Latency: 25.0s
+[2025-12-01 19:28:31] [INFO] main: [Status] Mode=NORMAL, Price=84756.3, Line=0 | WSS Latency: 26.2s
+[2025-12-01 19:28:32] [INFO] main: [Status] Mode=NORMAL, Price=84756.2, Line=0 | WSS Latency: 27.5s
+[2025-12-01 19:28:34] [INFO] main: [Status] Mode=NORMAL, Price=84744.5, Line=0 | WSS Latency: 28.7s
+[2025-12-01 19:28:35] [INFO] main: [Status] Mode=NORMAL, Price=84740.0, Line=0 | WSS Latency: 29.9s
+[2025-12-01 19:36:59] [WARNING] exchange_api: 🚀 [REAL] Trade Mode
+[2025-12-01 19:36:59] [INFO] state_manager: 상태 로드: {'mode': 'NORMAL', 'p_center': 84792.0, 'p_gap': 378.7, 'atr_value': 0, 'total_balance': 600.0, 'last_long_line': 0, 'last_short_line': 0}
+[2025-12-01 19:36:59] [INFO] main: 🤖 Bybit Wave Bot v11.3 (Final WSS Trade Mode) Starting...
+[2025-12-01 19:36:59] [INFO] main: 🔌 WebSocket Private Stream initiated.
+[2025-12-01 19:37:00] [WARNING] exchange_api: Setup Error (set_leverage): bybit setLeverage() only support linear and inverse market
+[2025-12-01 19:37:00] [WARNING] exchange_api: Setup Error (set_position_mode): bybit {"retCode":10001,"retMsg":"inverse in uta cannot switch position mode","result":{},"retExtInfo":{},"time":1764617820818}
+[2025-12-01 19:37:00] [INFO] websocket_service: WS: Connecting to Private Stream...
+[2025-12-01 19:37:00] [INFO] websocket_service: WS: Sent auth message.
+[2025-12-01 19:37:00] [INFO] websocket_service: WS: Subscribed to position, order, and wallet streams.
+[2025-12-01 19:37:03] [WARNING] main: ⚠️ WSS Initial Snapshot Failed. Using REST fallback.
+[2025-12-01 19:37:03] [INFO] main: [Status] Mode=NORMAL, Price=84982.1, Line=1 | WSS Latency: 1764617822.8s
+[2025-12-01 19:37:03] [WARNING] main: 🧹 State Cleanup: Clearing old line memory.
+[2025-12-01 19:37:03] [INFO] main: 🆕 Start-up Entry (Initial Entry)
+[2025-12-01 19:37:03] [INFO] order_manager: [Order] Maker Only: Side=1, P=84982.1, Q=0.001
+[2025-12-01 19:37:38] [ERROR] websocket_service: WS Fatal Error: TimeoutError - . Reconnecting in 10s.
+[2025-12-01 19:37:48] [INFO] websocket_service: WS: Connecting to Private Stream...
+[2025-12-01 19:37:48] [INFO] websocket_service: WS: Sent auth message.
+[2025-12-01 19:37:48] [INFO] websocket_service: WS: Subscribed to position, order, and wallet streams.
+[2025-12-01 19:38:03] [WARNING] exchange_api: Setup Error (cancel_order): bybit {"retCode":110001,"retMsg":"order not exists or too late to cancel","result":{},"retExtInfo":{},"time":1764617883322}
+[2025-12-01 19:38:03] [INFO] order_manager: [Timeout] 잔량 0.0010개 취소 (Maker Only)
+[2025-12-01 19:38:03] [INFO] order_manager: [Order] Maker Only: Side=3, P=84982.1, Q=0.001
+[2025-12-01 19:38:38] [ERROR] websocket_service: WS Fatal Error: TimeoutError - . Reconnecting in 10s.
+[2025-12-01 19:38:48] [INFO] websocket_service: WS: Connecting to Private Stream...
+[2025-12-01 19:38:48] [INFO] websocket_service: WS: Sent auth message.
+[2025-12-01 19:38:48] [INFO] websocket_service: WS: Subscribed to position, order, and wallet streams.
+[2025-12-01 19:39:03] [INFO] order_manager: [Timeout] 잔량 0.0010개 취소 (Maker Only)
+[2025-12-01 19:39:06] [INFO] main: [Status] Mode=NORMAL, Price=84725.5, Line=0 | WSS Latency: 3.2s
+[2025-12-01 19:39:06] [WARNING] main: 🧹 State Cleanup: Clearing old line memory.
+[2025-12-01 19:39:06] [INFO] main: 🆕 Start-up Entry (Initial Entry)
+[2025-12-01 19:39:06] [INFO] order_manager: [Order] Maker Only: Side=1, P=84725.5, Q=0.001
