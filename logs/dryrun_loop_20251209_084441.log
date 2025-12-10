@@ -1,0 +1,18 @@
+[2025-12-09 08:44:42] [WARNING] exchange_api: [ExchangeAPI] config.SYMBOL=BTC/USDT:USDT 이지만, v10.1 명세에 따라 BTCUSDT 로 고정합니다.
+[2025-12-09 08:44:42] [WARNING] exchange_api: 🧪 [DRY_RUN] 모드로 ExchangeAPI 초기화 (실 거래 없음)
+[2025-12-09 08:44:42] [WARNING] state_manager: BotState JSON 스키마 차이 감지 (missing=set(), extra={'startup_done'}) → 호환 모드로 로드합니다.
+[2025-12-09 08:44:42] [INFO] state_manager: BotState 로드: mode=NORMAL wave_id=27413 p_center=91702.4 p_gap=206.7389285714285
+[2025-12-09 08:44:42] [INFO] escape_config: [escape_config] YAML loaded but no value changes detected.
+[2025-12-09 08:44:42] [WARNING] state_manager: BotState JSON 스키마 차이 감지 (missing=set(), extra={'startup_done'}) → 호환 모드로 로드합니다.
+[2025-12-09 08:44:42] [INFO] state_manager: BotState 로드: mode=NORMAL wave_id=27413 p_center=91702.4 p_gap=206.7389285714285
+Traceback (most recent call last):
+  File "/home/ubuntu/mexc_bot/main_v10.py", line 764, in <module>
+    raise SystemExit(main())
+                     ^^^^^^
+  File "/home/ubuntu/mexc_bot/main_v10.py", line 719, in main
+    bot = WaveBot()
+          ^^^^^^^^^
+  File "/home/ubuntu/mexc_bot/main_v10.py", line 122, in __init__
+    self.wave_fsm = WaveFSM(
+                    ^^^^^^^^
+TypeError: WaveFSM.__init__() missing 1 required positional argument: 'capital_manager'
