@@ -1,0 +1,99 @@
+--- a/strategy/feed_types.py
++++ b/strategy/feed_types.py
+@@ -1,6 +1,8 @@
+ from __future__ import annotations
+ from dataclasses import dataclass
+-from typing import Dict, List, Optional
++from typing import List, Optional
++
++from .state_model import BotState
+ 
+ 
+ # ------------------------------
+@@ -25,56 +27,40 @@
+ 
+ 
+ # ------------------------------
+-# BotState
+-# ------------------------------
+-
+-@dataclass
+-class BotState:
+-    """
+-    v10.1 Bybit Wave Bot 전략 상태 (Grid/Wave/Seed/Mode).
+-    """
+-    mode: str              # "NORMAL" | "ESCAPE" | "NEWS_BLOCK"
+-
+-    p_center: float
+-    p_gap: float
+-    atr_value: float
+-    wave_id: int
+-
+-    total_balance: float
+-
+-    long_seed_total: float
+-    short_seed_total: float
+-    reserve_balance: float
+-    unit_seed: float       # long_seed_total / 13
+-
+-    long_steps_filled: int   # 0~13 (실제 fill 기준)
+-    short_steps_filled: int
+-
+-    long_size: float
+-    short_size: float
+-    hedge_size: float
+-    long_pnl: float
+-    short_pnl: float
+-
+-    escape_active: bool
+-    news_block: bool
+-    line_memory_long: Dict[int, str]
+-    line_memory_short: Dict[int, str]
+-
+-
+-# ------------------------------
+ # StrategyFeed
+ # ------------------------------
+ 
+ @dataclass
+ class StrategyFeed:
+     """
+-    GridLogic / OrderManager / WaveFSM 모두가 공유하는 단일 feed.
++    WaveBot v10.1 공통 입력 Feed.
++
++    - GridLogic
++    - EscapeLogic
++    - OrderManager
++    - RiskManager
++    - main_v10
++
++    위 모든 컴포넌트는 전역 mutable 상태에 의존하지 않고,
++    이 StrategyFeed 인스턴스를 통해 필요한 정보를 주입받아야 한다.
+     """
++    # 현재 BTCUSDT 기준 가격
+     price: float
+-    atr_4h_42: float    # 4H ATR(42) = 7일 기준 변동성
+-    state: BotState
+-    open_orders: List[OrderInfo]
+-
+-    pnl_total: float         # long + short (+ hedge) PnL (USDT)
+-    pnl_total_pct: float     # pnl_total / state.total_balance
++    atr_4h_42: float    # 4H ATR(42) = 7일 기준 변동성
++
++    # 4H ATR(42) 값
++    # - Grid p_gap 산출
++    # - ESCAPE Vol-Spike 조건 등에 사용
++    atr_4h_42: float
++
++    # state_model.py 에 정의된 BotState (단일 진실 원천)
++    state: BotState
++
++    # 현재 활성화된 Bybit 주문 리스트 (내부 표준 OrderInfo 형태)
++    open_orders: List[OrderInfo]
++
++    # 계정 전체 PnL (USDT 기준, long/short/hedge 포함)
++    pnl_total: float
++
++    # pnl_total / Total_Balance_snap
++    # 일반적으로 state.total_balance(스냅샷) 를 분모로 사용
++    pnl_total_pct: float

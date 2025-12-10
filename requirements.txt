@@ -1,1 +1,4 @@
 websockets
+pandas
+ccxt
+ccxt

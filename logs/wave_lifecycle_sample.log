@@ -1,0 +1,9 @@
+[2025-12-09 10:20:29] [INFO] wave_fsm: [WaveFSM] pos_state: long=0.0050, short=0.0000, hedge=0.0000, flat=False, flat_ticks=0
+[2025-12-09 10:20:29] [INFO] grid_logic: [Feed] pos_for_fsm: long=0.000000 short=0.000000 hedge=0.000000 long_pnl=0.000000 short_pnl=0.000000
+[2025-12-09 10:20:29] [INFO] order_manager: [OrderManager] apply_decision(mode=NORMAL, cancels=0, entries=0, replaces=0)
+[2025-12-09 10:20:30] [INFO] wave_fsm: [WaveFSM] pos_state: long=0.0050, short=0.0000, hedge=0.0000, flat=False, flat_ticks=0
+[2025-12-09 10:20:30] [INFO] grid_logic: [Feed] pos_for_fsm: long=0.000000 short=0.000000 hedge=0.000000 long_pnl=0.000000 short_pnl=0.000000
+[2025-12-09 10:20:30] [INFO] order_manager: [OrderManager] apply_decision(mode=NORMAL, cancels=0, entries=0, replaces=0)
+[2025-12-09 10:20:32] [INFO] wave_fsm: [WaveFSM] pos_state: long=0.0050, short=0.0000, hedge=0.0000, flat=False, flat_ticks=0
+[2025-12-09 10:20:32] [INFO] grid_logic: [Feed] pos_for_fsm: long=0.000000 short=0.000000 hedge=0.000000 long_pnl=0.000000 short_pnl=0.000000
+[2025-12-09 10:20:32] [INFO] order_manager: [OrderManager] apply_decision(mode=NORMAL, cancels=0, entries=0, replaces=0)

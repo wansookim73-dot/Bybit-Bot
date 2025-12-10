@@ -1,0 +1,537 @@
+"""
+wave_bot.py - Orchestration layer for Bybit Wave Bot v10.1
+
+This module connects:
+- core.exchange_api.ExchangeAPI
+- core.websocket_service.WebsocketService
+- core.state_manager.StateManager
+- core.order_manager.OrderManager
+- strategy.wave_fsm.WaveFSM
+- strategy.grid_logic.GridLogic
+- strategy.escape_logic.EscapeLogic
+- strategy.risk_manager.RiskManager
+- strategy.hedge_runtime_v9_1.HedgeRuntime
+- strategy.liquidation_slicer.LiquidationSlicer
+
+It does NOT implement trading rules itself; those live in the strategy modules.
+"""
+
+from __future__ import annotations
+
+import time
+from dataclasses import dataclass
+from typing import List
+
+from core.exchange_api import ExchangeAPI
+from core.order_manager import OrderManager
+from core.state_manager import get_state_manager
+from core.websocket_service import WebsocketService
+from strategy.escape_logic import EscapeLogic
+from strategy.grid_logic import GridLogic
+from strategy.hedge_runtime_v9_1 import HedgeRuntime
+from strategy.liquidation_slicer import LiquidationSlicer
+from strategy.risk_manager import RiskManager
+from strategy.wave_fsm import WaveFSM
+from strategy.capital import CapitalManager
+from strategy.feed_types import StrategyFeed, BotState, OrderInfo
+from strategy.escape_runtime_bridge import run_escape_cycle
+from utils.logger import get_logger
+
+
+@dataclass
+class WaveBotContext:
+    """
+    Lightweight context object that bundles together all core components.
+    """
+    exchange: ExchangeAPI
+    ws_service: WebsocketService
+    state_manager: StateManager
+    order_manager: OrderManager
+    grid_logic: GridLogic
+    escape_logic: EscapeLogic
+    risk_manager: RiskManager
+    hedge_runtime: HedgeRuntime
+    slicer: LiquidationSlicer
+
+class WaveBot:
+    """
+    High-level orchestrator for Bybit Wave Bot v10.1.
+    """
+
+    def __init__(self) -> None:
+        self.logger = get_logger("wave_bot")
+
+        # Core I/O components
+        self.exchange = ExchangeAPI()
+        self.ws_service = WebsocketService(self.exchange)
+        self.state_manager = get_state_manager()
+        self.order_manager = OrderManager(self.exchange)
+
+        # Central capital manager (v10.1: 25/25/50, 13분할, seed 관리)
+        self.capital = CapitalManager()
+
+        # Strategy components
+        self.grid_logic = GridLogic(capital=self.capital)
+        self.escape_logic = EscapeLogic(capital=self.capital)
+        self.risk_manager = RiskManager()
+        self.hedge_runtime = HedgeRuntime()
+        self.slicer = LiquidationSlicer()
+
+        # WaveFSM
+        self.fsm = WaveFSM(
+            grid_logic=self.grid_logic,
+            escape_logic=self.escape_logic,
+            order_manager=self.order_manager,
+            state_manager=self.state_manager,
+        )
+
+        # Context bundle
+        self.ctx = WaveBotContext(
+            exchange=self.exchange,
+            ws_service=self.ws_service,
+            state_manager=self.state_manager,
+            order_manager=self.order_manager,
+            grid_logic=self.grid_logic,
+            escape_logic=self.escape_logic,
+            risk_manager=self.risk_manager,
+            hedge_runtime=self.hedge_runtime,
+            slicer=self.slicer,
+        )
+
+        self.logger.info("WaveBot v10.1 initialized.")
+
+    # --- Market state bridge -------------------------------------------------
+
+    # --- Market state bridge -------------------------------------------------
+
+    def _update_market_state(self) -> None:
+        """
+        ExchangeAPI.get_positions() / get_balance() 결과를
+        StateManager.state 에 반영한다.
+
+        DRY_RUN / REAL 공통:
+          - long_size / short_size / hedge_size
+          - total_balance / free_balance
+        """
+
+        def _safe_float(v) -> float:
+            try:
+                return float(v or 0.0)
+            except Exception:
+                return 0.0
+
+        # 현재 state 객체 (dict 또는 dataclass)
+        state_obj = self.state_manager.state
+
+        def _get_state(name: str, default: float = 0.0) -> float:
+            if isinstance(state_obj, dict):
+                return _safe_float(state_obj.get(name, default))
+            return _safe_float(getattr(state_obj, name, default))
+
+        def _set_state(name: str, value) -> None:
+            v = _safe_float(value)
+            if isinstance(state_obj, dict):
+                state_obj[name] = v
+            else:
+                try:
+                    setattr(state_obj, name, v)
+                except Exception:
+                    # 없는 필드면 무시
+                    pass
+
+        # ------------------------------------------------------------------
+        # 1) 포지션: ExchangeAPI.get_positions()
+        # ------------------------------------------------------------------
+        try:
+            positions = self.exchange.get_positions() or {}
+        except Exception as exc:
+            self.logger.warning(
+                "[WaveBot] _update_market_state get_positions failed: %s", exc
+            )
+            positions = {}
+
+        long_raw = positions.get("LONG") or positions.get("long") or {}
+        short_raw = positions.get("SHORT") or positions.get("short") or {}
+
+        long_size = _safe_float(long_raw.get("qty") or long_raw.get("size"))
+        short_size = _safe_float(short_raw.get("qty") or short_raw.get("size"))
+
+        self.logger.info(
+            "[WaveBot] pos from ExchangeAPI: long=%.6f short=%.6f",
+            long_size,
+            short_size,
+        )
+
+        # State 에 기록
+        _set_state("long_size", long_size)
+        _set_state("short_size", short_size)
+        # 아직 별도 hedge 포지션은 없으므로 기존 값 또는 0 유지
+        _set_state("hedge_size", _get_state("hedge_size", 0.0))
+
+        self.logger.info(
+            "[WaveBot] pos write: long=%.6f short=%.6f",
+            long_size,
+            short_size,
+        )
+
+        # ------------------------------------------------------------------
+        # 2) 잔고: ExchangeAPI.get_balance()
+        # ------------------------------------------------------------------
+        total_balance = _get_state("total_balance", 0.0)
+        free_balance = _get_state("free_balance", 0.0)
+
+        try:
+            balance = self.exchange.get_balance()
+            if isinstance(balance, dict):
+                total_balance = _safe_float(balance.get("total", total_balance))
+                free_balance = _safe_float(
+                    balance.get("available", balance.get("free", free_balance))
+                )
+        except Exception as exc:
+            self.logger.warning(
+                "[WaveBot] _update_market_state get_balance failed: %s", exc
+            )
+
+        _set_state("total_balance", total_balance)
+        _set_state("free_balance", free_balance)
+
+        self.logger.info(
+            "[WaveBot] balance snapshot: total=%.4f, free=%.4f",
+            total_balance,
+            free_balance,
+        )
+
+        # dict / dataclass 공통으로 같은 객체를 다시 state 에 넣어둔다.
+        self.state_manager.state = state_obj
+
+    # --- Lifecycle ---------------------------------------------------------
+
+    def start(self) -> None:
+        self.logger.info("Starting WebSocket services...")
+        try:
+            import asyncio
+            asyncio.get_event_loop().create_task(self.ws_service.start_services())
+        except RuntimeError:
+            self.logger.info("No running event loop for WS; skipping auto-start.")
+        self.logger.info("WebSocket services start requested.")
+
+    def shutdown(self) -> None:
+        self.logger.info("Shutting down WaveBot...")
+        try:
+            if hasattr(self.ws_service, "running"):
+                self.ws_service.running = False
+        finally:
+            self.logger.info("WaveBot shutdown complete.")
+
+    # --- Helpers -----------------------------------------------------------
+
+    def _build_bot_state(self) -> BotState:
+        """
+        현재 self.state_manager.state 를 기반으로 BotState 를 생성한다.
+
+        - state_manager.state 는 dict / dataclass 모두 허용
+        - 포지션(long_size / short_size)은 항상 ExchangeAPI.get_positions() 에서
+          직접 다시 읽어서, StrategyFeed.state 에 실포지션이 들어가도록 보장한다.
+        """
+        raw_state = self.state_manager.state
+
+        # dict / dataclass 공통 처리
+        if isinstance(raw_state, dict):
+            s = dict(raw_state)
+        else:
+            s = dict(getattr(raw_state, "__dict__", {}))
+
+        # 0) 현재 실포지션으로 long/short size 필드 강제 동기화
+        try:
+            positions = self.exchange.get_positions() or {}
+            long_pos = positions.get("LONG", {}) or {}
+            short_pos = positions.get("SHORT", {}) or {}
+
+            s["long_size"] = float(long_pos.get("qty", 0.0) or 0.0)
+            s["short_size"] = float(short_pos.get("qty", 0.0) or 0.0)
+
+            self.logger.info(
+                "[WaveBot] _build_bot_state positions: long=%.6f short=%.6f",
+                s["long_size"],
+                s["short_size"],
+            )
+        except Exception as exc:
+            self.logger.warning(
+                "[WaveBot] _build_bot_state: get_positions() failed: %s",
+                exc,
+            )
+
+        # 1) 잔고 / 라인 메모리 등은 state 기반 계산
+        total_balance = float(s.get("total_balance", 0.0) or 0.0)
+
+        # Line memory (Wave 단위 FSM용)
+        raw_lm_long = s.get("line_memory_long", {}) or {}
+        raw_lm_short = s.get("line_memory_short", {}) or {}
+
+        line_memory_long: dict[int, str] = {}
+        for k, v in raw_lm_long.items():
+            try:
+                idx = int(k)
+            except Exception:
+                continue
+            line_memory_long[idx] = str(v or "FREE")
+
+        line_memory_short: dict[int, str] = {}
+        for k, v in raw_lm_short.items():
+            try:
+                idx = int(k)
+            except Exception:
+                continue
+            line_memory_short[idx] = str(v or "FREE")
+
+        long_pnl = float(s.get("long_pnl", 0.0) or 0.0)
+        short_pnl = float(s.get("short_pnl", 0.0) or 0.0)
+
+        # v10.1-7D-B seed 구조 (25/25/50, 13-step, 안전계수 0.9)
+        long_seed_total = total_balance * 0.25
+        short_seed_total = total_balance * 0.25
+        reserve_balance = total_balance * 0.50
+
+        effective_long_seed = long_seed_total * 0.9
+        effective_short_seed = short_seed_total * 0.9
+
+        unit_seed = effective_long_seed / 13.0 if effective_long_seed > 0 else 0.0
+
+        bot_state = BotState(
+            mode=s.get("mode", "NORMAL"),
+            p_center=float(s.get("p_center", 0.0) or 0.0),
+            p_gap=float(s.get("p_gap", 0.0) or 0.0),
+            atr_value=float(s.get("atr_value", 0.0) or 0.0),
+            wave_id=int(s.get("wave_id", 0) or 0),
+
+            total_balance=total_balance,
+            long_seed_total=long_seed_total,
+            short_seed_total=short_seed_total,
+            reserve_balance=reserve_balance,
+            unit_seed=unit_seed,
+
+            long_steps_filled=int(s.get("long_steps_filled", 0) or 0),
+            short_steps_filled=int(s.get("short_steps_filled", 0) or 0),
+
+            long_size=float(s.get("long_size", 0.0) or 0.0),
+            short_size=float(s.get("short_size", 0.0) or 0.0),
+            hedge_size=float(s.get("hedge_size", 0.0) or 0.0),
+            long_pnl=long_pnl,
+            short_pnl=short_pnl,
+
+            escape_active=bool(s.get("escape_active", False)),
+            news_block=bool(s.get("news_block", False)),
+            line_memory_long=line_memory_long,
+            line_memory_short=line_memory_short,
+        )
+
+        return bot_state
+
+    def _build_open_orders(self) -> List[OrderInfo]:
+        """
+        ExchangeAPI.get_open_orders() 결과(ccxt raw dict 리스트)를
+        StrategyFeed.OrderInfo 리스트로 변환한다.
+        """
+        raw_orders = []
+        try:
+            raw_orders = self.exchange.get_open_orders()
+        except Exception as exc:
+            self.logger.warning("[WaveBot] get_open_orders() failed: %s", exc)
+            return []
+
+        orders: List[OrderInfo] = []
+        for o in raw_orders or []:
+            try:
+                order_id = str(o.get("id") or o.get("orderId") or "")
+                side_raw = str(o.get("side", "")).upper()
+                side = "BUY" if side_raw == "BUY" else "SELL"
+                price = float(o.get("price", 0.0) or 0.0)
+                qty = float(o.get("amount", 0.0) or 0.0)
+                filled_qty = float(o.get("filled", 0.0) or 0.0)
+                reduce_only = bool(o.get("reduceOnly", False))
+                order_type = str(o.get("type", "") or "")
+                tif = str(o.get("timeInForce", "") or "")
+                tag = None
+
+                info = o.get("info") or {}
+                if isinstance(info, dict):
+                    tag = info.get("tag") or info.get("orderLinkId") or None
+
+                ts = o.get("timestamp") or o.get("createdTime") or 0
+                try:
+                    created_ts = float(ts) / 1000.0 if ts else 0.0
+                except Exception:
+                    created_ts = 0.0
+
+                orders.append(
+                    OrderInfo(
+                        order_id=order_id,
+                        side=side,
+                        price=price,
+                        qty=qty,
+                        filled_qty=filled_qty,
+                        reduce_only=reduce_only,
+                        order_type=order_type,
+                        time_in_force=tif,
+                        tag=tag,
+                        created_ts=created_ts,
+                    )
+                )
+            except Exception as exc:
+                self.logger.warning(
+                    "[WaveBot] Failed to convert raw order %r: %s", o, exc
+                )
+                continue
+
+        return orders
+
+    def _compute_pnl(self, price: float) -> tuple[float, float]:
+        """
+        현재 포지션 정보 + 가격을 이용해 pnl_total, pnl_total_pct 를 계산한다.
+        """
+        total_pnl = 0.0
+        pnl_pct = 0.0
+
+        if price <= 0:
+            return total_pnl, pnl_pct
+
+        try:
+            positions = self.exchange.get_positions()
+        except Exception as exc:
+            self.logger.warning("[WaveBot] get_positions() failed in _compute_pnl: %s", exc)
+            return total_pnl, pnl_pct
+
+        long_pos = positions.get("LONG", {}) or {}
+        short_pos = positions.get("SHORT", {}) or {}
+
+        long_qty = float(long_pos.get("qty", 0.0) or 0.0)
+        long_avg = float(long_pos.get("avg_price", 0.0) or 0.0)
+        short_qty = float(short_pos.get("qty", 0.0) or 0.0)
+        short_avg = float(short_pos.get("avg_price", 0.0) or 0.0)
+
+        long_pnl = (price - long_avg) * long_qty if long_qty > 0 and long_avg > 0 else 0.0
+        short_pnl = (short_avg - price) * short_qty if short_qty > 0 and short_avg > 0 else 0.0
+
+        total_pnl = long_pnl + short_pnl
+
+        total_balance = float(self.state_manager.state.get("total_balance", 0.0))
+        if total_balance > 0:
+            pnl_pct = total_pnl / total_balance
+
+        return total_pnl, pnl_pct
+
+    def _build_strategy_feed(self) -> StrategyFeed:
+        """
+        현재 StateManager.snapshot() + BotState + ExchangeAPI 포지션으로
+        StrategyFeed 를 구성한다.
+
+        - state        : BotState (long_size/short_size 포함)
+        - open_orders  : ExchangeAPI.get_open_orders()
+        - pnl_total    : _compute_pnl(price)
+        - feed.positions : LONG/SHORT 실 포지션 (검증용)
+        """
+        # StateManager snapshot (BotState)
+        snapshot = self.state_manager.snapshot()
+        bot_state = self._build_bot_state()
+        open_orders = self._build_open_orders()
+
+        price = snapshot.price
+        pnl_total, pnl_total_pct = self._compute_pnl(price)
+
+        feed = StrategyFeed(
+            price=price,
+            atr_4h_42=float(self.state_manager.state.get("atr_value", 0.0)),
+            state=bot_state,
+            open_orders=open_orders,
+            pnl_total=pnl_total,
+            pnl_total_pct=pnl_total_pct,
+        )
+
+        # ------------------------------------------------------------------
+        # ExchangeAPI 포지션을 그대로 feed.positions 에 넣어준다.
+        # GridLogic / WaveFSM 에서 검증용으로 사용할 수 있다.
+        # ------------------------------------------------------------------
+        def _safe_float(v) -> float:
+            try:
+                return float(v or 0.0)
+            except Exception:
+                return 0.0
+
+        try:
+            positions = self.exchange.get_positions() or {}
+        except Exception as exc:
+            self.logger.warning(
+                "[WaveBot] get_positions() failed in _build_strategy_feed: %s", exc
+            )
+            positions = {}
+
+        long_raw = positions.get("LONG") or positions.get("long") or {}
+        short_raw = positions.get("SHORT") or positions.get("short") or {}
+
+        feed.positions = {
+            "long_size": _safe_float(long_raw.get("qty") or long_raw.get("size")),
+            "short_size": _safe_float(short_raw.get("qty") or short_raw.get("size")),
+            "hedge_size": 0.0,
+            # 참고용: BotState 에 들어간 값도 같이 남겨둔다.
+            "state_long_size": _safe_float(getattr(bot_state, "long_size", 0.0)),
+            "state_short_size": _safe_float(getattr(bot_state, "short_size", 0.0)),
+        }
+
+        self.logger.info(
+            "[WaveBot] StrategyFeed.state: long=%.6f short=%.6f (positions LONG=%.6f SHORT=%.6f)",
+            _safe_float(getattr(bot_state, "long_size", 0.0)),
+            _safe_float(getattr(bot_state, "short_size", 0.0)),
+            feed.positions.get("long_size", 0.0),
+            feed.positions.get("short_size", 0.0),
+        )
+
+        return feed
+
+    # --- Main loop --------------------------------------------------------
+
+    def loop_once(self) -> None:
+        """
+        Execute a single iteration of the main trading loop.
+        """
+        # ESCAPE/FULL_EXIT/Hedge 1틱 평가 (에러 발생 시 루프는 계속 진행)
+        try:
+            decision = run_escape_cycle(
+                capital=self.capital,
+                symbol="BTCUSDT",
+                state_mgr=self.state_manager,
+                exch=self.exchange,
+                order_mgr=self.order_manager,
+            )
+        except Exception as exc:
+            self.logger.warning("[WaveBot] run_escape_cycle() failed: %s", exc)
+            decision = None
+
+        # 0) 시장 상태 갱신 (포지션/잔고 → StateManager.state)
+        self._update_market_state()
+
+        # 1) StrategyFeed 구성
+        feed = self._build_strategy_feed()
+        now_ts = time.time()
+
+        # 2) WaveFSM 한 틱 실행
+        self.fsm.tick(feed, now_ts)
+
+        # 3) HedgeRuntime 한 틱 실행
+        try:
+            self.hedge_runtime.on_tick(
+                state=self.state_manager.state,
+                decision=None,
+                ctx=self.ctx,
+            )
+        except Exception as exc:
+            self.logger.warning("[WaveBot] HedgeRuntime.on_tick() failed: %s", exc)
+
+        self.logger.debug(
+            "loop_once completed (price=%.2f, wave_id=%s, mode=%s, open_orders=%d, pnl=%.2f, pnl_pct=%.4f)",
+            feed.price,
+            feed.state.wave_id,
+            feed.state.mode,
+            len(feed.open_orders),
+            feed.pnl_total,
+            feed.pnl_total_pct,
+        )

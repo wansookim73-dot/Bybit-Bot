@@ -1,0 +1,19 @@
+# v10.1 Escape / FULL_EXIT / Hedge Threshold Config (기본 preset)
+full_exit_pnl_pct: 0.02   # +2% 이상 전체 계좌 이익 시 FULL_EXIT
+
+escape:
+  on_pnl_pct: 0.04        # -4% 이하 손실이면 ESCAPE (계좌 기준)
+  off_pnl_pct: 0.015      # -1.5% 이상 회복 시 ESCAPE 해제 고려
+
+  on_seed_exposure_ratio: 1.0   # main_notional >= side_seed_total (seed의 100% 노출)
+  off_max_exposure_ratio: 0.5   # ESCAPE 해제 시 노출은 seed의 50% 이하
+
+  atr_spike_mult: 2.0     # ATR 현재값이 평소 대비 2배 이상이면 Vol Spike
+  atr_off_mult: 1.3       # ATR이 평소의 1.3배 이하로 진정되면 허용
+
+  cooldown_sec: 300       # ESCAPE ON 후 최소 5분 유지
+
+hedge:
+  be_tolerance_pct: 0.001         # -0.1% 이상이면 BE로 간주
+  min_notional_usdt: 200.0        # 200 USDT 미만 헷지는 스킵
+  entry_min_threshold: 0.000001   # 최소 qty threshold (BTC)

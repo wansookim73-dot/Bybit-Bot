@@ -35,3 +35,12 @@ def setup_logger(name: str = "BYBIT_BOT") -> logging.Logger:
     return logger
 
 logger = setup_logger()
+
+def get_logger(name: str = "BYBIT_BOT") -> logging.Logger:
+    """
+    v10.1 아키텍처 호환용 래퍼.
+
+    - 기존 코드: get_logger("wave_bot"), get_logger("hedge_runtime_v9_1") 등 사용
+    - 내부에서는 setup_logger(name)를 그대로 호출한다.
+    """
+    return setup_logger(name)

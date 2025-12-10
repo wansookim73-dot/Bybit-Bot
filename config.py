@@ -7,19 +7,19 @@ load_dotenv()
 # [보안] API Key는 환경변수 또는 아래에 직접 입력 (문자열)
 BYBIT_API_KEY = "DEi5nK4G4zjj43B9pA"
 BYBIT_SECRET_KEY = "xDI1GoZz3KfhG3m5SggS4CnDE6BMYpngFOPY"
-DRY_RUN = False  # False: 실전 매매, True: 로그만 출력
+DRY_RUN = True  # False: 실전 매매, True: 로그만 출력
 
 # === 2. 거래 기본 설정 ===
 EXCHANGE_ID = "bybit"
-SYMBOL = "BTC/USDT"
+SYMBOL = "BTC/USDT:USDT"
 LEVERAGE = 7
 OPEN_TYPE = "cross"  # CCXT Bybit default
 
 # === 3. 자금 관리 & 전략 파라미터 ===
 INITIAL_SEED_USDT = 600.0
-GRID_SPLIT_COUNT = 20
-ATR_MULTIPLIER = 0.3
-MIN_GRID_GAP = 150.0  # 최소 그리드 간격 (USDT)
+GRID_SPLIT_COUNT = 13
+ATR_MULTIPLIER = 0.15
+MIN_GRID_GAP = 100.0  # 최소 그리드 간격 (USDT)
 
 # [안전장치 v9.1]
 MAX_ALLOCATION_RATE = 0.25   # 방향별 최대 할당 비율 (25%)
