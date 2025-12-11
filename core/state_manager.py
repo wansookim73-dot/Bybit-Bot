@@ -360,6 +360,8 @@ class StateManager:
         return getattr(self.state, key, default)
 
     def update(self, key: str, value: Any) -> None:
+        if hasattr(self, "logger") and self.logger is not None:
+            self.logger.info("[StateManager] update: %s = %s", key, value)
         """
         (레거시 호환용) 단일 BotState 필드 업데이트 후 저장.
         - 존재하지 않는 키는 무시하고 경고만 로그.

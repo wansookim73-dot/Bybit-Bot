@@ -61,6 +61,12 @@ SHORT_LINE_MAX = +12
 OVERLAP_MIN = -7
 OVERLAP_MAX = +7
 
+# DCA 발동 최소 손실 기준 (USDT 단위)
+#   예) 3.0 으로 설정하면, PnL 이 -3 USDT 이하일 때만 DCA 시도
+#   기본값은 0.0 → 기존 동작과 완전히 동일
+DCA_MIN_LOSS_USDT_LONG: float = 0.0   # 롱 기준
+DCA_MIN_LOSS_USDT_SHORT: float = 0.0  # 숏 기준
+
 
 # ------------------------------
 # Helper dataclasses
@@ -179,73 +185,211 @@ def detect_touched_lines(
 
     return touched
 
-
 def _extract_position_info(feed: StrategyFeed) -> Dict[str, Any]:
     """
     StrategyFeed / BotState / (옵션) feed.positions 에서
-    현재 계좌 포지션 정보를 읽어온다.
+    현재 계좌 포지션 정보를 추출한다.
 
     - dict / dataclass 모두 지원
-    - KeyError 방지를 위해 항상 dict.get() 사용
+    - KeyError 방지를 위해 항상 dict.get() / getattr(..., default) 사용
     """
+
     logger = get_logger("grid_logic")
+
+    # 안전한 float 변환 헬퍼
+    def _to_float(value: Any, default: float = 0.0) -> float:
+        try:
+            if value is None:
+                return default
+            return float(value)
+        except (TypeError, ValueError):
+            return default
 
     long_size = short_size = hedge_size = 0.0
     long_pnl = short_pnl = 0.0
 
     # 1) 우선 feed.positions 가 있으면 그것을 사용
     pos_from_feed = getattr(feed, "positions", None)
+    # BotState 도 같이 받아둔다 (PnL 합치기용)
+    state = getattr(feed, "state", None)
+
     if isinstance(pos_from_feed, dict):
-        long_size = float(pos_from_feed.get("long_size", 0.0) or 0.0)
-        short_size = float(pos_from_feed.get("short_size", 0.0) or 0.0)
-        hedge_size = float(pos_from_feed.get("hedge_size", 0.0) or 0.0)
-        long_pnl = float(pos_from_feed.get("long_pnl", 0.0) or 0.0)
-        short_pnl = float(pos_from_feed.get("short_pnl", 0.0) or 0.0)
+        long_size = _to_float(pos_from_feed.get("long_size", 0.0))
+        short_size = _to_float(pos_from_feed.get("short_size", 0.0))
+        hedge_size = _to_float(pos_from_feed.get("hedge_size", 0.0))
+
+        # 1-A) feed.positions 에 PnL 이 있으면 우선 사용
+        long_pnl = _to_float(pos_from_feed.get("long_pnl", 0.0))
+        short_pnl = _to_float(pos_from_feed.get("short_pnl", 0.0))
+
+        # 1-B) 그런데 여전히 0 이면, BotState 의 PnL 로 덮어쓴다
+        if state is not None and (abs(long_pnl) < 1e-9 or abs(short_pnl) < 1e-9):
+            if isinstance(state, dict):
+                if abs(long_pnl) < 1e-9:
+                    long_pnl = _to_float(state.get("long_pnl", long_pnl))
+                if abs(short_pnl) < 1e-9:
+                    short_pnl = _to_float(state.get("short_pnl", short_pnl))
+            else:
+                if abs(long_pnl) < 1e-9:
+                    long_pnl = _to_float(getattr(state, "long_pnl", long_pnl))
+                if abs(short_pnl) < 1e-9:
+                    short_pnl = _to_float(getattr(state, "short_pnl", short_pnl))
+
     else:
         # 2) fallback: feed.state (BotState dataclass 또는 dict)
-        state = feed.state
         if isinstance(state, dict):
-            long_size = float(state.get("long_size", 0.0) or 0.0)
-            short_size = float(state.get("short_size", 0.0) or 0.0)
-            hedge_size = float(state.get("hedge_size", 0.0) or 0.0)
-            long_pnl = float(state.get("long_pnl", 0.0) or 0.0)
-            short_pnl = float(state.get("short_pnl", 0.0) or 0.0)
+            long_size = _to_float(state.get("long_size", 0.0))
+            short_size = _to_float(state.get("short_size", 0.0))
+            hedge_size = _to_float(state.get("hedge_size", 0.0))
+            long_pnl = _to_float(state.get("long_pnl", 0.0))
+            short_pnl = _to_float(state.get("short_pnl", 0.0))
         else:
-            long_size = float(getattr(state, "long_size", 0.0) or 0.0)
-            short_size = float(getattr(state, "short_size", 0.0) or 0.0)
-            hedge_size = float(getattr(state, "hedge_size", 0.0) or 0.0)
-            long_pnl = float(getattr(state, "long_pnl", 0.0) or 0.0)
-            short_pnl = float(getattr(state, "short_pnl", 0.0) or 0.0)
+            long_size = _to_float(getattr(state, "long_size", 0.0))
+            short_size = _to_float(getattr(state, "short_size", 0.0))
+            hedge_size = _to_float(getattr(state, "hedge_size", 0.0))
+            long_pnl = _to_float(getattr(state, "long_pnl", 0.0))
+            short_pnl = _to_float(getattr(state, "short_pnl", 0.0))
 
-    # [DRY-RUN TEST ONLY]
-    # DRY_RUN 환경에서 실 포지션이 항상 0이기 때문에,
-    # WaveFSM 테스트와 동일하게 GridLogic에도 "가짜 포지션"을 주입한다.
+    # ------------------------------------------------------------------
+    # 3) Fallback: 사이즈는 있는데 long_pnl / short_pnl 이 0 으로만 올 때
+    #    => 현재가(마크/라스트)와 평단가로부터 직접 PnL 계산
+    #    (DCA / ESCAPE 로직에서 PnL 을 못 잡는 현상 대응)
+    # ------------------------------------------------------------------
+    has_size = (abs(long_size) > 0.0) or (abs(short_size) > 0.0)
+    pnl_missing = (abs(long_pnl) < 1e-9 and abs(short_pnl) < 1e-9)
+
+    if has_size and pnl_missing:
+        # 3-1) 현재가(마크 프라이스 / 라스트 프라이스) 추정
+        mark_price = 0.0
+        candidate_prices: list[float] = []
+
+        # StrategyFeed 에 직접 붙어 있을 가능성이 있는 필드들
+        for attr in (
+            "mark_price",
+            "last_price",
+            "last",
+            "price",
+            "mid_price",
+            "mid",
+            "close",
+            "best_bid",
+            "best_ask",
+            "bid",
+            "ask",
+        ):
+            v = getattr(feed, attr, None)
+            candidate_prices.append(_to_float(v, 0.0))
+
+        # ticker dict 안에 들어 있을 수도 있음
+        ticker = getattr(feed, "ticker", None)
+        if isinstance(ticker, dict):
+            for key in (
+                "mark_price",
+                "markPrice",
+                "last",
+                "close",
+                "price",
+                "mid",
+                "bid",
+                "ask",
+            ):
+                candidate_prices.append(_to_float(ticker.get(key), 0.0))
+
+        # 양수인 값 하나만 선택
+        for p in candidate_prices:
+            if p and p > 0:
+                mark_price = p
+                break
+
+        # 3-2) 진입가(평단) 추정
+        long_avg = short_avg = 0.0
+        src_for_avg = pos_from_feed if isinstance(pos_from_feed, dict) else getattr(feed, "state", None)
+
+        def _get_avg(src: Any, prefix: str) -> float:
+            """
+            prefix = "long" 또는 "short"
+            long_avg / long_entry / long_price … 등 여러 이름을 최대한 지원
+            """
+            if isinstance(src, dict):
+                for key in (
+                    f"{prefix}_avg",
+                    f"{prefix}_avg_price",
+                    f"{prefix}_entry",
+                    f"{prefix}_entry_price",
+                    f"{prefix}_price",
+                ):
+                    if key in src:
+                        return _to_float(src.get(key), 0.0)
+            else:
+                for attr in (
+                    f"{prefix}_avg",
+                    f"{prefix}_avg_price",
+                    f"{prefix}_entry",
+                    f"{prefix}_entry_price",
+                    f"{prefix}_price",
+                ):
+                    if hasattr(src, attr):
+                        return _to_float(getattr(src, attr, 0.0), 0.0)
+            return 0.0
+
+        long_avg = _get_avg(src_for_avg, "long")
+        short_avg = _get_avg(src_for_avg, "short")
+
+        # 3-3) PnL 직접 계산 (Bybit USDT Perp 기준)
+        #  - 롱  : (mark - entry) * size
+        #  - 숏  : (entry - mark) * size
+        if mark_price > 0.0:
+            if abs(long_size) > 0.0 and long_avg > 0.0:
+                long_pnl = (mark_price - long_avg) * long_size
+            if abs(short_size) > 0.0 and short_avg > 0.0:
+                short_pnl = (short_avg - mark_price) * short_size
+
+            # 디버그용 (INFO 로그는 그대로 유지)
+            logger.debug(
+                "[Feed] Fallback PnL calc: mark=%.2f long_avg=%.2f short_avg=%.2f long_pnl=%.6f short_pnl=%.6f",
+                mark_price,
+                long_avg,
+                short_avg,
+                long_pnl,
+                short_pnl,
+            )
+
+    # ------------------------------------------------------------------
+    # 4) [DRY-RUN TEST ONLY] 가짜 포지션 주입 (기존 로직 그대로 유지)
+    # ------------------------------------------------------------------
     try:
         fake_pos_flag = bool(int(os.getenv("FSM_FAKE_POS", "0")))
-        fake_pos_qty = float(os.getenv("FSM_FAKE_POS_QTY", "0.005"))
+        fake_pos_qty = _to_float(os.getenv("FSM_FAKE_POS_QTY", "0.005"))
     except Exception:
         fake_pos_flag = False
         fake_pos_qty = 0.0
 
     if fake_pos_flag and long_size == 0 and short_size == 0 and hedge_size == 0:
-        long_size = fake_pos_qty    # 가짜 롱 포지션
+        # 테스트용: 가짜 롱 포지션
+        long_size = fake_pos_qty
         short_size = 0.0
         hedge_size = 0.0
 
-    # [DRY-RUN TEST ONLY] fake PnL injection for EXIT/ESCAPE test
-    # 환경 변수 FSM_FAKE_PNL=1 이고, 포지션이 있고(long_size>0 등) 실제 PnL이 0일 때만,
-    # long_pnl / short_pnl 에 테스트용 값을 넣어 EXIT/ESCAPE 로직을 밟아본다.
+    # ------------------------------------------------------------------
+    # 5) [DRY-RUN TEST ONLY] 가짜 PnL 주입 (EXIT/ESCAPE 테스트)
+    # ------------------------------------------------------------------
     try:
         fake_pnl_flag = bool(int(os.getenv("FSM_FAKE_PNL", "0")))
-        fake_pnl_value = float(os.getenv("FSM_FAKE_PNL_VALUE", "0.0"))
+        fake_pnl_value = _to_float(os.getenv("FSM_FAKE_PNL_VALUE", "0.0"))
     except Exception:
         fake_pnl_flag = False
         fake_pnl_value = 0.0
 
+    # 기존 동작 그대로: 원래 long_pnl 이 0 일 때만 덮어씀
     if fake_pnl_flag and long_size > 0 and long_pnl == 0.0:
-        # 롱 포지션 기준 테스트: 양수면 익절, 음수면 손절/ESCAPE 쪽을 강제로 밟아볼 수 있다.
+        # 롱 포지션 기준 테스트:
+        #  - 양수면 익절 시나리오
+        #  - 음수면 손절/ESCAPE 시나리오
         long_pnl = fake_pnl_value
 
+    # ------------------------------------------------------------------
+    # 6) 최종 dict 구성 + 로그
+    # ------------------------------------------------------------------
     pos_info: Dict[str, Any] = {
         "long_size": long_size,
         "short_size": short_size,
@@ -264,7 +408,6 @@ def _extract_position_info(feed: StrategyFeed) -> Dict[str, Any]:
     )
 
     return pos_info
-
 
 def _compute_profit_line_index(pnl: float, size: float, p_gap: float) -> int:
     """
@@ -608,6 +751,19 @@ class GridLogic:
         startup_done = bool(getattr(state, "startup_done", False))
         startup_entries_created = 0
 
+        # ✅ 이미 해당 방향 포지션이 있으면 Start-up 금지
+        has_long_pos = (long_size != 0.0)
+        has_short_pos = (short_size != 0.0)
+
+        # ✅ 이미 grid_index=0 에 스타트업 Maker 가 걸려 있으면 Start-up 금지
+        # grid_orders_by_side_idx 는 위에서 만든 dict[(side, idx)] = [OrderInfo...]
+        existing_long_startup = bool(
+            grid_orders_by_side_idx.get(("BUY", 0), [])
+        )
+        existing_short_startup = bool(
+            grid_orders_by_side_idx.get(("SELL", 0), [])
+        )
+
         if (
             wave_id > 0
             and not startup_done
@@ -620,6 +776,7 @@ class GridLogic:
                 and k_long == 0
                 and not escape_long_active
                 and seed_long.can_open_unit
+                and not existing_long_startup  # 이미 Maker 없을 때만
             ):
                 long_idx = 0
                 # LONG 허용 라인 범위 내에서만
@@ -692,7 +849,6 @@ class GridLogic:
                     startup_entries_created,
                 )
 
-        # ------------------------------
         # 3) DCA (Scale-in) – 4 조건 (3.2.4)
         # ------------------------------
         # LONG DCA:
@@ -700,12 +856,14 @@ class GridLogic:
         #  (2) 손실 방향(가격 하락)으로 새로운 라인 터치
         #  (3) 해당 라인 line_state == FREE
         #  (4) remain_seed >= unit_seed (last-chunk)
+        #  (+) |long_pnl| >= DCA_MIN_LOSS_USDT_LONG (최소 손실 기준)
         if (
             long_pnl < 0.0
             and long_size != 0.0
             and price_now < price_prev
             and not escape_long_active
             and seed_long.can_open_unit
+            and (-long_pnl) >= DCA_MIN_LOSS_USDT_LONG
         ):
             remaining_seed = seed_long.remain_seed
             available_steps = max(0, SPLIT_COUNT - seed_long.k_dir)
@@ -745,12 +903,14 @@ class GridLogic:
                     available_steps -= 1
 
         # SHORT DCA (손실 방향: 가격 상승)
+        #  (+) |short_pnl| >= DCA_MIN_LOSS_USDT_SHORT (최소 손실 기준)
         if (
             short_pnl < 0.0
             and short_size != 0.0
             and price_now > price_prev
             and not escape_short_active
             and seed_short.can_open_unit
+            and (-short_pnl) >= DCA_MIN_LOSS_USDT_SHORT
         ):
             remaining_seed = seed_short.remain_seed
             available_steps = max(0, SPLIT_COUNT - seed_short.k_dir)
@@ -801,6 +961,28 @@ class GridLogic:
         long_tp_max_index = int(getattr(state, "long_tp_max_index", 0) or 0)
         short_tp_max_index = int(getattr(state, "short_tp_max_index", 0) or 0)
 
+        # TP 디버그: 현재 상태 스냅샷
+        logger.info(
+            "[TP-DBG] pre: price_now=%.2f p_gap=%.2f "
+            "long_size=%.6f long_pnl=%.6f profit_idx_long=%d long_tp_active=%s long_tp_max_index=%d "
+            "short_size=%.6f short_pnl=%.6f profit_idx_short=%d short_tp_active=%s short_tp_max_index=%d "
+            "escape_long_active=%s escape_short_active=%s",
+            price_now,
+            p_gap,
+            long_size,
+            long_pnl,
+            profit_idx_long,
+            long_tp_active,
+            long_tp_max_index,
+            short_size,
+            short_pnl,
+            profit_idx_short,
+            short_tp_active,
+            short_tp_max_index,
+            bool(escape_long_active),
+            bool(escape_short_active),
+        )
+
         # LONG TP 단계 진입 (profit_line_index 가 처음으로 3 이상이 되는 순간)
         if (
             long_size != 0.0
@@ -812,6 +994,11 @@ class GridLogic:
             long_tp_max_index = profit_idx_long - 1
             decision.state_updates["long_tp_active"] = True
             decision.state_updates["long_tp_max_index"] = long_tp_max_index
+            logger.info(
+                "[TP-DBG] LONG TP 활성화: profit_idx_long=%d -> long_tp_max_index=%d",
+                profit_idx_long,
+                long_tp_max_index,
+            )
 
         # SHORT TP 단계 진입
         if (
@@ -824,6 +1011,11 @@ class GridLogic:
             short_tp_max_index = profit_idx_short - 1
             decision.state_updates["short_tp_active"] = True
             decision.state_updates["short_tp_max_index"] = short_tp_max_index
+            logger.info(
+                "[TP-DBG] SHORT TP 활성화: profit_idx_short=%d -> short_tp_max_index=%d",
+                profit_idx_short,
+                short_tp_max_index,
+            )
 
         # LONG TP 실행
         if (
@@ -870,6 +1062,12 @@ class GridLogic:
                             )
                         )
                         long_tp_max_index = idx
+                        logger.info(
+                            "[TP-DBG] LONG TP 주문 생성: idx=%d price_tp=%.2f qty_tp=%.6f",
+                            idx,
+                            price_tp,
+                            qty_tp,
+                        )
 
                 decision.state_updates["long_tp_max_index"] = long_tp_max_index
 
@@ -916,6 +1114,12 @@ class GridLogic:
                             )
                         )
                         short_tp_max_index = idx
+                        logger.info(
+                            "[TP-DBG] SHORT TP 주문 생성: idx=%d price_tp=%.2f qty_tp=%.6f",
+                            idx,
+                            price_tp,
+                            qty_tp,
+                        )
 
                 decision.state_updates["short_tp_max_index"] = short_tp_max_index
 
