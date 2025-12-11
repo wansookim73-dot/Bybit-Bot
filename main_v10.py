@@ -473,80 +473,160 @@ class WaveBot:
     # --------------------------------------------------------
     # Positions/Balance → BotState 동기화
     # --------------------------------------------------------
+    # --------------------------------------------------------
+    # Positions → BotState 동기화
 
-    def _update_state_from_positions(self, snap: MarketSnapshot, state: Any) -> None:
+    def _update_state_from_positions(self, snap: "MarketSnapshot", state: object) -> None:
         """
-        거래소 포지션/잔고 정보를 BotState 에 동기화한다.
+        거래소 포지션 정보를 BotState 에 동기화한다.
 
-        - long_size / short_size / long_pnl / short_pnl
-        - long_pos_nonzero / short_pos_nonzero / long_pnl_sign / short_pnl_sign
-        - total_balance / free_balance
+        - ExchangeAPI.get_positions() 래퍼 기준 (권장):
+            {
+              "LONG":  {"qty": float, "avg_price": float},
+              "SHORT": {"qty": float, "avg_price": float},
+            }
+
+        - long_size / short_size: 각 방향 수량
+        - long_pnl / short_pnl  : 현재가 기준 단순 미실현 PnL (USDT)
+                                   롱: (price_now - avg) * qty
+                                   숏: (avg - price_now) * qty
         """
-        positions_raw = getattr(snap, "positions_raw", None)
 
-        # iterable 로 변환
-        if positions_raw is None:
-            pos_list: List[Any] = []
-        elif isinstance(positions_raw, dict):
-            pos_list = list(positions_raw.values())
-        else:
+        def _safe_float(v, default: float = 0.0) -> float:
             try:
-                pos_list = list(positions_raw)
-            except TypeError:
-                pos_list = []
+                if v is None:
+                    return default
+                return float(v)
+            except Exception:
+                return default
+
+        # 0) snapshot 에서 price / positions 가져오기 (여러 필드명 대응)
+        price_now = None
+        for attr in ("price", "last", "last_price", "mark_price"):
+            if hasattr(snap, attr):
+                price_now = _safe_float(getattr(snap, attr), None)
+                if price_now and price_now > 0.0:
+                    break
+
+        if price_now is None:
+            price_now = 0.0
+
+        positions_raw = getattr(snap, "positions_raw", None)
+        if positions_raw is None:
+            # 예전 코드가 snap.positions 를 쓰고 있을 가능성 커서 fallback 추가
+            positions_raw = getattr(snap, "positions", None)
 
         long_size = 0.0
-        long_pnl = 0.0
         short_size = 0.0
-        short_pnl = 0.0
+        long_avg = 0.0
+        short_avg = 0.0
 
-        for p in pos_list:
-            # dict 형태로 정규화
-            if not isinstance(p, dict):
-                if hasattr(p, "__dict__"):
-                    p = vars(p)
-                else:
+        # 디버그: raw 입력 확인 (INFO 레벨로 찍기)
+        self.logger.info(
+            "[PnL] raw: price_now=%s positions_raw=%s",
+            price_now,
+            positions_raw,
+        )
+
+        # 1) dict 형태 (ExchangeAPI.get_positions() 래퍼 사용 시)
+        if isinstance(positions_raw, dict):
+            long_raw = positions_raw.get("LONG") or positions_raw.get("long") or {}
+            short_raw = positions_raw.get("SHORT") or positions_raw.get("short") or {}
+
+            long_size = _safe_float(
+                long_raw.get("qty")
+                or long_raw.get("contracts")
+                or long_raw.get("size")
+                or 0.0
+            )
+            short_size = _safe_float(
+                short_raw.get("qty")
+                or short_raw.get("contracts")
+                or short_raw.get("size")
+                or 0.0
+            )
+
+            # avg_price / avgPrice / entryPrice 전부 대응
+            long_avg = _safe_float(
+                long_raw.get("avg_price")
+                or long_raw.get("avgPrice")
+                or long_raw.get("entryPrice")
+                or 0.0
+            )
+            short_avg = _safe_float(
+                short_raw.get("avg_price")
+                or short_raw.get("avgPrice")
+                or short_raw.get("entryPrice")
+                or 0.0
+            )
+
+        # 2) list/tuple 형태 (ccxt 포맷이 바로 들어오는 경우)
+        elif isinstance(positions_raw, (list, tuple)):
+            for p in positions_raw:
+                if not isinstance(p, dict):
+                    continue
+                info = p.get("info") or {}
+
+                # 수량
+                qty = _safe_float(
+                    p.get("contracts")
+                    or p.get("size")
+                    or info.get("contracts")
+                    or info.get("size")
+                    or 0.0
+                )
+                if qty <= 0.0:
                     continue
 
-            info = p.get("info") or {}
+                # 방향
+                side_raw = p.get("side") or info.get("side") or ""
+                side = str(side_raw).strip().lower()
+                if not side:
+                    idx = str(info.get("positionIdx", ""))  # bybit hedge
+                    if idx == "1":
+                        side = "long"
+                    elif idx == "2":
+                        side = "short"
 
-            # size / contracts
-            size_val = p.get("contracts", p.get("size", 0.0))
-            try:
-                size = float(size_val or 0.0)
-            except (TypeError, ValueError):
-                size = 0.0
+                # 진입가
+                avg_price = (
+                    p.get("entryPrice")
+                    or p.get("avg_price")
+                    or info.get("avgPrice")
+                    or info.get("avg_price")
+                )
+                avg = _safe_float(avg_price, 0.0)
 
-            if size <= 0.0:
-                continue
+                if side in ("long", "buy"):
+                    long_size += qty
+                    if avg > 0.0:
+                        long_avg = avg  # 여러 개면 마지막 값 기준
+                elif side in ("short", "sell"):
+                    short_size += qty
+                    if avg > 0.0:
+                        short_avg = avg
 
-            # side
-            side_raw = p.get("side") or info.get("side") or ""
-            side = str(side_raw).strip().lower()
+        # 3) PnL 계산
+        long_pnl = 0.0
+        short_pnl = 0.0
 
-            # unrealized PnL
-            if "unrealizedPnl" in p:
-                pnl_val = p.get("unrealizedPnl")
-            else:
-                pnl_val = p.get("unrealisedPnl")
+        if price_now > 0.0:
+            if long_size > 0.0 and long_avg > 0.0:
+                long_pnl = (price_now - long_avg) * long_size
+            if short_size > 0.0 and short_avg > 0.0:
+                short_pnl = (short_avg - price_now) * short_size
 
-            if pnl_val is None:
-                pnl_val = info.get("unrealisedPnl") or info.get("unrealizedPnl") or 0.0
-
-            try:
-                pnl = float(pnl_val or 0.0)
-            except (TypeError, ValueError):
-                pnl = 0.0
-
-            if side in ("long", "buy"):
-                long_size += size
-                long_pnl += pnl
-            elif side in ("short", "sell"):
-                short_size += size
-                short_pnl += pnl
-            else:
-                # side 비어 있으면 무시
-                continue
+        # 계산 결과 디버그 출력 (INFO)
+        self.logger.info(
+            "[PnL] parsed: long_size=%.6f long_avg=%.1f short_size=%.6f short_avg=%.1f "
+            "long_pnl=%.6f short_pnl=%.6f",
+            long_size,
+            long_avg,
+            short_size,
+            short_avg,
+            long_pnl,
+            short_pnl,
+        )
 
         def _sign(x: float) -> int:
             if x > 0:
@@ -560,13 +640,13 @@ class WaveBot:
             "short_size": float(short_size),
             "long_pnl": float(long_pnl),
             "short_pnl": float(short_pnl),
-            "long_pos_nonzero": bool(long_size > 0),
-            "short_pos_nonzero": bool(short_size > 0),
+            "long_pos_nonzero": bool(long_size > 0.0),
+            "short_pos_nonzero": bool(short_size > 0.0),
             "long_pnl_sign": _sign(long_pnl),
             "short_pnl_sign": _sign(short_pnl),
         }
 
-        # BotState 인스턴스에 직접 세팅 + StateManager.update 로 영속화
+        # BotState 인스턴스 + StateManager 동시 업데이트
         for key, value in updates.items():
             # 1) state 객체에 best-effort 세팅
             try:
@@ -581,44 +661,6 @@ class WaveBot:
                 self.logger.warning(
                     "[WaveBot] state_manager.update(%s) failed: %s", key, exc
                 )
-
-        # 잔고 정보(total_balance / free_balance)도 BotState 에 동기화
-        balance_raw = getattr(snap, "balance_raw", None)
-
-        def _safe_float(v) -> float:
-            try:
-                return float(v or 0.0)
-            except Exception:
-                return 0.0
-
-        if isinstance(balance_raw, dict):
-            total_balance = _safe_float(
-                balance_raw.get("total_equity")
-                or balance_raw.get("total_balance")
-                or balance_raw.get("equity")
-            )
-            free_balance = _safe_float(
-                balance_raw.get("available_balance")
-                or balance_raw.get("free_balance")
-                or balance_raw.get("available")
-            )
-
-            bal_updates = {
-                "total_balance": total_balance,
-                "free_balance": free_balance,
-            }
-
-            for key, value in bal_updates.items():
-                try:
-                    setattr(state, key, value)
-                except Exception:
-                    pass
-                try:
-                    self.state_manager.update(key, value)
-                except Exception as exc:
-                    self.logger.warning(
-                        "[WaveBot] state_manager.update(%s) failed: %s", key, exc
-                    )
 
     # --------------------------------------------------------
     # RiskInputs 구성 + RiskDecision → BotState 반영
