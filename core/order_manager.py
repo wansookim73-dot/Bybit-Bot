@@ -255,21 +255,52 @@ class OrderManager:
 
     def _side_code_for_exit(self, logical_side: str) -> int:
         """
-        logical_side:
-          - "LONG"  → side_code=4 (Long 포지션 종료 = Sell reduce-only)
-          - "SHORT" → side_code=2 (Short 포지션 종료 = Buy reduce-only)
+        청산(Exit)용 side_code 매핑.
+
+        허용 입력:
+          - "LONG"  또는 "SELL"  -> 4 (롱 청산 = sell reduce-only)
+          - "SHORT" 또는 "BUY"   -> 2 (숏 청산 = buy reduce-only)
+
+        그 외는 위험하니 '찍지 않고' 0을 반환(주문 스킵 유도).
         """
-        s = (logical_side or "").upper()
-        return 4 if s == "LONG" else 2
+        s = (logical_side or "").upper().strip()
+
+        if s in ("LONG", "SELL"):
+            return 4
+        if s in ("SHORT", "BUY"):
+            return 2
+
+        self.logger.critical(
+            "[OrderManager] _side_code_for_exit invalid logical_side=%r "
+            "(expected LONG/SHORT or BUY/SELL) -> SKIP",
+            logical_side,
+        )
+        return 0
+
 
     def _side_code_for_entry(self, logical_side: str) -> int:
         """
-        logical_side:
-          - "LONG"  → side_code=1 (Long 진입 = Buy)
-          - "SHORT" → side_code=3 (Short 진입 = Sell)
+        진입(Entry)용 side_code 매핑.
+
+        허용 입력:
+          - "LONG"  또는 "BUY"   -> 1 (롱 진입 = buy)
+          - "SHORT" 또는 "SELL"  -> 3 (숏 진입 = sell)
+
+        그 외는 위험하니 '찍지 않고' 0을 반환(주문 스킵 유도).
         """
-        s = (logical_side or "").upper()
-        return 1 if s == "LONG" else 3
+        s = (logical_side or "").upper().strip()
+
+        if s in ("LONG", "BUY"):
+            return 1
+        if s in ("SHORT", "SELL"):
+            return 3
+
+        self.logger.critical(
+            "[OrderManager] _side_code_for_entry invalid logical_side=%r "
+            "(expected LONG/SHORT or BUY/SELL) -> SKIP",
+            logical_side,
+        )
+        return 0
 
     def _map_side_int(self, side_code: int) -> Tuple[str, int, bool]:
         """
@@ -414,6 +445,15 @@ class OrderManager:
             logical = "OPEN_SHORT"
 
         side_code = self._side_code_for_entry(logical_side)
+        if side_code not in (1, 3):
+            self.logger.critical(
+                "[HedgeEntry] %s INVALID logical_side=%r -> side_code=%r "
+                "(expected 1 or 3) -> SKIP",
+                tag,
+                logical_side,
+                side_code,
+            )
+            return
 
         fp = self._fp_for_new_order(side_code, price, qty)
         if fp in open_fps:
@@ -467,6 +507,15 @@ class OrderManager:
         - 가능하면 ExchangeAPI의 TP 전용 함수를 우선 사용
         - 없으면 close side_code(2/4) 기반 place_limit_order로 fallback
         """
+        # [SAFETY] TP는 반드시 close side_code(2/4) + position_idx(1/2) 여야 한다.
+        if side_code not in (2, 4) or position_idx not in (1, 2):
+            self.logger.critical(
+                "[TP] invalid side_code=%r position_idx=%r (expected close 2/4 + idx 1/2) -> REFUSE",
+                side_code,
+                position_idx,
+            )
+            return ""
+
         # 여러 구현명을 방어적으로 지원
         for name in ("place_tp_limit_order", "place_tp_limit", "place_limit_order_tp"):
             if hasattr(self.exchange, name):
@@ -535,6 +584,13 @@ class OrderManager:
 
         logical_side = "LONG" if side == "BUY" else "SHORT"
         side_code = self._side_code_for_entry(logical_side)
+        if side_code not in (1, 3):
+            self.logger.critical(
+                "[ModeA] INVALID logical_side=%r -> side_code=%r (expected 1 or 3) -> SKIP",
+                logical_side,
+                side_code,
+            )
+            return
 
         try:
             new_oid = self.exchange.place_limit_order(side_code, price, remaining)
@@ -641,6 +697,16 @@ class OrderManager:
             if qty <= 0.0:
                 return
             side_code = self._side_code_for_exit(side_str)
+            if side_code not in (2, 4):
+                self.logger.critical(
+                    "[SliceExit] %s INVALID side_str=%r -> side_code=%r "
+                    "(expected 2 or 4) -> SKIP",
+                    tag,
+                    side_str,
+                    side_code,
+                )
+                return
+
             try:
                 oid = self.exchange.place_market_order(side_code, qty, price_for_calc=price)
                 self.logger.info("[SliceExit] %s MARKET side=%s side_code=%s qty=%.6f oid=%s", tag, side_str, side_code, qty, oid)
@@ -664,6 +730,15 @@ class OrderManager:
             return
 
         side_code = self._side_code_for_entry(logical_side)
+        if side_code not in (1, 3):
+            self.logger.critical(
+                "[HedgeEntry] %s INVALID logical_side=%r -> side_code=%r "
+                "(expected 1 or 3) -> SKIP",
+                tag,
+                logical_side,
+                side_code,
+            )
+            return
 
         self.logger.info("[HedgeEntry] %s LIMIT side=%s side_code=%s qty=%.6f price=%.2f", tag, logical_side, side_code, total_qty, price)
 
@@ -733,6 +808,15 @@ class OrderManager:
             if qty <= 0.0:
                 return
             side_code = self._side_code_for_entry(side_str)
+            if side_code not in (1, 3):
+                self.logger.critical(
+                    "[SliceEntry] %s INVALID side_str=%r -> side_code=%r "
+                    "(expected 1 or 3) -> SKIP",
+                    tag,
+                    side_str,
+                    side_code,
+                )
+                return
             try:
                 oid = self.exchange.place_market_order(side_code, qty, price_for_calc=price)
                 self.logger.info("[SliceEntry] %s MARKET side=%s side_code=%s qty=%.6f oid=%s", tag, side_str, side_code, qty, oid)
@@ -768,6 +852,17 @@ class OrderManager:
         """
         if price <= 0.0 or usdt_amount <= 0.0:
             return {"limit_oid": None, "market_oid": None, "filled": 0.0}
+        if price <= 0.0 or usdt_amount <= 0.0:
+            return {"limit_oid": None, "market_oid": None, "filled": 0.0}
+
+        if side not in (1, 2, 3, 4):
+            self.logger.critical(
+                "[AtomicOrder] invalid side=%r (expected 1/2/3/4) -> SKIP",
+                side,
+            )
+            return {"limit_oid": None, "market_oid": None, "filled": 0.0}
+
+        qty = calc_contract_qty(...)
 
         qty = calc_contract_qty(usdt_amount=usdt_amount, price=price, symbol=getattr(self.exchange, "symbol", "BTCUSDT"), dry_run=getattr(self.exchange, "dry_run", False))
         if qty <= 0.0:
