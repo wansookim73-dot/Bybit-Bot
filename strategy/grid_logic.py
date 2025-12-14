@@ -124,7 +124,7 @@ def classify_order(order: OrderInfo, current_wave_id: int) -> Tuple[str, Optiona
 
     # Escape / Manual / 기타 특수 주문
     if tag.startswith("MB_PRE_") or tag.startswith("MB_SLICE_") \
-       or tag in ("FULL_EXIT", "ESCAPE_HEDGE_EXIT"):
+       or tag in ("FULL_EXIT", "ESCAPE_HEDGE_EXIT", "HEDGE_EXIT"):
         return ("NON_GRID_MANAGED", None, None)
 
     return ("FOREIGN", None, None)
