@@ -138,16 +138,6 @@ class ExchangeAPI:
     def get_balance(self) -> Dict[str, float]:
         """
         USDT 기준 total / available 잔고 리턴.
-
-        - UTA(UNIFIED) 계정의 USDT 잔고를 우선 사용
-        - 필요시 일반 fetch_balance() 를 fallback 으로 사용
-        - 예외가 발생한 경우에만 0.0 으로 fallback
-
-        반환:
-            {
-              "total": float,      # 총 잔고 (USDT)
-              "available": float,  # 사용 가능 잔고 (USDT)
-            }
         """
         total = 0.0
         available = 0.0
@@ -160,12 +150,10 @@ class ExchangeAPI:
             usdt = bal.get("USDT") or {}
             if not isinstance(usdt, dict):
                 return t, a
-            # total
             try:
                 t = float(usdt.get("total") or 0.0)
             except Exception:
                 t = 0.0
-            # free / available
             try:
                 free = usdt.get("free")
                 if free is None:
@@ -175,7 +163,6 @@ class ExchangeAPI:
                 a = t
             return t, a
 
-        # 1) UTA (UNIFIED) 우선
         try:
             bal = self.exchange.fetch_balance({"accountType": "UNIFIED"})
             t, a = _extract_usdt(bal)
@@ -185,7 +172,6 @@ class ExchangeAPI:
                 "[ExchangeAPI] fetch_balance(accountType='UNIFIED') failed: %s", exc
             )
 
-        # 2) 필요 시 일반 fetch_balance() fallback
         if total == 0.0 and available == 0.0:
             try:
                 bal2 = self.exchange.fetch_balance()
@@ -211,12 +197,6 @@ class ExchangeAPI:
     def get_positions(self) -> Dict[str, Dict[str, float]]:
         """
         현재 LONG / SHORT 포지션 정보 (수량, 평균 진입가)를 Bybit UTA 헤지 모드 기준으로 반환한다.
-
-        반환 형태:
-            {
-              "LONG":  {"qty": float, "avg_price": float},
-              "SHORT": {"qty": float, "avg_price": float},
-            }
         """
         result: Dict[str, Dict[str, float]] = {
             "LONG": {"qty": 0.0, "avg_price": 0.0},
@@ -224,10 +204,7 @@ class ExchangeAPI:
         }
 
         try:
-            # 마켓 정보는 한 번만 로드되도록 _ensure_markets_loaded 사용
             self._ensure_markets_loaded()
-
-            # Bybit UTA: symbol 필터 + category 지정
             positions = self.exchange.fetch_positions(
                 [self.symbol],
                 params={"category": BYBIT_CATEGORY},
@@ -252,7 +229,6 @@ class ExchangeAPI:
 
                 info = pos.get("info") or {}
 
-                # 수량 (contracts / size / info.size 중 하나 사용)
                 contracts = pos.get("contracts")
                 if contracts is None:
                     contracts = pos.get("size") or info.get("size")
@@ -260,17 +236,14 @@ class ExchangeAPI:
                 if qty <= 0.0:
                     continue
 
-                # 방향 (side / info.side / info.positionIdx)
                 side = (pos.get("side") or info.get("side") or "").lower()
                 if not side:
-                    # Bybit positionIdx: 1=long, 2=short
                     idx = str(info.get("positionIdx", ""))
                     if idx == "1":
                         side = "long"
                     elif idx == "2":
                         side = "short"
 
-                # 평균 진입가
                 avg_price = pos.get("entryPrice")
                 if not avg_price:
                     avg_price = pos.get("avgPrice") or info.get("avgPrice")
@@ -337,7 +310,6 @@ class ExchangeAPI:
             logger.info("[ExchangeAPI] DRY_RUN - set_leverage_and_mode 스킵")
             return
 
-        # 마진 모드: Cross
         self._safe_request(
             self.exchange.set_margin_mode,
             "cross",
@@ -345,7 +317,6 @@ class ExchangeAPI:
             params={"category": BYBIT_CATEGORY},
         )
 
-        # 레버리지 설정 (Cross 7x)
         self._safe_request(
             self.exchange.set_leverage,
             self.leverage,
@@ -353,7 +324,6 @@ class ExchangeAPI:
             params={"category": BYBIT_CATEGORY},
         )
 
-        # 포지션 모드: Hedge Mode
         self._safe_request(
             self.exchange.set_position_mode,
             hedged=POSITION_MODE_HEDGED,
@@ -397,15 +367,9 @@ class ExchangeAPI:
           3: Open SHORT
           4: Close LONG
         """
-        # 방향 (buy/sell)
         side_str = "buy" if side in (1, 2) else "sell"
-
-        # positionIdx: 1=LONG, 2=SHORT
         position_idx = 1 if side in (1, 4) else 2
-
-        # reduceOnly 여부
         reduce_only = side in (2, 4)
-
         return side_str, position_idx, reduce_only
 
     # ==========================================================
@@ -419,11 +383,8 @@ class ExchangeAPI:
     ) -> Tuple[float, float]:
         """
         v10.1 정밀도 규칙 (qty 기반):
-
-        - price: price_floor_to_tick 로 tickSize 기준 floor
-        - qty  : 이미 GridLogic 등에서 calc_contract_qty 로 한 번 계산된 값이지만,
-                 여기서도 notional = price * qty 를 기준으로 다시 calc_contract_qty 를 거쳐
-                 minQty/stepSize 를 재검증한다 (이중 floor는 안전 측면에서 OK).
+        - price: tickSize 기준 floor
+        - qty  : notional 기반으로 calc_contract_qty 재검증
         """
         info = SYMBOL_INFO.get(self.symbol, {})
         tick_size = float(info.get("tick_size", 0.0))
@@ -434,7 +395,6 @@ class ExchangeAPI:
             symbol=self.symbol,
         )
 
-        # qty → notional(USDT) → 다시 calc_contract_qty 로 step/minQty 재검증
         notional = float(qty) * floored_price
         checked_qty = calc_contract_qty(
             usdt_amount=notional,
@@ -445,23 +405,104 @@ class ExchangeAPI:
 
         return floored_price, checked_qty
 
+    # ==========================================================
+    # ✅ TP 전용: reduceOnly/positionIdx 강제 LIMIT
+    # ==========================================================
+
+    def place_tp_limit_order(
+        self,
+        side: int,
+        price: float,
+        qty: float,
+        *,
+        position_idx: int,
+        reduce_only: bool = True,
+    ) -> str:
+        """
+        TP(청산) 전용 LIMIT 주문.
+
+        - 반드시 reduceOnly=True
+        - 반드시 positionIdx=1(LONG) 또는 2(SHORT)
+
+        side_code는 v10.1 규약을 따르는 것을 전제로:
+          - Close LONG  : side=4 (sell) + positionIdx=1 + reduceOnly=True
+          - Close SHORT : side=2 (buy)  + positionIdx=2 + reduceOnly=True
+        """
+        if not reduce_only:
+            logger.error("[ExchangeAPI] place_tp_limit_order called with reduce_only=False (refuse).")
+            return ""
+
+        if position_idx not in (1, 2):
+            logger.error("[ExchangeAPI] place_tp_limit_order invalid position_idx=%r (expected 1 or 2).", position_idx)
+            return ""
+
+        if self.dry_run:
+            logger.info(
+                "[DRY_RUN] place_tp_limit_order(side=%s, price=%.2f, qty=%.6f, positionIdx=%s, reduceOnly=True)",
+                side,
+                price,
+                qty,
+                position_idx,
+            )
+            return "dry_id"
+
+        try:
+            side_str, _pidx_from_side, _ro_from_side = self._side_int_to_ccxt(side)
+
+            floored_price, final_qty = self._prepare_price_and_qty_from_qty(price, qty)
+            if final_qty <= 0.0:
+                logger.warning(
+                    "[ExchangeAPI] place_tp_limit_order: qty=0 (minQty/stepSize 미만) → 주문 스킵 (req=%.6f)",
+                    qty,
+                )
+                return ""
+
+            params: Dict[str, Any] = {
+                "category": BYBIT_CATEGORY,
+                "positionIdx": int(position_idx),
+                "reduceOnly": True,
+            }
+
+            order = self.exchange.create_order(
+                self.symbol,
+                type="limit",
+                side=side_str,
+                amount=final_qty,
+                price=floored_price,
+                params=params,
+            )
+            order_id = str(order.get("id", ""))
+            logger.info(
+                "[ExchangeAPI] TP Limit Order Created: id=%s side=%s qty=%.6f price=%.2f positionIdx=%s reduceOnly=True",
+                order_id,
+                side_str,
+                final_qty,
+                floored_price,
+                params.get("positionIdx"),
+            )
+            return order_id
+        except Exception as e:
+            logger.error(f"[ExchangeAPI] place_tp_limit_order Fail: {e}")
+            return ""
+
     def place_limit_order(
         self,
         side: int,
         price: float,
         qty: float,
+        **kwargs: Any,
     ) -> str:
         """
         v10.1 기준 Limit 주문 (qty 기반).
 
-        - side : 1/2/3/4 (Open Long / Close Short / Open Short / Close Long)
-        - price: 희망 주문 가격 (raw), 내부에서 tickSize 기준 floor 처리
-        - qty  : BTC 수량 (GridLogic 등에서 calc_contract_qty 로 계산된 값)
+        ✅ 추가 지원:
+        - reduce_only / position_idx (snake_case)
+        - reduceOnly / positionIdx (camelCase)
+        - params=dict(...) 직접 전달
 
-        내부 규칙:
-        - price_floor_to_tick() 로 가격 floor
-        - qty 는 notional = price * qty 를 기준으로 다시 calc_contract_qty() 를 거쳐
-          minQty/stepSize 재검증 (이중 floor는 보수적 안전장치)
+        목적:
+        - OrderManager가 TP 경로에서 reduceOnly/positionIdx를 "명시적으로" 전달해도
+          ExchangeAPI가 안전하게 이를 받아 실제 주문 params로 반영할 수 있게 한다.
         """
         if self.dry_run:
             logger.info(
@@ -476,7 +517,6 @@ class ExchangeAPI:
             side_str, position_idx, reduce_only = self._side_int_to_ccxt(side)
 
             floored_price, final_qty = self._prepare_price_and_qty_from_qty(price, qty)
-
             if final_qty <= 0.0:
                 logger.warning(
                     "[ExchangeAPI] place_limit_order: qty=0 (minQty/stepSize 미만) → 주문 스킵 (req=%.6f)",
@@ -484,12 +524,37 @@ class ExchangeAPI:
                 )
                 return ""
 
-            params: Dict[str, Any] = {
-                "category": BYBIT_CATEGORY,
-                "positionIdx": position_idx,
-            }
+            # --- kwargs override (TP 강제용) ---
+            # 1) params dict 우선
+            params_in = kwargs.get("params")
+            if isinstance(params_in, dict):
+                params: Dict[str, Any] = dict(params_in)
+            else:
+                params = {}
+
+            # 2) 표준 category는 항상 강제
+            params["category"] = BYBIT_CATEGORY
+
+            # 3) positionIdx override
+            pos_override = kwargs.get("position_idx", kwargs.get("positionIdx", None))
+            if pos_override is not None:
+                try:
+                    position_idx = int(pos_override)
+                except Exception:
+                    pass
+
+            # 4) reduceOnly override
+            ro_override = kwargs.get("reduce_only", kwargs.get("reduceOnly", None))
+            if ro_override is not None:
+                reduce_only = bool(ro_override)
+
+            # 최종 반영
+            params["positionIdx"] = int(position_idx)
             if reduce_only:
                 params["reduceOnly"] = True
+            else:
+                # False인 경우는 키를 제거(혼동 방지)
+                params.pop("reduceOnly", None)
 
             order = self.exchange.create_order(
                 self.symbol,
@@ -501,11 +566,13 @@ class ExchangeAPI:
             )
             order_id = str(order.get("id", ""))
             logger.info(
-                "[ExchangeAPI] Limit Order Created: id=%s side=%s qty=%.6f price=%.2f",
+                "[ExchangeAPI] Limit Order Created: id=%s side=%s qty=%.6f price=%.2f positionIdx=%s reduceOnly=%s",
                 order_id,
                 side_str,
                 final_qty,
                 floored_price,
+                params.get("positionIdx"),
+                bool(params.get("reduceOnly", False)),
             )
             return order_id
         except Exception as e:
@@ -521,14 +588,6 @@ class ExchangeAPI:
     ) -> str:
         """
         v10.1 기준 Market 주문 (qty 기반).
-
-        - side : 1/2/3/4 (Open Long / Close Short / Open Short / Close Long)
-        - qty  : BTC 수량
-        - price_for_calc : qty 검증용 가격 (None 이면 get_ticker() 사용)
-
-        내부 규칙:
-        - price_for_calc 기준 notional = price * qty 계산
-        - calc_contract_qty() 로 minQty/stepSize 재검증 후 그 qty 로 Market 주문
         """
         if self.dry_run:
             logger.info(
@@ -585,11 +644,13 @@ class ExchangeAPI:
             )
             order_id = str(order.get("id", ""))
             logger.info(
-                "[ExchangeAPI] Market Order Created: id=%s side=%s qty=%.6f (px=%.2f)",
+                "[ExchangeAPI] Market Order Created: id=%s side=%s qty=%.6f (px=%.2f) positionIdx=%s reduceOnly=%s",
                 order_id,
                 side_str,
                 final_qty,
                 price_used,
+                params.get("positionIdx"),
+                bool(params.get("reduceOnly", False)),
             )
             return order_id
         except Exception as e:
@@ -616,30 +677,78 @@ class ExchangeAPI:
 
     def get_order_status(self, order_id: str) -> Dict[str, float]:
         """
-        filled 수량(Deal Volume)만 단순히 조회해서 리턴.
+        UTA(Bybit Unified) 계정에서 fetch_order(fetchOrder)가 막힌 케이스 대응.
+
+        우선순위:
+          1) (가능하면) fetch_open_order / fetch_closed_order
+          2) fetch_open_orders 목록에서 ID 매칭
+          3) fetch_closed_orders 목록(최근 N개)에서 ID 매칭
 
         반환:
-            {"dealVol": float}
+          {"dealVol": float}  # 체결 수량
         """
         if self.dry_run:
-            # DRY_RUN 에서는 충분히 큰 값으로 가정 (상위 로직 검증용)
             return {"dealVol": 999999.0}
 
+        params = {"category": BYBIT_CATEGORY}
+
+        # 1) CCXT에 open/closed 단건 조회가 있으면 우선 사용
         try:
-            order = self.exchange.fetch_order(
-                order_id,
-                self.symbol,
-                params={"category": BYBIT_CATEGORY},
-            )
-            filled = float(order.get("filled", 0.0))
-            return {"dealVol": filled}
-        except Exception as e:
-            logger.error(f"[ExchangeAPI] get_order_status fail: {e}")
-            return {"dealVol": 0.0}
+            if hasattr(self.exchange, "fetch_open_order"):
+                o = self.exchange.fetch_open_order(order_id, self.symbol, params=params)
+                if isinstance(o, dict):
+                    return {"dealVol": float(o.get("filled", 0.0) or 0.0)}
+        except Exception:
+            pass
 
+        try:
+            if hasattr(self.exchange, "fetch_closed_order"):
+                o = self.exchange.fetch_closed_order(order_id, self.symbol, params=params)
+                if isinstance(o, dict):
+                    return {"dealVol": float(o.get("filled", 0.0) or 0.0)}
+        except Exception:
+            pass
 
-# 전역 인스턴스 및 상수 (기존 호환용)
-exchange = ExchangeAPI()
+        # 2) open orders 목록에서 찾기
+        try:
+            opens = self.exchange.fetch_open_orders(self.symbol, params=params)
+            for o in opens or []:
+                if str(o.get("id")) == str(order_id):
+                    return {"dealVol": float(o.get("filled", 0.0) or 0.0)}
+        except Exception as exc:
+            logger.warning("[ExchangeAPI] get_order_status: fetch_open_orders failed: %s", exc)
 
+        # 3) closed orders(최근)에서 찾기
+        try:
+            # 너무 크게 잡을 필요 없음: 최근 50~200 정도면 충분
+            closed = self.exchange.fetch_closed_orders(self.symbol, limit=100, params=params)
+            for o in closed or []:
+                if str(o.get("id")) == str(order_id):
+                    return {"dealVol": float(o.get("filled", 0.0) or 0.0)}
+        except Exception as exc:
+            logger.warning("[ExchangeAPI] get_order_status: fetch_closed_orders failed: %s", exc)
+
+        return {"dealVol": 0.0}
+
+# ==========================================================
+# Global instance (compat) — used by main_v10.py / order_manager.py
+# ==========================================================
+
+try:
+    exchange  # type: ignore[name-defined]
+except NameError:
+    exchange = ExchangeAPI()
+
+# Legacy constants (compat)
 SIDE_BUY = "Buy"
 SIDE_SELL = "Sell"
+
+
+# ---------------------------------------------------------------------
+# Compatibility aliases (debug tooling)
+# ---------------------------------------------------------------------
+try:
+    if not hasattr(ExchangeAPI, "fetch_positions"):
+        ExchangeAPI.fetch_positions = ExchangeAPI.get_positions
+except Exception:
+    pass

@@ -1,3 +1,5 @@
 mexc_bot_snapshot_*.tgz
 data/bot.log
 data/bot_state.json
+__pycache__/
+*.pyc

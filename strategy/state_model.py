@@ -129,7 +129,6 @@ LineMemory = Dict[int, LineState]
 # Bot 상태 모델 (Wave/Grid/Seed/LineMemory)
 # ==============================
 
-
 @dataclass
 class BotState:
     """
@@ -155,6 +154,7 @@ class BotState:
     - line_memory_long              : grid_index → LineState 맵 (Long)
     - line_memory_short             : grid_index → LineState 맵 (Short)
     """
+
     # 현재 모드 ("NORMAL" / "ESCAPE" / "NEWS_BLOCK" / 기타)
     mode: str
 
@@ -207,6 +207,11 @@ class BotState:
     line_memory_long: LineMemory = field(default_factory=dict)
     line_memory_short: LineMemory = field(default_factory=dict)
 
+    # --- TP 상태 (익절 단계 진행 상태) ---
+    long_tp_active: bool = False
+    long_tp_max_index: int = 0
+    short_tp_active: bool = False
+    short_tp_max_index: int = 0
 
 # ==============================
 # 주문 스펙 (전략 -> 주문 엔진)
