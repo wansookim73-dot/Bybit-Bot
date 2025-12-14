@@ -693,23 +693,64 @@ class EscapeLogic:
         if main_side is None or main_qty <= 0.0:
             return orders
 
-        # 2배수 cap (notional 기준)
+        # 2배수 cap (notional 기준) + 기존 반대방향 포지션 포함 (HEDGE-ADD-01)
         main_notional = m["main_notional"]
-        max_hedge_notional = 2.0 * main_notional
+        max_hedge_notional = 2.0 * main_notional  # 2x cap (총량 기준)
 
-        # 기본 타겟: 1x Hedge (보수적으로)
+        # 기본 타겟: 1x Hedge (보수적으로) + cap 적용
         target_hedge_notional = min(main_notional, max_hedge_notional)
         target_hedge_qty = target_hedge_notional / price if price > 0.0 else 0.0
 
-        # 현재 헷지 대비 추가 필요한 수량
-        add_qty = target_hedge_qty - hedge_size
+        # [HEDGE-ADD-01] 기존 반대방향 포지션까지 포함한 "총 existing" 계산
+        # - main이 LONG이면 반대방향은 SHORT이므로 existing = abs(short_size)
+        # - main이 SHORT이면 반대방향은 LONG이므로 existing = abs(long_size)
+        if main_side == "LONG":
+            existing_hedge_total_qty = abs(m["short_size"])
+            hedge_dir = "SHORT"
+        else:
+            existing_hedge_total_qty = abs(m["long_size"])
+            hedge_dir = "LONG"
+
+        existing_hedge_total_qty = min(existing_hedge_total_qty, target_hedge_qty)
+
+        # 목표 총량(1x)에서 existing을 뺀 "추가분"
+        add_qty = target_hedge_qty - existing_hedge_total_qty
         add_notional = add_qty * price
+
+        # 2x cap 안전 클램프(총량 기준)
+        max_total_hedge_qty = (max_hedge_notional / price) if price > 0.0 else 0.0
+        max_add_qty = max(0.0, max_total_hedge_qty - existing_hedge_total_qty)
+        if add_qty > max_add_qty:
+            add_qty = max_add_qty
+            add_notional = add_qty * price
+
+        # [HEDGE-ADD-01] Seed cap 클램프 (hedge 방향의 잔여 seed로 제한)
+        try:
+            # hedge_dir 방향의 seed 잔여로 추가 진입 상한을 결정한다.
+            if hedge_dir == "LONG":
+                eff = float(getattr(state, "long_seed_total_effective", 0.0) or 0.0)
+                unit = float(getattr(state, "unit_seed_long", 0.0) or 0.0)
+                k = int(getattr(state, "k_long", 0) or 0)
+            else:
+                eff = float(getattr(state, "short_seed_total_effective", 0.0) or 0.0)
+                unit = float(getattr(state, "unit_seed_short", 0.0) or 0.0)
+                k = int(getattr(state, "k_short", 0) or 0)
+
+            seed = self._compute_seed_usage_dir(eff, unit, k)
+            remain_usdt = float(seed.get("remain", 0.0) or 0.0)
+
+            if remain_usdt > 0.0 and price > 0.0:
+                seed_cap_qty = remain_usdt / price
+                if add_qty > seed_cap_qty:
+                    add_qty = seed_cap_qty
+                    add_notional = add_qty * price
+        except Exception:
+            pass
 
         # 너무 작으면 무시
         if add_qty <= 0.0 or add_notional < CFG.HEDGE_ENTRY_MIN_NOTIONAL_USDT:
             return orders
 
-        hedge_dir = "SHORT" if main_side == "LONG" else "LONG"
         orders.append(
             EscapeOrderSpec(
                 type="HEDGE_ENTRY",
@@ -724,9 +765,9 @@ class EscapeLogic:
                 main_side=main_side,
                 main_qty=main_qty,
                 hedge_side=hedge_dir,
-                hedge_qty_before=hedge_size,
-                hedge_qty_after=hedge_size + add_qty,
-                hedge_notional=target_hedge_notional,
+                hedge_qty_before=existing_hedge_total_qty,
+                hedge_qty_after=existing_hedge_total_qty + add_qty,
+                hedge_notional=(existing_hedge_total_qty + add_qty) * price,
             )
         except Exception:
             pass
@@ -1074,24 +1115,27 @@ class EscapeLogic:
                             )
                             break
 
-        # ------------------------------
+        # --------------------------------------------------------
         # 7) ESCAPE_ACTIVE 플래그 / mode 정리 (5.3 Gate 용)
-        # ------------------------------
+        # --------------------------------------------------------
+
         # 방향 ESCAPE_ACTIVE 가 하나라도 ON 이면 글로벌도 ON
         if getattr(state, "escape_long_active", False) or getattr(state, "escape_short_active", False):
             state.escape_active = True
         else:
-            # 방향별 ESCAPE 가 모두 꺼져 있으면 글로벌도 OFF (이미 FULL_EXIT/BE/+2% 에서 정리했을 수 있음)
+            # 방향 ESCAPE 가 모두 꺼진 경우
+            # (이미 FULL_EXIT / BE / +2% 에서 정리됐을 수 있음)
             if not getattr(state, "escape_active", False):
                 state.escape_reason = None
                 state.escape_enter_ts = 0.0
 
+        # mode 결정
         if getattr(state, "escape_active", False):
             state.mode = "ESCAPE"
             if decision.mode_override is None:
                 decision.mode_override = "ESCAPE"
         else:
-            # ESCAPE 비활성 + 뉴스 블록 여부에 따라 모드 유지
+            # ESCAPE 비활성 + 뉴스 블록 여부에 따라 mode 유지
             if getattr(state, "news_block", False):
                 state.mode = "NEWS_BLOCK"
                 if decision.mode_override is None:
@@ -1101,19 +1145,22 @@ class EscapeLogic:
                 if decision.mode_override is None:
                     decision.mode_override = "NORMAL"
 
+        # --------------------------------------------------------
         # Grid / Risk / OrderManager 에서 사용할 Gate:
-        # - state.escape_active
-        # - state.escape_long_active / state.escape_short_active
-        # - state.mode ("ESCAPE"/"NEWS_BLOCK"/"NORMAL")
+        #   - state.escape_active
+        #   - state.escape_long_active / state.escape_short_active
+        #   - state.mode ("ESCAPE" / "NEWS_BLOCK" / "NORMAL")
+        # --------------------------------------------------------
 
-        # ------------------------------
-        # 8) ESCAPE_ACTIVE 동안 Hedge Entry/Exit 계획 생성
-        # ------------------------------
+        # --------------------------------------------------------
+        # 8) ESCAPE_ACTIVE 동안 Hedge Entry / Exit 계획 생성
+        # --------------------------------------------------------
+
         orders: List[EscapeOrderSpec] = list(early_orders)
 
-        # +2% / BE 청산이 이미 트리거된 틱에서는 추가 HEDGE_ENTRY/EXIT 를 만들지 않는다.
-        if getattr(state, "escape_active", False) and not (pair_exit_triggered or hedge_be_triggered):
+        # +2% / BE 청산이 이미 트리거된 틱에서는
+        # 추가 HEDGE_ENTRY / HEDGE_EXIT 를 만들지 않는다.
+        if (getattr(state, "escape_active", False) or abs(float(m.get("hedge_size", 0.0) or 0.0)) > 0.0) and not (pair_exit_triggered or hedge_be_triggered):
             orders.extend(self._plan_hedge_orders(state, m))
-
         decision.orders = orders
         return decision
