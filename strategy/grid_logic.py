@@ -9,13 +9,13 @@ from utils.logger import logger, get_logger
 from utils.calculator import calc_contract_qty
 from strategy.capital import CapitalManager
 from core.state_manager import get_state_manager
+import time
 import os
 from decimal import Decimal
 
 # ------------------------------
 # GridOrderSpec
 # ------------------------------
-
 
 @dataclass
 class GridOrderSpec:
@@ -26,6 +26,9 @@ class GridOrderSpec:
     wave_id: int
     mode: str = "A"        # Grid Maker는 항상 Mode A
 
+    # ✅ TP safety (Hedge Mode)
+    reduce_only: bool = False
+    position_idx: Optional[int] = None  # 1=LONG, 2=SHORT
 
 # ------------------------------
 # GridDecision
@@ -181,22 +184,17 @@ def detect_touched_lines(
             lp = line_price(p_center, p_gap, idx)
             if price_prev > lp >= price_now:
                 touched.append(idx)
-        # 이미 내림차순
 
     return touched
+
 
 def _extract_position_info(feed: StrategyFeed) -> Dict[str, Any]:
     """
     StrategyFeed / BotState / (옵션) feed.positions 에서
     현재 계좌 포지션 정보를 추출한다.
-
-    - dict / dataclass 모두 지원
-    - KeyError 방지를 위해 항상 dict.get() / getattr(..., default) 사용
     """
+    _log = get_logger("grid_logic")
 
-    logger = get_logger("grid_logic")
-
-    # 안전한 float 변환 헬퍼
     def _to_float(value: Any, default: float = 0.0) -> float:
         try:
             if value is None:
@@ -208,21 +206,16 @@ def _extract_position_info(feed: StrategyFeed) -> Dict[str, Any]:
     long_size = short_size = hedge_size = 0.0
     long_pnl = short_pnl = 0.0
 
-    # 1) 우선 feed.positions 가 있으면 그것을 사용
     pos_from_feed = getattr(feed, "positions", None)
-    # BotState 도 같이 받아둔다 (PnL 합치기용)
     state = getattr(feed, "state", None)
 
     if isinstance(pos_from_feed, dict):
         long_size = _to_float(pos_from_feed.get("long_size", 0.0))
         short_size = _to_float(pos_from_feed.get("short_size", 0.0))
         hedge_size = _to_float(pos_from_feed.get("hedge_size", 0.0))
-
-        # 1-A) feed.positions 에 PnL 이 있으면 우선 사용
         long_pnl = _to_float(pos_from_feed.get("long_pnl", 0.0))
         short_pnl = _to_float(pos_from_feed.get("short_pnl", 0.0))
 
-        # 1-B) 그런데 여전히 0 이면, BotState 의 PnL 로 덮어쓴다
         if state is not None and (abs(long_pnl) < 1e-9 or abs(short_pnl) < 1e-9):
             if isinstance(state, dict):
                 if abs(long_pnl) < 1e-9:
@@ -234,9 +227,7 @@ def _extract_position_info(feed: StrategyFeed) -> Dict[str, Any]:
                     long_pnl = _to_float(getattr(state, "long_pnl", long_pnl))
                 if abs(short_pnl) < 1e-9:
                     short_pnl = _to_float(getattr(state, "short_pnl", short_pnl))
-
     else:
-        # 2) fallback: feed.state (BotState dataclass 또는 dict)
         if isinstance(state, dict):
             long_size = _to_float(state.get("long_size", 0.0))
             short_size = _to_float(state.get("short_size", 0.0))
@@ -250,113 +241,56 @@ def _extract_position_info(feed: StrategyFeed) -> Dict[str, Any]:
             long_pnl = _to_float(getattr(state, "long_pnl", 0.0))
             short_pnl = _to_float(getattr(state, "short_pnl", 0.0))
 
-    # ------------------------------------------------------------------
-    # 3) Fallback: 사이즈는 있는데 long_pnl / short_pnl 이 0 으로만 올 때
-    #    => 현재가(마크/라스트)와 평단가로부터 직접 PnL 계산
-    #    (DCA / ESCAPE 로직에서 PnL 을 못 잡는 현상 대응)
-    # ------------------------------------------------------------------
     has_size = (abs(long_size) > 0.0) or (abs(short_size) > 0.0)
     pnl_missing = (abs(long_pnl) < 1e-9 and abs(short_pnl) < 1e-9)
 
     if has_size and pnl_missing:
-        # 3-1) 현재가(마크 프라이스 / 라스트 프라이스) 추정
         mark_price = 0.0
         candidate_prices: list[float] = []
-
-        # StrategyFeed 에 직접 붙어 있을 가능성이 있는 필드들
         for attr in (
-            "mark_price",
-            "last_price",
-            "last",
-            "price",
-            "mid_price",
-            "mid",
-            "close",
-            "best_bid",
-            "best_ask",
-            "bid",
-            "ask",
+            "mark_price", "last_price", "last", "price", "mid_price", "mid", "close",
+            "best_bid", "best_ask", "bid", "ask",
         ):
-            v = getattr(feed, attr, None)
-            candidate_prices.append(_to_float(v, 0.0))
+            candidate_prices.append(_to_float(getattr(feed, attr, None), 0.0))
 
-        # ticker dict 안에 들어 있을 수도 있음
         ticker = getattr(feed, "ticker", None)
         if isinstance(ticker, dict):
-            for key in (
-                "mark_price",
-                "markPrice",
-                "last",
-                "close",
-                "price",
-                "mid",
-                "bid",
-                "ask",
-            ):
+            for key in ("mark_price", "markPrice", "last", "close", "price", "mid", "bid", "ask"):
                 candidate_prices.append(_to_float(ticker.get(key), 0.0))
 
-        # 양수인 값 하나만 선택
         for p in candidate_prices:
             if p and p > 0:
                 mark_price = p
                 break
 
-        # 3-2) 진입가(평단) 추정
-        long_avg = short_avg = 0.0
-        src_for_avg = pos_from_feed if isinstance(pos_from_feed, dict) else getattr(feed, "state", None)
-
         def _get_avg(src: Any, prefix: str) -> float:
-            """
-            prefix = "long" 또는 "short"
-            long_avg / long_entry / long_price … 등 여러 이름을 최대한 지원
-            """
             if isinstance(src, dict):
                 for key in (
-                    f"{prefix}_avg",
-                    f"{prefix}_avg_price",
-                    f"{prefix}_entry",
-                    f"{prefix}_entry_price",
-                    f"{prefix}_price",
+                    f"{prefix}_avg", f"{prefix}_avg_price",
+                    f"{prefix}_entry", f"{prefix}_entry_price", f"{prefix}_price",
                 ):
                     if key in src:
                         return _to_float(src.get(key), 0.0)
             else:
                 for attr in (
-                    f"{prefix}_avg",
-                    f"{prefix}_avg_price",
-                    f"{prefix}_entry",
-                    f"{prefix}_entry_price",
-                    f"{prefix}_price",
+                    f"{prefix}_avg", f"{prefix}_avg_price",
+                    f"{prefix}_entry", f"{prefix}_entry_price", f"{prefix}_price",
                 ):
                     if hasattr(src, attr):
                         return _to_float(getattr(src, attr, 0.0), 0.0)
             return 0.0
 
+        src_for_avg = pos_from_feed if isinstance(pos_from_feed, dict) else getattr(feed, "state", None)
         long_avg = _get_avg(src_for_avg, "long")
         short_avg = _get_avg(src_for_avg, "short")
 
-        # 3-3) PnL 직접 계산 (Bybit USDT Perp 기준)
-        #  - 롱  : (mark - entry) * size
-        #  - 숏  : (entry - mark) * size
         if mark_price > 0.0:
             if abs(long_size) > 0.0 and long_avg > 0.0:
                 long_pnl = (mark_price - long_avg) * long_size
             if abs(short_size) > 0.0 and short_avg > 0.0:
                 short_pnl = (short_avg - mark_price) * short_size
 
-            # 디버그용 (INFO 로그는 그대로 유지)
-            logger.debug(
-                "[Feed] Fallback PnL calc: mark=%.2f long_avg=%.2f short_avg=%.2f long_pnl=%.6f short_pnl=%.6f",
-                mark_price,
-                long_avg,
-                short_avg,
-                long_pnl,
-                short_pnl,
-            )
-
-    # ------------------------------------------------------------------
-    # 4) [DRY-RUN TEST ONLY] 가짜 포지션 주입 (기존 로직 그대로 유지)
-    # ------------------------------------------------------------------
+    # DRY-RUN fake injection (keep)
     try:
         fake_pos_flag = bool(int(os.getenv("FSM_FAKE_POS", "0")))
         fake_pos_qty = _to_float(os.getenv("FSM_FAKE_POS_QTY", "0.005"))
@@ -365,14 +299,8 @@ def _extract_position_info(feed: StrategyFeed) -> Dict[str, Any]:
         fake_pos_qty = 0.0
 
     if fake_pos_flag and long_size == 0 and short_size == 0 and hedge_size == 0:
-        # 테스트용: 가짜 롱 포지션
         long_size = fake_pos_qty
-        short_size = 0.0
-        hedge_size = 0.0
 
-    # ------------------------------------------------------------------
-    # 5) [DRY-RUN TEST ONLY] 가짜 PnL 주입 (EXIT/ESCAPE 테스트)
-    # ------------------------------------------------------------------
     try:
         fake_pnl_flag = bool(int(os.getenv("FSM_FAKE_PNL", "0")))
         fake_pnl_value = _to_float(os.getenv("FSM_FAKE_PNL_VALUE", "0.0"))
@@ -380,16 +308,9 @@ def _extract_position_info(feed: StrategyFeed) -> Dict[str, Any]:
         fake_pnl_flag = False
         fake_pnl_value = 0.0
 
-    # 기존 동작 그대로: 원래 long_pnl 이 0 일 때만 덮어씀
     if fake_pnl_flag and long_size > 0 and long_pnl == 0.0:
-        # 롱 포지션 기준 테스트:
-        #  - 양수면 익절 시나리오
-        #  - 음수면 손절/ESCAPE 시나리오
         long_pnl = fake_pnl_value
 
-    # ------------------------------------------------------------------
-    # 6) 최종 dict 구성 + 로그
-    # ------------------------------------------------------------------
     pos_info: Dict[str, Any] = {
         "long_size": long_size,
         "short_size": short_size,
@@ -398,7 +319,7 @@ def _extract_position_info(feed: StrategyFeed) -> Dict[str, Any]:
         "short_pnl": short_pnl,
     }
 
-    logger.info(
+    _log.info(
         "[Feed] pos_for_fsm: long=%.6f short=%.6f hedge=%.6f long_pnl=%.6f short_pnl=%.6f",
         pos_info.get("long_size", 0.0),
         pos_info.get("short_size", 0.0),
@@ -409,34 +330,21 @@ def _extract_position_info(feed: StrategyFeed) -> Dict[str, Any]:
 
     return pos_info
 
+
 def _compute_profit_line_index(pnl: float, size: float, p_gap: float) -> int:
-    """
-    TP 단계 진입/진행을 위한 profit_line_index 계산.
-
-    명세:
-      - Long:  floor((price_now - avg_entry) / P_gap)
-      - Short: floor((avg_entry - price_now) / P_gap)
-
-    여기서는 PnL과 size, p_gap 만으로 등가 계산:
-      - PnL = |size| * Δprice
-      - Δprice = PnL / |size|
-      - profit_line_index = floor(max(0, Δprice / P_gap))
-    """
     try:
         pnl = float(pnl)
         size = float(size)
         p_gap = float(p_gap)
     except (TypeError, ValueError):
         return 0
-
     if size == 0 or p_gap <= 0:
         return 0
-
     delta_price = pnl / abs(size)
     lines = delta_price / p_gap
     if lines <= 0:
         return 0
-    return int(lines // 1)  # floor
+    return int(lines // 1)
 
 
 def _pnl_sign(x: float) -> int:
@@ -449,84 +357,75 @@ def _pnl_sign(x: float) -> int:
 
 
 def _compute_avg_entry_from_pnl_long(price_now: float, size: float, pnl: float) -> Optional[float]:
-    """
-    Long 기준 avg_entry 추정:
-      pnl = (price_now - avg_entry) * size
-      avg_entry = price_now - pnl / size
-    """
     try:
         price_now = float(price_now)
         size = float(size)
         pnl = float(pnl)
     except (TypeError, ValueError):
         return None
-
     if size == 0:
         return None
-    return price_now - pnl / size
+    return price_now - pnl / abs(size)
 
 
 def _compute_avg_entry_from_pnl_short(price_now: float, size: float, pnl: float) -> Optional[float]:
-    """
-    Short 기준 avg_entry 추정:
-      pnl = (avg_entry - price_now) * size
-      avg_entry = price_now + pnl / size
-    """
     try:
         price_now = float(price_now)
         size = float(size)
         pnl = float(pnl)
     except (TypeError, ValueError):
         return None
-
     if size == 0:
         return None
-    return price_now + pnl / size
+    return price_now + pnl / abs(size)
 
 
 # ------------------------------
 # GridLogic
 # ------------------------------
 
-
 class GridLogic:
-    """
-    v10.1 Grid 엔진.
-
-    기능:
-    - P_center/P_gap 기반 라인 정의 (-12..+12)
-    - Overlap Zone / 허용 라인 (Long: -12~+7, Short: -7~+12)
-    - price_prev/price_now 기반 Line Touch 검출
-    - Start-up Entry / DCA(Scale-in) / TP 판단
-    - remain_seed_dir ≥ unit_seed_dir last-chunk 규칙 적용
-    - ESCAPE/NEWS/CB Gate
-    - LineMemory(FREE/OPEN/LOCKED_LOSS) Gate + 리셋 (3.2.5, 3.3.5, 3.3.6)
-    """
-
     def __init__(self, capital: CapitalManager | None = None) -> None:
-        # capital 은 현재 직접 사용하지 않지만,
-        # v10.1 seed/step 계산 설계와의 정합성을 위해 보관한다.
         self.capital = capital
-        # capital.py 의 SAFE_FACTOR(0.9)와 split_count(13)를 그대로 따른다.
         self.safe_factor = SAFE_FACTOR
 
-    # --------------------------
-    # Seed / last-chunk 계산
-    # --------------------------
+    def _apply_news_cb_block(
+        self,
+        decision,
+        grid_orders_by_side_idx,
+        news_block: bool,
+        cb_block: bool,
+        mode: str,
+    ) -> tuple[bool, bool]:
+        """
+        Returns: (news_active, block_new_entries)
+        - 뉴스/CB 구간에서는 신규 진입(리스크 증가)을 차단한다.
+        - TP/Reduce(리스크 감소)는 허용한다.
+        - 기존 Maker(Grid) 주문은 취소한다.
+        """
+        news_active = bool(news_block or cb_block or mode == "NEWS_BLOCK")
+        if not news_active:
+            return False, False
+
+        # cancel existing maker/grid orders
+        for orders in grid_orders_by_side_idx.values():
+            for o in orders:
+                decision.grid_cancels.append(o.order_id)
+
+        logger.info("[GRID] NEWS/CB Block active → Grid 신규 엔트리 차단, TP/Reduce 허용, 기존 Maker 취소")
+
+        # block new entries, keep reduce-only only
+        try:
+            decision.grid_entries = [
+                e for e in decision.grid_entries
+                if bool(getattr(e, "reduce_only", False))
+            ]
+        except Exception:
+            pass
+
+        return True, True
 
     def _seed_gate(self, state, side: str, override_k_dir: Optional[int] = None) -> SeedGateState:
-        """
-        BotState 에서 해당 방향 seed 사용 가능 여부 계산.
-
-        명세:
-        - unit_seed_dir        : state.unit_seed_long/short
-        - effective_seed_total : state.long/short_seed_total_effective
-        - allocated_seed_dir   = effective_seed_total / SAFE_FACTOR
-        - used_seed_dir        = k_dir * unit_seed_dir
-        - remain_seed_dir      = allocated_seed_dir - used_seed_dir
-        - remain_seed_dir ≥ unit_seed_dir 이면 새로운 1분할 진입 허용
-        - k_dir 는 0 ~ 13 범위로 클램프
-        """
         s = state
         side_u = side.upper()
         if side_u == "LONG":
@@ -557,7 +456,6 @@ class GridLogic:
         allocated = eff / self.safe_factor if self.safe_factor > 0 else eff
         used = float(k_dir) * unit
         remain = max(0.0, allocated - used)
-
         can_open = (k_dir < SPLIT_COUNT) and (remain + 1e-9 >= unit)
 
         return SeedGateState(
@@ -570,11 +468,8 @@ class GridLogic:
             can_open_unit=can_open,
         )
 
-    # --------------------------
-    # 메인 프로세스
-    # --------------------------
-
     def process(self, feed: StrategyFeed) -> GridDecision:
+        now_ts = time.time()  # injected for DCA cooldown
         state = feed.state
         mode = getattr(state, "mode", "NORMAL")
 
@@ -593,47 +488,109 @@ class GridLogic:
         price_now = float(getattr(feed, "price", 0.0) or 0.0)
         price_prev = float(getattr(feed, "price_prev", price_now) or price_now)
 
-        # LineMemory (dict[int, LineState])
         line_memory_long: Dict[int, LineState] = dict(getattr(state, "line_memory_long", {}) or {})
         line_memory_short: Dict[int, LineState] = dict(getattr(state, "line_memory_short", {}) or {})
 
-        # ESCAPE / NEWS / CB 상태
         wave_state = getattr(feed, "wave_state", None)
         if wave_state is not None:
             escape_long_active = bool(getattr(getattr(wave_state, "long_escape", wave_state), "active", False))
             escape_short_active = bool(getattr(getattr(wave_state, "short_escape", wave_state), "active", False))
         else:
-            escape_long_active = bool(
-                getattr(state, "escape_long_active", False)
-                or getattr(state, "escape_active_long", False)
-            )
-            escape_short_active = bool(
-                getattr(state, "escape_short_active", False)
-                or getattr(state, "escape_active_short", False)
-            )
+            escape_long_active = bool(getattr(state, "escape_long_active", False) or getattr(state, "escape_active_long", False))
+            escape_short_active = bool(getattr(state, "escape_short_active", False) or getattr(state, "escape_active_short", False))
 
-        news_block = bool(
-            getattr(feed, "news_block", False)
-            or getattr(state, "news_block", False)
-        )
-        cb_block = bool(
-            getattr(feed, "cb_block", False)
-            or getattr(state, "cb_block", False)
-        )
+        news_block = bool(getattr(feed, "news_block", False) or getattr(state, "news_block", False))
+        cb_block = bool(getattr(feed, "cb_block", False) or getattr(state, "cb_block", False))
 
-        # 포지션 / PnL 정보
         pos_info = _extract_position_info(feed)
         long_size = float(pos_info.get("long_size", 0.0) or 0.0)
         short_size = float(pos_info.get("short_size", 0.0) or 0.0)
         long_pnl = float(pos_info.get("long_pnl", 0.0) or 0.0)
         short_pnl = float(pos_info.get("short_pnl", 0.0) or 0.0)
 
-        # ------------------------------
-        # LineMemory Reset 규칙 (3.2.5, 3.3.5 / 3.3.6)
-        # ------------------------------
+        # ------------------------------------------------------------
+        # [REENTRY_RESET_V10_1]
+        # TP 1분할 체결(수량 감소) 감지 시 dca_used_indices(진입기록) 리셋 → 동일 라인 재진입 허용
+        # - LONG TP fill: 음수 idx(롱 진입 라인)만 제거
+        # - SHORT TP fill: 양수 idx(숏 진입 라인)만 제거
+        # ------------------------------------------------------------
+        try:
+            prev_long_size = float(getattr(state, "prev_long_size", long_size) or long_size)
+            prev_short_size = float(getattr(state, "prev_short_size", short_size) or short_size)
+            prev_long_tp_active = bool(getattr(state, "prev_long_tp_active", False))
+            prev_short_tp_active = bool(getattr(state, "prev_short_tp_active", False))
+        except Exception:
+            prev_long_size, prev_short_size = long_size, short_size
+            prev_long_tp_active, prev_short_tp_active = False, False
+
+        # NOTE:
+        #  - 운영에서 TP active 신호가 누락/불안정할 수 있어(prev_*_tp_active가 False로 유지되는 케이스),
+        #    "수량 감소"를 1차 트리거로 사용한다.
+        #  - prev_*_tp_active는 'TP로 인한 감소인지' 라벨링/관측용 힌트로만 사용.
+        _tp_fill_eps = 1e-9
+
+        long_reduced = (prev_long_size > 0.0) and (long_size < (prev_long_size - _tp_fill_eps))
+        short_reduced = (prev_short_size > 0.0) and (short_size < (prev_short_size - _tp_fill_eps))
+
+        tp_filled_long = bool(long_reduced)
+        tp_filled_short = bool(short_reduced)
+
+        if tp_filled_long or tp_filled_short:
+            used = set(getattr(state, "dca_used_indices", []) or [])
+            last_idx = int(getattr(state, "dca_last_idx", 10**9) or 10**9)
+            last_ts = float(getattr(state, "dca_last_ts", 0.0) or 0.0)
+            last_price = float(getattr(state, "dca_last_price", 0.0) or 0.0)
+
+            if tp_filled_long:
+                used = {i for i in used if i >= 0}
+                if last_idx < 0:
+                    last_idx, last_ts, last_price = 10**9, 0.0, 0.0
+
+                if prev_long_tp_active:
+                    logger.info(
+                        "[REENTRY] LONG TP filled -> reset dca_used_indices(negative cleared). prev=%.6f now=%.6f",
+                        prev_long_size, long_size
+                    )
+                else:
+                    logger.info(
+                        "[REENTRY] LONG size reduced -> reset dca_used_indices(negative cleared). prev_tp_active=False prev=%.6f now=%.6f",
+                        prev_long_size, long_size
+                    )
+
+            if tp_filled_short:
+                used = {i for i in used if i <= 0}
+                if last_idx > 0:
+                    last_idx, last_ts, last_price = 10**9, 0.0, 0.0
+
+                if prev_short_tp_active:
+                    logger.info(
+                        "[REENTRY] SHORT TP filled -> reset dca_used_indices(positive cleared). prev=%.6f now=%.6f",
+                        prev_short_size, short_size
+                    )
+                else:
+                    logger.info(
+                        "[REENTRY] SHORT size reduced -> reset dca_used_indices(positive cleared). prev_tp_active=False prev=%.6f now=%.6f",
+                        prev_short_size, short_size
+                    )
+
+            try:
+                setattr(state, "dca_used_indices", sorted(used))
+                setattr(state, "dca_last_idx", last_idx)
+                setattr(state, "dca_last_ts", last_ts)
+                setattr(state, "dca_last_price", last_price)
+            except Exception:
+                pass
+
+            try:
+                decision.state_updates["dca_used_indices"] = sorted(used)
+                decision.state_updates["dca_last_idx"] = last_idx
+                decision.state_updates["dca_last_ts"] = last_ts
+                decision.state_updates["dca_last_price"] = last_price
+            except Exception:
+                pass
+
         prev_long_nonzero = bool(getattr(state, "long_pos_nonzero", long_size != 0.0))
         prev_short_nonzero = bool(getattr(state, "short_pos_nonzero", short_size != 0.0))
-
         prev_long_pnl_sign = int(getattr(state, "long_pnl_sign", 0) or 0)
         prev_short_pnl_sign = int(getattr(state, "short_pnl_sign", 0) or 0)
 
@@ -645,7 +602,6 @@ class GridLogic:
         reset_long_seed = False
         reset_short_seed = False
 
-        # (A) 전량 익절(또는 손절 등) 후 size=0 이 된 경우 → line_memory 전체 리셋 + k_dir=0
         if long_size == 0.0 and prev_long_nonzero:
             reset_long_lines = True
             reset_long_seed = True
@@ -653,7 +609,6 @@ class GridLogic:
             reset_short_lines = True
             reset_short_seed = True
 
-        # (B) 부분익절 이후 PnL >= 0 상태 유지 → 다시 손실 구간(PnL<0)으로 돌아오는 순간 → line_memory 리셋
         if long_size != 0.0 and prev_long_pnl_sign >= 0 and long_pnl_sign < 0:
             reset_long_lines = True
         if short_size != 0.0 and prev_short_pnl_sign >= 0 and short_pnl_sign < 0:
@@ -662,7 +617,6 @@ class GridLogic:
         if reset_long_lines:
             line_memory_long = {}
             decision.state_updates["line_memory_long"] = line_memory_long
-            # TP 단계도 초기화
             decision.state_updates["long_tp_active"] = False
             decision.state_updates["long_tp_max_index"] = 0
 
@@ -672,7 +626,6 @@ class GridLogic:
             decision.state_updates["short_tp_active"] = False
             decision.state_updates["short_tp_max_index"] = 0
 
-        # 전량 익절 후 seed 측면 초기화 (k_dir=0)
         k_long_state = int(getattr(state, "k_long", 0) or 0)
         k_short_state = int(getattr(state, "k_short", 0) or 0)
 
@@ -684,21 +637,14 @@ class GridLogic:
         if reset_short_seed and k_short_state != 0:
             decision.state_updates["k_short"] = 0
 
-        # 현재 tick 기준 상태 저장 (size≠0 여부, pnl sign)
         decision.state_updates["long_pos_nonzero"] = (long_size != 0.0)
         decision.state_updates["short_pos_nonzero"] = (short_size != 0.0)
         decision.state_updates["long_pnl_sign"] = long_pnl_sign
         decision.state_updates["short_pnl_sign"] = short_pnl_sign
 
-        # ------------------------------
-        # Seed Gate (last-chunk 규칙, remain_seed_dir ≥ unit_seed_dir)
-        # ------------------------------
         seed_long = self._seed_gate(state, "LONG", override_k_dir=k_long_effective)
         seed_short = self._seed_gate(state, "SHORT", override_k_dir=k_short_effective)
 
-        # ------------------------------
-        # OPEN ORDERS 분류
-        # ------------------------------
         grid_orders_by_side_idx: Dict[Tuple[str, int], List[OrderInfo]] = {}
         old_wave_orders: List[str] = []
 
@@ -710,40 +656,94 @@ class GridLogic:
             elif kind == "GRID_OLD_WAVE":
                 old_wave_orders.append(o.order_id)
 
-        # 이전 wave 의 GRID 주문은 전부 취소
         for oid in old_wave_orders:
             decision.grid_cancels.append(oid)
 
-        # ------------------------------
-        # ESCAPE / NEWS / CB 글로벌 게이트
-        # ------------------------------
-        if news_block or cb_block or mode == "NEWS_BLOCK":
-            # 모든 GRID Maker 주문 취소, 신규 생성 없음
-            for orders in grid_orders_by_side_idx.values():
-                for o in orders:
-                    decision.grid_cancels.append(o.order_id)
-            logger.info(
-                "[GRID] NEWS/CB Block active → 모든 Grid 엔트리/TP 차단 및 기존 Maker 취소"
-            )
-            return decision
+        news_active, block_new_entries = self._apply_news_cb_block(
+            decision, grid_orders_by_side_idx, news_block, cb_block, mode
+        )
 
+        # -----------
+        # DCA touch window (crossing-based, but over a rolling high/low window)
         # ------------------------------
-        # 1) 라인 터치 검출
-        # ------------------------------
+        try:
+            dca_low = float(getattr(state, "dca_win_low", price_now))
+            dca_high = float(getattr(state, "dca_win_high", price_now))
+            dca_ts = float(getattr(state, "dca_win_ts", 0.0))
+        except Exception:
+            dca_low, dca_high, dca_ts = price_now, price_now, 0.0
+
+        # 윈도우 만료(예: 20초) 시 리셋
+        if (now_ts - dca_ts) > 20.0:
+            dca_low, dca_high = price_now, price_now
+            dca_ts = now_ts
+
+        # 윈도우 업데이트
+        dca_low = min(dca_low, price_now)
+        dca_high = max(dca_high, price_now)
+
+        setattr(state, "dca_win_low", dca_low)
+        setattr(state, "dca_win_high", dca_high)
+        setattr(state, "dca_win_ts", dca_ts)
+
+        # 교차 기반 터치: (윈도우 low~high) 구간을 기준으로 라인 관통 여부 검사
         touched_indices = detect_touched_lines(
-            price_prev=price_prev,
-            price_now=price_now,
+            price_prev=dca_low,
+            price_now=dca_high,
             p_center=p_center,
             p_gap=p_gap,
             idx_min=min(LONG_LINE_MIN, SHORT_LINE_MIN),
             idx_max=max(LONG_LINE_MAX, SHORT_LINE_MAX),
         )
+        dca_indices: list[int] = []  # A-PLAN safety init (avoid UnboundLocalError)
 
         # ------------------------------
-        # 2) Start-up Entry (3.2.3)
-        #   - Wave 시작 시 BUY/SELL 한 개씩 Maker 배치 (grid_index=0)
-        #   - qty = unit_seed_long / unit_seed_short (1유닛)
-        #   - startup_done 플래그로 1회만 실행
+        # [A-PLAN] DCA trigger: touched OR near-line
+        # ------------------------------
+        dca_near_eps = float(getattr(state, 'dca_near_eps', 0.18) or 0.18)
+        dca_cooldown_sec = float(getattr(state, 'dca_cooldown_sec', 20.0) or 20.0)
+        dca_repeat_guard = float(getattr(state, 'dca_repeat_guard', 0.50) or 0.50)
+
+        idx_float = (price_now - p_center) / p_gap if p_gap > 0 else 0.0
+        idx_near = int(round(idx_float))
+        line_near = line_price(p_center, p_gap, idx_near) if p_gap > 0 else price_now
+        dist_near = abs(price_now - line_near)
+        dist_ratio = (dist_near / p_gap) if p_gap > 0 else 999.0
+        near_touch = (dist_ratio <= dca_near_eps)
+
+        dca_indices = list(dca_indices or [])
+        if (not dca_indices) and near_touch:
+            dca_indices = [idx_near]
+
+        logger.info(
+            "[DCA-DBG] dca_indices=%s touched=%s near_touch=%s dist_ratio=%.3f eps=%.3f",
+            dca_indices, touched_indices, near_touch, dist_ratio, dca_near_eps
+        )
+
+        logger.info(
+            "[DCA-DBG] price_prev=%.2f price_now=%.2f touched=%s",
+            price_prev, price_now, touched_indices,
+        )
+        # [DCA-DBG] nearest_line (why touched==[])
+        try:
+            pc = float(p_center)
+            pg = float(p_gap)
+            pn = float(price_now)
+            cand = []
+            for gi in range(-12, 13):
+                lp = pc + pg * gi
+                cand.append((abs(pn - lp), gi, lp))
+            cand.sort(key=lambda x: x[0])
+            d0, gi0, lp0 = cand[0]
+            logger.info(
+                "[DCA-DBG] nearest_line: price_now=%.2f nearest_idx=%d line=%.2f dist=%.2f p_center=%.2f p_gap=%.2f",
+                pn, gi0, lp0, d0, pc, pg,
+            )
+        except Exception as _e:
+            logger.info("[DCA-DBG] nearest_line: skipped (%s)", _e)
+
+        # ------------------------------
+        # Start-up Entry (진입) — reduce_only 금지
         # ------------------------------
         k_long = k_long_effective
         k_short = k_short_effective
@@ -751,112 +751,49 @@ class GridLogic:
         startup_done = bool(getattr(state, "startup_done", False))
         startup_entries_created = 0
 
-        # ✅ 이미 해당 방향 포지션이 있으면 Start-up 금지
-        has_long_pos = (long_size != 0.0)
-        has_short_pos = (short_size != 0.0)
+        existing_long_startup = bool(grid_orders_by_side_idx.get(("BUY", 0), []))
+        existing_short_startup = bool(grid_orders_by_side_idx.get(("SELL", 0), []))
 
-        # ✅ 이미 grid_index=0 에 스타트업 Maker 가 걸려 있으면 Start-up 금지
-        # grid_orders_by_side_idx 는 위에서 만든 dict[(side, idx)] = [OrderInfo...]
-        existing_long_startup = bool(
-            grid_orders_by_side_idx.get(("BUY", 0), [])
-        )
-        existing_short_startup = bool(
-            grid_orders_by_side_idx.get(("SELL", 0), [])
-        )
-
-        if (
-            wave_id > 0
-            and not startup_done
-            and p_center > 0.0
-            and p_gap > 0.0
-        ):
-            # LONG Start-up at grid_index = 0
-            if (
-                long_size == 0.0
-                and k_long == 0
-                and not escape_long_active
-                and seed_long.can_open_unit
-                and not existing_long_startup  # 이미 Maker 없을 때만
-            ):
+        if wave_id > 0 and (not startup_done) and p_center > 0.0 and p_gap > 0.0:
+            if (long_size == 0.0 and k_long == 0 and (not escape_long_active) and seed_long.can_open_unit and (not existing_long_startup)):
                 long_idx = 0
-                # LONG 허용 라인 범위 내에서만
                 if LONG_LINE_MIN <= long_idx <= LONG_LINE_MAX:
-                    line_state = line_memory_long.get(long_idx, LineState.FREE)
-                    if line_state == LineState.FREE:
+                    if line_memory_long.get(long_idx, LineState.FREE) == LineState.FREE:
                         price_l = line_price(p_center, p_gap, long_idx)
                         notional_l = seed_long.unit_seed * GRID_LEVERAGE
-                        qty_l = calc_contract_qty(
-                            usdt_amount=notional_l,
-                            price=price_l,
-                            symbol="BTCUSDT",
-                        )
+                        qty_l = calc_contract_qty(usdt_amount=notional_l, price=price_l, symbol="BTCUSDT")
                         if qty_l > 0.0:
                             key_l = ("BUY", long_idx)
                             existing_l = choose_main_order(grid_orders_by_side_idx.get(key_l, []))
                             if existing_l is None:
                                 decision.grid_entries.append(
-                                    GridOrderSpec(
-                                        side="BUY",
-                                        price=price_l,
-                                        qty=qty_l,
-                                        grid_index=long_idx,
-                                        wave_id=wave_id,
-                                        mode="A",
-                                    )
+                                    GridOrderSpec(side="BUY", price=price_l, qty=qty_l, grid_index=long_idx, wave_id=wave_id, mode="A")
                                 )
                                 startup_entries_created += 1
 
-            # SHORT Start-up at grid_index = 0
-            if (
-                short_size == 0.0
-                and k_short == 0
-                and not escape_short_active
-                and seed_short.can_open_unit
-            ):
+            if (short_size == 0.0 and k_short == 0 and (not escape_short_active) and seed_short.can_open_unit and (not existing_short_startup)):
                 short_idx = 0
-                # SHORT 허용 라인 범위 내에서만
                 if SHORT_LINE_MIN <= short_idx <= SHORT_LINE_MAX:
-                    line_state = line_memory_short.get(short_idx, LineState.FREE)
-                    if line_state == LineState.FREE:
+                    if line_memory_short.get(short_idx, LineState.FREE) == LineState.FREE:
                         price_s = line_price(p_center, p_gap, short_idx)
                         notional_s = seed_short.unit_seed * GRID_LEVERAGE
-                        qty_s = calc_contract_qty(
-                            usdt_amount=notional_s,
-                            price=price_s,
-                            symbol="BTCUSDT",
-                        )
+                        qty_s = calc_contract_qty(usdt_amount=notional_s, price=price_s, symbol="BTCUSDT")
                         if qty_s > 0.0:
                             key_s = ("SELL", short_idx)
                             existing_s = choose_main_order(grid_orders_by_side_idx.get(key_s, []))
                             if existing_s is None:
                                 decision.grid_entries.append(
-                                    GridOrderSpec(
-                                        side="SELL",
-                                        price=price_s,
-                                        qty=qty_s,
-                                        grid_index=short_idx,
-                                        wave_id=wave_id,
-                                        mode="A",
-                                    )
+                                    GridOrderSpec(side="SELL", price=price_s, qty=qty_s, grid_index=short_idx, wave_id=wave_id, mode="A")
                                 )
                                 startup_entries_created += 1
 
             if startup_entries_created > 0:
                 decision.state_updates["startup_done"] = True
-                logger.info(
-                    "[GRID] Start-up Entry 실행 완료: wave_id=%s, entries=%s",
-                    wave_id,
-                    startup_entries_created,
-                )
+                logger.info("[GRID] Start-up Entry 실행 완료: wave_id=%s, entries=%s", wave_id, startup_entries_created)
 
-        # 3) DCA (Scale-in) – 4 조건 (3.2.4)
         # ------------------------------
-        # LONG DCA:
-        #  (1) long_pnl < 0 (손실 구간)
-        #  (2) 손실 방향(가격 하락)으로 새로운 라인 터치
-        #  (3) 해당 라인 line_state == FREE
-        #  (4) remain_seed >= unit_seed (last-chunk)
-        #  (+) |long_pnl| >= DCA_MIN_LOSS_USDT_LONG (최소 손실 기준)
+        # DCA (Scale-in) — unchanged
+        # ------------------------------
         if (
             long_pnl < 0.0
             and long_size != 0.0
@@ -867,43 +804,77 @@ class GridLogic:
         ):
             remaining_seed = seed_long.remain_seed
             available_steps = max(0, SPLIT_COUNT - seed_long.k_dir)
-            for idx in touched_indices:
+            for idx in dca_indices:
+                # [A-PLAN] anti-repeat guard
+                # 같은 wave에서 같은 idx 반복 진입을 막는다.
+                try:
+                    _wave_id_now = int(getattr(state, 'wave_id', 0) or 0)
+                except Exception:
+                    _wave_id_now = 0
+                try:
+                    _guard_wave = int(getattr(state, 'dca_guard_wave_id', -1) or -1)
+                except Exception:
+                    _guard_wave = -1
+                if _guard_wave != _wave_id_now:
+                    dca_used_indices = set()
+                    dca_last_ts = 0.0
+                    dca_last_idx = 10**9
+                    dca_last_price = 0.0
+                    try:
+                        setattr(state, 'dca_guard_wave_id', _wave_id_now)
+                        setattr(state, 'dca_used_indices', [])
+                        setattr(state, 'dca_last_ts', 0.0)
+                        setattr(state, 'dca_last_idx', 10**9)
+                        setattr(state, 'dca_last_price', 0.0)
+                    except Exception:
+                        pass
+                else:
+                    dca_used_indices = set(getattr(state, 'dca_used_indices', []) or [])
+                    dca_last_ts = float(getattr(state, 'dca_last_ts', 0.0) or 0.0)
+                    dca_last_idx = int(getattr(state, 'dca_last_idx', 10**9) or 10**9)
+                    dca_last_price = float(getattr(state, 'dca_last_price', 0.0) or 0.0)
+                # idx 1회 사용 + 동일 idx 재시도 쿨다운 + 동일 idx 가격근접 반복 방지
+                if idx in dca_used_indices:
+                    logger.info('[DCA-DBG] guard_block: idx=%s already used (wave=%s)', idx, _wave_id_now)
+                    continue
+                if (idx == dca_last_idx) and ((now_ts - dca_last_ts) < dca_cooldown_sec):
+                    logger.info('[DCA-DBG] guard_block: cooldown idx=%s dt=%.1f < %.1f', idx, (now_ts - dca_last_ts), dca_cooldown_sec)
+                    continue
+                if (idx == dca_last_idx) and (dca_last_price > 0.0) and (abs(price_now - dca_last_price) < (dca_repeat_guard * p_gap)):
+                    logger.info('[DCA-DBG] guard_block: repeat_price idx=%s dist=%.2f < %.2f', idx, abs(price_now - dca_last_price), (dca_repeat_guard * p_gap))
+                    continue
+                # 보수적으로: 루프에 들어온 순간 mark (같은 tick/다음 tick 반복 진입을 강하게 억제)
+                dca_used_indices.add(idx)
+                dca_last_ts = now_ts
+                dca_last_idx = idx
+                dca_last_price = price_now
+                try:
+                    setattr(state, 'dca_used_indices', sorted(dca_used_indices))
+                    setattr(state, 'dca_last_ts', dca_last_ts)
+                    setattr(state, 'dca_last_idx', dca_last_idx)
+                    setattr(state, 'dca_last_price', dca_last_price)
+                except Exception:
+                    pass
                 if idx < LONG_LINE_MIN or idx > LONG_LINE_MAX:
                     continue
                 if available_steps <= 0:
                     break
-                line_state = line_memory_long.get(idx, LineState.FREE)
-                if line_state != LineState.FREE:
+                if line_memory_long.get(idx, LineState.FREE) != LineState.FREE:
                     continue
                 if remaining_seed + 1e-9 < seed_long.unit_seed:
                     break
                 price_i = line_price(p_center, p_gap, idx)
                 notional = seed_long.unit_seed * GRID_LEVERAGE
-                qty = calc_contract_qty(
-                    usdt_amount=notional,
-                    price=price_i,
-                    symbol="BTCUSDT",
-                )
+                qty = calc_contract_qty(usdt_amount=notional, price=price_i, symbol="BTCUSDT")
                 if qty <= 0.0:
                     continue
                 key = ("BUY", idx)
                 existing = choose_main_order(grid_orders_by_side_idx.get(key, []))
                 if existing is None:
-                    decision.grid_entries.append(
-                        GridOrderSpec(
-                            side="BUY",
-                            price=price_i,
-                            qty=qty,
-                            grid_index=idx,
-                            wave_id=wave_id,
-                            mode="A",
-                        )
-                    )
+                    decision.grid_entries.append(GridOrderSpec(side="BUY", price=price_i, qty=qty, grid_index=idx, wave_id=wave_id, mode="A"))
                     remaining_seed -= seed_long.unit_seed
                     available_steps -= 1
 
-        # SHORT DCA (손실 방향: 가격 상승)
-        #  (+) |short_pnl| >= DCA_MIN_LOSS_USDT_SHORT (최소 손실 기준)
         if (
             short_pnl < 0.0
             and short_size != 0.0
@@ -914,43 +885,79 @@ class GridLogic:
         ):
             remaining_seed = seed_short.remain_seed
             available_steps = max(0, SPLIT_COUNT - seed_short.k_dir)
-            for idx in touched_indices:
+            for idx in dca_indices:
+                # [A-PLAN] anti-repeat guard
+                # 같은 wave에서 같은 idx 반복 진입을 막는다.
+                try:
+                    _wave_id_now = int(getattr(state, 'wave_id', 0) or 0)
+                except Exception:
+                    _wave_id_now = 0
+                try:
+                    _guard_wave = int(getattr(state, 'dca_guard_wave_id', -1) or -1)
+                except Exception:
+                    _guard_wave = -1
+                if _guard_wave != _wave_id_now:
+                    dca_used_indices = set()
+                    dca_last_ts = 0.0
+                    dca_last_idx = 10**9
+                    dca_last_price = 0.0
+                    try:
+                        setattr(state, 'dca_guard_wave_id', _wave_id_now)
+                        setattr(state, 'dca_used_indices', [])
+                        setattr(state, 'dca_last_ts', 0.0)
+                        setattr(state, 'dca_last_idx', 10**9)
+                        setattr(state, 'dca_last_price', 0.0)
+                    except Exception:
+                        pass
+                else:
+                    dca_used_indices = set(getattr(state, 'dca_used_indices', []) or [])
+                    dca_last_ts = float(getattr(state, 'dca_last_ts', 0.0) or 0.0)
+                    dca_last_idx = int(getattr(state, 'dca_last_idx', 10**9) or 10**9)
+                    dca_last_price = float(getattr(state, 'dca_last_price', 0.0) or 0.0)
+                # idx 1회 사용 + 동일 idx 재시도 쿨다운 + 동일 idx 가격근접 반복 방지
+                if idx in dca_used_indices:
+                    logger.info('[DCA-DBG] guard_block: idx=%s already used (wave=%s)', idx, _wave_id_now)
+                    continue
+                if (idx == dca_last_idx) and ((now_ts - dca_last_ts) < dca_cooldown_sec):
+                    logger.info('[DCA-DBG] guard_block: cooldown idx=%s dt=%.1f < %.1f', idx, (now_ts - dca_last_ts), dca_cooldown_sec)
+                    continue
+                if (idx == dca_last_idx) and (dca_last_price > 0.0) and (abs(price_now - dca_last_price) < (dca_repeat_guard * p_gap)):
+                    logger.info('[DCA-DBG] guard_block: repeat_price idx=%s dist=%.2f < %.2f', idx, abs(price_now - dca_last_price), (dca_repeat_guard * p_gap))
+                    continue
+                # 보수적으로: 루프에 들어온 순간 mark (같은 tick/다음 tick 반복 진입을 강하게 억제)
+                dca_used_indices.add(idx)
+                dca_last_ts = now_ts
+                dca_last_idx = idx
+                dca_last_price = price_now
+                try:
+                    setattr(state, 'dca_used_indices', sorted(dca_used_indices))
+                    setattr(state, 'dca_last_ts', dca_last_ts)
+                    setattr(state, 'dca_last_idx', dca_last_idx)
+                    setattr(state, 'dca_last_price', dca_last_price)
+                except Exception:
+                    pass
                 if idx < SHORT_LINE_MIN or idx > SHORT_LINE_MAX:
                     continue
                 if available_steps <= 0:
                     break
-                line_state = line_memory_short.get(idx, LineState.FREE)
-                if line_state != LineState.FREE:
+                if line_memory_short.get(idx, LineState.FREE) != LineState.FREE:
                     continue
                 if remaining_seed + 1e-9 < seed_short.unit_seed:
                     break
                 price_j = line_price(p_center, p_gap, idx)
                 notional = seed_short.unit_seed * GRID_LEVERAGE
-                qty = calc_contract_qty(
-                    usdt_amount=notional,
-                    price=price_j,
-                    symbol="BTCUSDT",
-                )
+                qty = calc_contract_qty(usdt_amount=notional, price=price_j, symbol="BTCUSDT")
                 if qty <= 0.0:
                     continue
                 key = ("SELL", idx)
                 existing = choose_main_order(grid_orders_by_side_idx.get(key, []))
                 if existing is None:
-                    decision.grid_entries.append(
-                        GridOrderSpec(
-                            side="SELL",
-                            price=price_j,
-                            qty=qty,
-                            grid_index=idx,
-                            wave_id=wave_id,
-                            mode="A",
-                        )
-                    )
+                    decision.grid_entries.append(GridOrderSpec(side="SELL", price=price_j, qty=qty, grid_index=idx, wave_id=wave_id, mode="A"))
                     remaining_seed -= seed_short.unit_seed
                     available_steps -= 1
 
         # ------------------------------
-        # 4) TP (익절) & Refill (3.3)
+        # TP (익절)
         # ------------------------------
         profit_idx_long = _compute_profit_line_index(long_pnl, long_size, p_gap)
         profit_idx_short = _compute_profit_line_index(short_pnl, short_size, p_gap)
@@ -961,87 +968,63 @@ class GridLogic:
         long_tp_max_index = int(getattr(state, "long_tp_max_index", 0) or 0)
         short_tp_max_index = int(getattr(state, "short_tp_max_index", 0) or 0)
 
-        # TP 디버그: 현재 상태 스냅샷
         logger.info(
             "[TP-DBG] pre: price_now=%.2f p_gap=%.2f "
             "long_size=%.6f long_pnl=%.6f profit_idx_long=%d long_tp_active=%s long_tp_max_index=%d "
             "short_size=%.6f short_pnl=%.6f profit_idx_short=%d short_tp_active=%s short_tp_max_index=%d "
             "escape_long_active=%s escape_short_active=%s",
-            price_now,
-            p_gap,
-            long_size,
-            long_pnl,
-            profit_idx_long,
-            long_tp_active,
-            long_tp_max_index,
-            short_size,
-            short_pnl,
-            profit_idx_short,
-            short_tp_active,
-            short_tp_max_index,
-            bool(escape_long_active),
-            bool(escape_short_active),
+            price_now, p_gap,
+            long_size, long_pnl, profit_idx_long, long_tp_active, long_tp_max_index,
+            short_size, short_pnl, profit_idx_short, short_tp_active, short_tp_max_index,
+            bool(escape_long_active), bool(escape_short_active),
         )
 
-        # LONG TP 단계 진입 (profit_line_index 가 처음으로 3 이상이 되는 순간)
-        if (
-            long_size != 0.0
-            and long_pnl > 0.0
-            and profit_idx_long >= 3
-            and not long_tp_active
-        ):
+        # [TP_STATE_RESET_V10_1] reset TP state when flat on each side
+        if long_size == 0.0 and (long_tp_active or long_tp_max_index != 0):
+            long_tp_active = False
+            long_tp_max_index = 0
+            decision.state_updates["long_tp_active"] = False
+            decision.state_updates["long_tp_max_index"] = 0
+            logger.info("[TP-DBG] LONG TP reset: long_size=0 -> tp_active=False tpmax=0")
+        if short_size == 0.0 and (short_tp_active or short_tp_max_index != 0):
+            short_tp_active = False
+            short_tp_max_index = 0
+            decision.state_updates["short_tp_active"] = False
+            decision.state_updates["short_tp_max_index"] = 0
+            logger.info("[TP-DBG] SHORT TP reset: short_size=0 -> tp_active=False tpmax=0")
+
+        if long_size != 0.0 and long_pnl > 0.0 and profit_idx_long >= 3 and (not long_tp_active):
             long_tp_active = True
             long_tp_max_index = profit_idx_long - 1
             decision.state_updates["long_tp_active"] = True
             decision.state_updates["long_tp_max_index"] = long_tp_max_index
-            logger.info(
-                "[TP-DBG] LONG TP 활성화: profit_idx_long=%d -> long_tp_max_index=%d",
-                profit_idx_long,
-                long_tp_max_index,
-            )
+            logger.info("[TP-DBG] LONG TP 활성화: profit_idx_long=%d -> long_tp_max_index=%d", profit_idx_long, long_tp_max_index)
 
-        # SHORT TP 단계 진입
-        if (
-            short_size != 0.0
-            and short_pnl > 0.0
-            and profit_idx_short >= 3
-            and not short_tp_active
-        ):
+        if short_size != 0.0 and short_pnl > 0.0 and profit_idx_short >= 3 and (not short_tp_active):
             short_tp_active = True
             short_tp_max_index = profit_idx_short - 1
             decision.state_updates["short_tp_active"] = True
             decision.state_updates["short_tp_max_index"] = short_tp_max_index
-            logger.info(
-                "[TP-DBG] SHORT TP 활성화: profit_idx_short=%d -> short_tp_max_index=%d",
-                profit_idx_short,
-                short_tp_max_index,
-            )
+            logger.info("[TP-DBG] SHORT activate: idx=%d pnl=%.6f size=%.6f -> tpmax=%d", profit_idx_short, short_pnl, short_size, short_tp_max_index)
 
-        # LONG TP 실행
-        if (
-            long_size != 0.0
-            and long_pnl > 0.0
-            and long_tp_active
-            and not escape_long_active
-        ):
+        # LONG TP 실행 (SELL reduce-only, posIdx=1)
+        if long_size != 0.0 and long_pnl > 0.0 and long_tp_active and (not escape_long_active):
             avg_entry_long = _compute_avg_entry_from_pnl_long(price_now, long_size, long_pnl)
             if avg_entry_long is not None and p_gap > 0:
                 new_max = profit_idx_long
-                # 한 tick 에 여러 profit line 을 통과한 경우 모두 처리 (최대 SPLIT_COUNT 단계만)
                 upper_bound = min(new_max, long_tp_max_index + SPLIT_COUNT)
                 for idx in range(long_tp_max_index + 1, upper_bound + 1):
                     if idx < 3:
                         continue
                     price_tp = avg_entry_long + idx * p_gap
+                    _tick = 0.1
+                    if float(price_tp) <= float(avg_entry_long) + _tick:
+                        logger.info("[TP-DBG] LONG TP skip: price_tp=%.2f <= avg_entry_long=%.2f (tick=%.1f)", price_tp, avg_entry_long, _tick)
+                        continue
                     notional = seed_long.unit_seed * GRID_LEVERAGE if seed_long.unit_seed > 0 else 0.0
                     if notional <= 0.0:
                         break
-                    qty_tp = calc_contract_qty(
-                        usdt_amount=notional,
-                        price=price_tp,
-                        symbol="BTCUSDT",
-                    )
-                    # 포지션 크기를 초과하지 않도록 마지막 분할에서 clamp
+                    qty_tp = calc_contract_qty(usdt_amount=notional, price=price_tp, symbol="BTCUSDT")
                     if qty_tp <= 0.0:
                         break
                     if qty_tp > abs(long_size):
@@ -1059,25 +1042,19 @@ class GridLogic:
                                 grid_index=idx,
                                 wave_id=wave_id,
                                 mode="A",
+                                reduce_only=True,
+                                position_idx=1,
                             )
                         )
                         long_tp_max_index = idx
                         logger.info(
-                            "[TP-DBG] LONG TP 주문 생성: idx=%d price_tp=%.2f qty_tp=%.6f",
-                            idx,
-                            price_tp,
-                            qty_tp,
+                            "[TP-DBG] LONG TP 주문 생성: idx=%d price_tp=%.2f qty_tp=%.6f reduce_only=%s position_idx=%s",
+                            idx, price_tp, qty_tp, True, 1
                         )
-
                 decision.state_updates["long_tp_max_index"] = long_tp_max_index
 
-        # SHORT TP 실행
-        if (
-            short_size != 0.0
-            and short_pnl > 0.0
-            and short_tp_active
-            and not escape_short_active
-        ):
+        # SHORT TP 실행 (BUY reduce-only, posIdx=2)
+        if short_size != 0.0 and short_pnl > 0.0 and short_tp_active and (not escape_short_active):
             avg_entry_short = _compute_avg_entry_from_pnl_short(price_now, short_size, short_pnl)
             if avg_entry_short is not None and p_gap > 0:
                 new_max = profit_idx_short
@@ -1086,14 +1063,14 @@ class GridLogic:
                     if idx < 3:
                         continue
                     price_tp = avg_entry_short - idx * p_gap
+                    _tick = 0.1
+                    if float(price_tp) >= float(avg_entry_short) - _tick:
+                        logger.info("[TP-DBG] SHORT TP skip: price_tp=%.2f >= avg_entry_short=%.2f (tick=%.1f)", price_tp, avg_entry_short, _tick)
+                        continue
                     notional = seed_short.unit_seed * GRID_LEVERAGE if seed_short.unit_seed > 0 else 0.0
                     if notional <= 0.0:
                         break
-                    qty_tp = calc_contract_qty(
-                        usdt_amount=notional,
-                        price=price_tp,
-                        symbol="BTCUSDT",
-                    )
+                    qty_tp = calc_contract_qty(usdt_amount=notional, price=price_tp, symbol="BTCUSDT")
                     if qty_tp <= 0.0:
                         break
                     if qty_tp > abs(short_size):
@@ -1111,16 +1088,31 @@ class GridLogic:
                                 grid_index=idx,
                                 wave_id=wave_id,
                                 mode="A",
+                                reduce_only=True,
+                                position_idx=2,
                             )
                         )
                         short_tp_max_index = idx
                         logger.info(
-                            "[TP-DBG] SHORT TP 주문 생성: idx=%d price_tp=%.2f qty_tp=%.6f",
-                            idx,
-                            price_tp,
-                            qty_tp,
+                            "[TP-DBG] SHORT TP 주문 생성: idx=%d price_tp=%.2f qty_tp=%.6f reduce_only=%s position_idx=%s",
+                            idx, price_tp, qty_tp, True, 2
                         )
-
                 decision.state_updates["short_tp_max_index"] = short_tp_max_index
+
+        # [REENTRY_PREV_STATE_V10_1] 다음 tick에서 TP 체결(수량 감소) 감지용 prev 저장
+        try:
+            setattr(state, 'prev_long_size', float(long_size))
+            setattr(state, 'prev_short_size', float(short_size))
+            setattr(state, 'prev_long_tp_active', bool(long_tp_active))
+            setattr(state, 'prev_short_tp_active', bool(short_tp_active))
+        except Exception:
+            pass
+        try:
+            decision.state_updates['prev_long_size'] = float(long_size)
+            decision.state_updates['prev_short_size'] = float(short_size)
+            decision.state_updates['prev_long_tp_active'] = bool(long_tp_active)
+            decision.state_updates['prev_short_tp_active'] = bool(short_tp_active)
+        except Exception:
+            pass
 
         return decision
