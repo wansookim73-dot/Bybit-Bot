@@ -9,3 +9,10 @@ snapshots/
 scripts/
 *.tgz
 quarantine_untracked_20251214/
+
+# --- local runtime log artifacts (do not commit) ---
+/data/bot.log*
+/data/*.log*
+
+# --- local one-off backups (do not commit) ---
+/strategy/*.bak*
