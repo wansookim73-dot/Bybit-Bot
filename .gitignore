@@ -3,3 +3,8 @@ data/bot.log
 data/bot_state.json
 __pycache__/
 *.pyc
+quarantine_legacy_bak_20251214/
+quarantine_data_20251214/
+snapshots/
+scripts/
+*.tgz
