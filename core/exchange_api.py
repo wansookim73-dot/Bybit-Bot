@@ -4,6 +4,7 @@ import ccxt
 import time
 import hmac
 import hashlib
+import logging
 from typing import Dict, Any, Optional, Tuple, List
 
 from config import (
@@ -179,9 +180,7 @@ class ExchangeAPI:
                 if t2 or a2:
                     total, available = t2, a2
             except Exception as exc:
-                logger.warning(
-                    "[ExchangeAPI] fetch_balance() fallback failed: %s", exc
-                )
+                logger.warning("[ExchangeAPI] fetch_balance() fallback failed: %s", exc)
 
         logger.info(
             "[ExchangeAPI] balance snapshot: total=%.8f, free=%.8f",
@@ -209,10 +208,16 @@ class ExchangeAPI:
                 [self.symbol],
                 params={"category": BYBIT_CATEGORY},
             )
-            logger.info("[ExchangeAPI] raw positions: %s", positions)
         except Exception as exc:
             logger.warning("[ExchangeAPI] get_positions error (fetch_positions): %s", exc)
             return result
+
+        # ✅ raw positions 덤프는 DEBUG에서만 (INFO 로그 폭발 방지)
+        try:
+            if logger.isEnabledFor(logging.DEBUG):
+                logger.debug("[ExchangeAPI] raw positions: %s", positions)
+        except Exception:
+            pass
 
         if not isinstance(positions, (list, tuple)):
             return result
@@ -354,10 +359,7 @@ class ExchangeAPI:
     # 내부 side/positionIdx 매핑 유틸
     # ==========================================================
 
-    def _side_int_to_ccxt(
-        self,
-        side: int,
-    ) -> Tuple[str, int, bool]:
+    def _side_int_to_ccxt(self, side: int) -> Tuple[str, int, bool]:
         """
         side 코드 ↔ Bybit/ccxt 파라미터 매핑.
 
@@ -376,11 +378,7 @@ class ExchangeAPI:
     # 주문: v10.1 정밀도 규칙 적용 (qty 기반)
     # ==========================================================
 
-    def _prepare_price_and_qty_from_qty(
-        self,
-        price: float,
-        qty: float,
-    ) -> Tuple[float, float]:
+    def _prepare_price_and_qty_from_qty(self, price: float, qty: float) -> Tuple[float, float]:
         """
         v10.1 정밀도 규칙 (qty 기반):
         - price: tickSize 기준 floor
@@ -499,10 +497,6 @@ class ExchangeAPI:
         - reduce_only / position_idx (snake_case)
         - reduceOnly / positionIdx (camelCase)
         - params=dict(...) 직접 전달
-
-        목적:
-        - OrderManager가 TP 경로에서 reduceOnly/positionIdx를 "명시적으로" 전달해도
-          ExchangeAPI가 안전하게 이를 받아 실제 주문 params로 반영할 수 있게 한다.
         """
         if self.dry_run:
             logger.info(
@@ -553,7 +547,6 @@ class ExchangeAPI:
             if reduce_only:
                 params["reduceOnly"] = True
             else:
-                # False인 경우는 키를 제거(혼동 방지)
                 params.pop("reduceOnly", None)
 
             order = self.exchange.create_order(
@@ -720,7 +713,6 @@ class ExchangeAPI:
 
         # 3) closed orders(최근)에서 찾기
         try:
-            # 너무 크게 잡을 필요 없음: 최근 50~200 정도면 충분
             closed = self.exchange.fetch_closed_orders(self.symbol, limit=100, params=params)
             for o in closed or []:
                 if str(o.get("id")) == str(order_id):
@@ -729,6 +721,7 @@ class ExchangeAPI:
             logger.warning("[ExchangeAPI] get_order_status: fetch_closed_orders failed: %s", exc)
 
         return {"dealVol": 0.0}
+
 
 # ==========================================================
 # Global instance (compat) — used by main_v10.py / order_manager.py

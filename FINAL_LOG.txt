@@ -1,0 +1,5 @@
+ad7e5df Guard invalid side_code for hedge entry, repost, and atomic order
+bf94a5d Add offline hedge probes/tests
+4225767 HEDGE-ADD-01: include existing opposite position in hedge entry planning; safer hedge planning gate
+71bde0f Treat HEDGE_EXIT as reduce-only tag (safety)
+24f687b Ignore local log artifacts and backup files

@@ -1,0 +1,108 @@
+import os
+from dotenv import load_dotenv
+
+# ============================================================
+# Project root / .env 로딩
+# ============================================================
+
+PROJECT_ROOT = os.path.dirname(os.path.abspath(__file__))
+
+# systemd 환경에서 CWD가 달라도 .env를 잡도록 "프로젝트 루트 .env" 우선 로드
+load_dotenv(os.path.join(PROJECT_ROOT, ".env"))
+# 그래도 사용자가 다른 위치에서 실행하는 경우를 위해 한 번 더 로드
+load_dotenv()
+
+
+def _env_bool(name: str, default: bool) -> bool:
+    v = os.getenv(name)
+    if v is None:
+        return bool(default)
+    s = str(v).strip().lower()
+    return s in ("1", "true", "t", "yes", "y", "on")
+
+
+def _resolve_path(p: str) -> str:
+    """
+    상대경로는 프로젝트 루트 기준으로 절대경로로 변환.
+    (systemd CWD 이슈 방지)
+    """
+    p = os.path.expanduser(str(p))
+    if not os.path.isabs(p):
+        p = os.path.join(PROJECT_ROOT, p)
+    return os.path.abspath(p)
+
+
+# ============================================================
+# 1) 계정 및 API 설정 (환경변수 only)
+# ============================================================
+
+BYBIT_API_KEY = (os.getenv("BYBIT_API_KEY") or "").strip()
+BYBIT_SECRET_KEY = (os.getenv("BYBIT_SECRET_KEY") or "").strip()
+
+# ============================================================
+# 2) 실거래 안전 게이트
+#   - DRY_RUN=1 이 기본 (안전)
+#   - 실거래는 "DRY_RUN=0" AND "LIVE_TRADING=1" 두 조건이 모두 충족되어야만 허용
+# ============================================================
+
+# 사용자가 실거래를 "요청"했는지 (DRY_RUN=0이면 요청으로 간주)
+_request_live = not _env_bool("DRY_RUN", True)
+
+# 사용자가 실거래를 "명시적으로 승인"했는지
+_live_gate = _env_bool("LIVE_TRADING", False)
+
+# 최종 DRY_RUN 결정: 두 조건이 모두 True일 때만 DRY_RUN=False
+DRY_RUN = not (_request_live and _live_gate)
+
+# 실거래 모드인데 키가 없으면 즉시 실패(사고 방지)
+if not DRY_RUN:
+    if not BYBIT_API_KEY or not BYBIT_SECRET_KEY:
+        raise RuntimeError(
+            "LIVE_TRADING is enabled (DRY_RUN=0 & LIVE_TRADING=1) but BYBIT_API_KEY/SECRET is missing."
+        )
+
+# ============================================================
+# 3. 거래 기본 설정
+# ============================================================
+
+EXCHANGE_ID = "bybit"
+
+# CCXT 표준 심볼 (Bybit USDT Perp)
+# - core/exchange_api.py에서 v10.1 명세에 맞게 강제 고정할 수 있음
+SYMBOL = os.getenv("SYMBOL", "BTC/USDT:USDT")
+
+# (레거시/참고) v10.1에서는 ExchangeAPI에서 Cross 7x + Hedge 강제
+LEVERAGE = int(os.getenv("LEVERAGE", "7"))
+OPEN_TYPE = os.getenv("OPEN_TYPE", "cross")  # CCXT Bybit default
+
+# ============================================================
+# 4. 자금 관리 & 전략 파라미터
+# ============================================================
+
+INITIAL_SEED_USDT = float(os.getenv("INITIAL_SEED_USDT", "1200.0"))
+GRID_SPLIT_COUNT = int(os.getenv("GRID_SPLIT_COUNT", "13"))
+ATR_MULTIPLIER = float(os.getenv("ATR_MULTIPLIER", "0.15"))
+MIN_GRID_GAP = float(os.getenv("MIN_GRID_GAP", "100.0"))
+
+# [안전장치 v9.1 레거시 호환]
+MAX_ALLOCATION_RATE = float(os.getenv("MAX_ALLOCATION_RATE", "0.25"))
+HEDGE_MAX_FACTOR = float(os.getenv("HEDGE_MAX_FACTOR", "2.0"))
+ESCAPE_CUSHION_PCT = float(os.getenv("ESCAPE_CUSHION_PCT", "0.02"))
+
+# ============================================================
+# 5. 타임아웃 (Dual Mode)
+# ============================================================
+
+GRID_TIMEOUT_SEC = float(os.getenv("GRID_TIMEOUT_SEC", "60.0"))
+ESCAPE_TIMEOUT_SEC = float(os.getenv("ESCAPE_TIMEOUT_SEC", "1.0"))
+
+# ============================================================
+# 6. 시스템 설정
+# ============================================================
+
+API_TIMEOUT = int(os.getenv("API_TIMEOUT", "30"))
+MAX_RETRIES = int(os.getenv("MAX_RETRIES", "5"))
+
+# 로그/상태 파일 경로 (프로젝트 루트 기준 절대화)
+LOG_FILE_PATH = _resolve_path(os.getenv("LOG_FILE_PATH", "data/bot.log"))
+STATE_FILE_PATH = _resolve_path(os.getenv("STATE_FILE_PATH", "data/bot_state.json"))

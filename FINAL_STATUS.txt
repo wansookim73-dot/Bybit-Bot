@@ -1,0 +1,52 @@
+On branch fix/hedge-exit-planner
+Your branch is up to date with 'origin/fix/hedge-exit-planner'.
+
+Changes not staged for commit:
+  (use "git add <file>..." to update what will be committed)
+  (use "git restore <file>..." to discard changes in working directory)
+	modified:   .env
+	modified:   config.py
+	modified:   core/exchange_api.py
+	modified:   core/state_manager.py
+	modified:   main_v10.py
+	modified:   strategy/grid_logic.py
+	modified:   strategy/state_model.py
+	modified:   strategy/wave_fsm.py
+	modified:   utils/calculator.py
+	modified:   utils/logger.py
+
+Untracked files:
+  (use "git add <file>..." to include in what will be committed)
+	FINAL_STATUS.txt
+	config.py.bak_20251215
+	config.py.bak_REAL_20251215_131457
+	config.py.fullbak_20251215_132829
+	core/exchange_api.py.broken_20251215_1004
+	core/order_manager.py.bak_20251215_052210
+	core/state_manager.py.bak_20251214_171246
+	core/state_manager.py.bak_20251214_173355
+	core/state_manager.py.bak_20251215
+	core/state_manager.py.bak_20251215_041953
+	core/state_manager.py.bak_20251215_043133
+	data/bot_state.json.bak_20251215
+	data/bot_state.json.bak_20251215_041953
+	data/bot_state.json.bak_20251215_043133
+	data/bot_state.json.bak_before_dcaeps_20251214_154134
+	data/bot_state.json.bak_before_eps_20251214
+	data/bot_state.json.bak_before_touch_eps_20251214_154348
+	data/bot_state.json.bak_before_unblock_20251214
+	data/bot_state.json.bak_eps_20251214_171431
+	data/bot_state.json.broken_20251215_0903
+	data/bot_state.json.reset_20251215_0920
+	strategy/grid_logic.py.broken_20251215_113105
+	strategy/grid_logic.py.fullbak_20251215_113141
+	strategy/grid_logic.py.fullbak_fixLOG_20251215_113901
+	strategy/grid_logic.py.save
+	strategy/grid_logic.py.save.1
+	utils/calculator.py.fullbak_20251215_131037
+	utils/logger.py.bak_20251215
+	utils/logger.py.bak_20251215_final
+	utils/logger.py.bak_20251215_p4
+	utils/logger.py.bak_20251215_p5
+
+no changes added to commit (use "git add" and/or "git commit -a")

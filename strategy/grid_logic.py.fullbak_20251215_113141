@@ -12,6 +12,7 @@ from utils.calculator import calc_contract_qty
 from utils.logger import get_logger, logger
 
 
+LOG = get_logger(\"grid_logic\")
 # =============================================================================
 # Grid types (OrderManager가 import하는 심볼)
 # =============================================================================
@@ -705,7 +706,7 @@ class GridLogic:
         if (not dca_indices) and near_touch:
             dca_indices = [idx_near]
 
-        logger.debug(
+        LOG.debug(
             "[DCA-DBG] dca_indices=%s touched=%s near_touch=%s dist_ratio=%.3f eps=%.3f idx_near_raw=%s idx_near=%s",
             dca_indices, touched_indices, near_touch, dist_ratio, dca_near_eps, idx_near_raw, idx_near
         )
@@ -810,13 +811,13 @@ class GridLogic:
                     _wave_id_now, _guard_wave, dca_used_indices, dca_last_ts, dca_last_idx, dca_last_price = _load_dca_guard_state()
 
                     if idx in dca_used_indices:
-                        logger.debug("[DCA-DBG] guard_block: idx=%s already used (wave=%s)", idx, _wave_id_now)
+                        LOG.debug("[DCA-DBG] guard_block: idx=%s already used (wave=%s)", idx, _wave_id_now)
                         continue
                     if (idx == dca_last_idx) and ((now_ts - dca_last_ts) < dca_cooldown_sec):
-                        logger.debug("[DCA-DBG] guard_block: cooldown idx=%s dt=%.1f < %.1f", idx, (now_ts - dca_last_ts), dca_cooldown_sec)
+                        LOG.debug("[DCA-DBG] guard_block: cooldown idx=%s dt=%.1f < %.1f", idx, (now_ts - dca_last_ts), dca_cooldown_sec)
                         continue
                     if (idx == dca_last_idx) and (dca_last_price > 0.0) and (abs(price_now - dca_last_price) < (dca_repeat_guard * p_gap)):
-                        logger.debug("[DCA-DBG] guard_block: repeat_price idx=%s dist=%.2f < %.2f", idx, abs(price_now - dca_last_price), (dca_repeat_guard * p_gap))
+                        LOG.debug("[DCA-DBG] guard_block: repeat_price idx=%s dist=%.2f < %.2f", idx, abs(price_now - dca_last_price), (dca_repeat_guard * p_gap))
                         continue
 
                     if idx < LONG_LINE_MIN or idx > LONG_LINE_MAX:
@@ -877,13 +878,13 @@ class GridLogic:
                     _wave_id_now, _guard_wave, dca_used_indices, dca_last_ts, dca_last_idx, dca_last_price = _load_dca_guard_state()
 
                     if idx in dca_used_indices:
-                        logger.debug("[DCA-DBG] guard_block: idx=%s already used (wave=%s)", idx, _wave_id_now)
+                        LOG.debug("[DCA-DBG] guard_block: idx=%s already used (wave=%s)", idx, _wave_id_now)
                         continue
                     if (idx == dca_last_idx) and ((now_ts - dca_last_ts) < dca_cooldown_sec):
-                        logger.debug("[DCA-DBG] guard_block: cooldown idx=%s dt=%.1f < %.1f", idx, (now_ts - dca_last_ts), dca_cooldown_sec)
+                        LOG.debug("[DCA-DBG] guard_block: cooldown idx=%s dt=%.1f < %.1f", idx, (now_ts - dca_last_ts), dca_cooldown_sec)
                         continue
                     if (idx == dca_last_idx) and (dca_last_price > 0.0) and (abs(price_now - dca_last_price) < (dca_repeat_guard * p_gap)):
-                        logger.debug("[DCA-DBG] guard_block: repeat_price idx=%s dist=%.2f < %.2f", idx, abs(price_now - dca_last_price), (dca_repeat_guard * p_gap))
+                        LOG.debug("[DCA-DBG] guard_block: repeat_price idx=%s dist=%.2f < %.2f", idx, abs(price_now - dca_last_price), (dca_repeat_guard * p_gap))
                         continue
 
                     if idx < SHORT_LINE_MIN or idx > SHORT_LINE_MAX:

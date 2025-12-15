@@ -1,18 +1,155 @@
-mexc_bot_snapshot_*.tgz
-data/bot.log
+# secrets
+.env
+.env.*
+**/*secret*
+**/*key*
+**/*token*
+
+# runtime state/logs
 data/bot_state.json
+data/bot_state.BASELINE.json
+data/*.log
+data/bot.log
+
+# tmp
+/tmp/*
+*.log
+
+# caches
 __pycache__/
 *.pyc
-quarantine_legacy_bak_20251214/
-quarantine_data_20251214/
-snapshots/
-scripts/
+.cache/
+venv/
+.venv/
+
+# archives
 *.tgz
-quarantine_untracked_20251214/
+*.zip
+*.sha256
 
-# --- local runtime log artifacts (do not commit) ---
-/data/bot.log*
-/data/*.log*
+# misc
+wavebot_dump.txt
+1~# secrets
+.env
+.env.*
+**/*secret*
+**/*key*
+**/*token*
 
-# --- local one-off backups (do not commit) ---
-/strategy/*.bak*
+# runtime state/logs
+data/bot_state.json
+data/bot_state.BASELINE.json
+data/*.log
+data/bot.log
+
+# tmp
+/tmp/*
+*.log
+
+# caches
+__pycache__/
+*.pyc
+.cache/
+venv/
+.venv/
+
+# archives
+*.tgz
+*.zip
+*.sha256
+
+# misc
+wavebot_dump.txt
+1~# secrets
+.env
+.env.*
+**/*secret*
+**/*key*
+**/*token*
+
+# runtime state/logs
+data/bot_state.json
+data/bot_state.BASELINE.json
+data/*.log
+data/bot.log
+
+# tmp
+/tmp/*
+*.log
+
+# caches
+__pycache__/
+*.pyc
+.cache/
+venv/
+.venv/
+
+# archives
+*.tgz
+*.zip
+*.sha256
+
+# misc
+wavebot_dump.txt
+1~# secrets
+.env
+.env.*
+**/*secret*
+**/*key*
+**/*token*
+
+# runtime state/logs
+data/bot_state.json
+data/bot_state.BASELINE.json
+data/*.log
+data/bot.log
+
+# tmp
+/tmp/*
+*.log
+
+# caches
+__pycache__/
+*.pyc
+.cache/
+venv/
+.venv/
+
+# archives
+*.tgz
+*.zip
+*.sha256
+
+# misc
+wavebot_dump.txt
+1~# secrets
+.env
+.env.*
+**/*secret*
+**/*key*
+**/*token*
+
+# runtime state/logs
+data/bot_state.json
+data/bot_state.BASELINE.json
+data/*.log
+data/bot.log
+
+# tmp
+/tmp/*
+*.log
+
+# caches
+__pycache__/
+*.pyc
+.cache/
+venv/
+.venv/
+
+# archives
+*.tgz
+*.zip
+*.sha256
+
+# misc
+wavebot_dump.txt

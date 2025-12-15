@@ -1,8 +1,8 @@
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from typing import Optional, Literal, List, Dict
 from enum import Enum
+from typing import Dict, List, Literal, Optional
 
 
 # ==============================
@@ -29,7 +29,7 @@ class PositionSide:
     """
     한 방향(Long 또는 Short)의 포지션 상태.
 
-    - size : 수량 (BTC, Long>0 / Short<0 또는 '방향별 절대값'으로 쓸 수 있음)
+    - size : 수량 (BTC, Long>0 / Short>0 또는 '방향별 절대값'으로 쓸 수 있음)
     - pnl  : 해당 방향 포지션의 미실현 PnL (USDT)
     """
     size: float
@@ -40,17 +40,13 @@ class PositionSide:
         return abs(self.size) > 1e-12
 
     def notional(self, price: float) -> float:
-        """
-        현재 가격 기준 노출 Notional (USDT 절대값).
-        """
+        """현재 가격 기준 노출 Notional (USDT 절대값)."""
         return abs(self.size) * price
 
 
 @dataclass
 class PositionState:
-    """
-    롱/숏 포지션 상태를 묶은 구조체.
-    """
+    """롱/숏 포지션 상태를 묶은 구조체."""
     long: PositionSide
     short: PositionSide
 
@@ -129,6 +125,7 @@ LineMemory = Dict[int, LineState]
 # Bot 상태 모델 (Wave/Grid/Seed/LineMemory)
 # ==============================
 
+
 @dataclass
 class BotState:
     """
@@ -137,22 +134,9 @@ class BotState:
     Grid/Wave/Seed/LineMemory 관련 핵심 상태를 한 곳에 모아,
     StrategyFeed 및 각 Logic(Grid/Escape 등)에서 공통으로 참조한다.
 
-    필수 필드 (명세 기준):
-    - mode                          : 현재 모드 ("NORMAL" / "ESCAPE" / 기타)
-    - wave_id                       : 현재 Wave 게임 번호
-    - p_center                      : 현재 Wave 기준 중심 가격
-    - p_gap                         : Grid 간격
-    - atr_value                     : Wave 시작 시 ATR_4H(42) 스냅샷
-    - long_seed_total_effective     : Long 방향 유효 Seed 총액
-    - short_seed_total_effective    : Short 방향 유효 Seed 총액
-    - unit_seed_long                : Long 방향 1단계 unit seed
-    - unit_seed_short               : Short 방향 1단계 unit seed
-    - k_long                        : Long 방향 분할 카운터
-    - k_short                       : Short 방향 분할 카운터
-    - long_steps_filled             : Long 방향 실제 fill된 스텝 수
-    - short_steps_filled            : Short 방향 실제 fill된 스텝 수
-    - line_memory_long              : grid_index → LineState 맵 (Long)
-    - line_memory_short             : grid_index → LineState 맵 (Short)
+    [중요 - v10.1 명세]
+    - total_balance_snap 은 Wave 시작 시점의 '고정 스냅샷'으로,
+      Wave 진행 동안 PnL% 계산 분모 및 seed 계산의 기준이 된다.
     """
 
     # 현재 모드 ("NORMAL" / "ESCAPE" / "NEWS_BLOCK" / 기타)
@@ -180,10 +164,22 @@ class BotState:
     k_long: int
     k_short: int
 
+    # ------------------------------
+    # Wave balance snapshot (v10.1 고정 분모)
+    # ------------------------------
+    total_balance_snap: float = 0.0
+
+    # (운영/로그용) 현재 계정 잔고 스냅샷 (실시간 업데이트 가능)
+    total_balance: float = 0.0
+    free_balance: float = 0.0
+
+    # (구조상 별도 hedge 포지션이 없다면 0 유지)
+    hedge_size: float = 0.0
+
     # Start-up 단계 완료 여부 (명세 내 Start-up Rule용)
     startup_done: bool = False
 
-    # --- v10.1 runtime position snapshot ---
+    # --- runtime position snapshot ---
     long_size: float = 0.0
     short_size: float = 0.0
     long_pnl: float = 0.0
@@ -213,6 +209,58 @@ class BotState:
     short_tp_active: bool = False
     short_tp_max_index: int = 0
 
+    # ------------------------------
+    # DCA / REENTRY (v10.1 운영용)
+    # ------------------------------
+
+    # near-touch 판정 eps (dist_ratio <= dca_near_eps)
+    dca_near_eps: float = 0.18
+
+    # 동일 idx 재시도 쿨다운(초)
+    dca_cooldown_sec: float = 20.0
+
+    # 동일 idx 가격 근접 반복 방지 계수 (abs(price_now-last_price) < dca_repeat_guard * p_gap)
+    dca_repeat_guard: float = 0.50
+
+    # Wave 단위로 DCA 사용 기록을 묶기 위한 guard wave id
+    dca_guard_wave_id: int = 0
+
+    # 이미 사용한 DCA 라인 인덱스들 (idx 1회 사용 정책)
+    dca_used_indices: List[int] = field(default_factory=list)
+
+    # 최근 DCA 시각/라인/가격 (repeat/쿨다운 방지용)
+    dca_last_ts: float = 0.0
+    dca_last_idx: int = 10**9
+    dca_last_price: float = 0.0
+
+    # DCA 터치 윈도우(저가/고가) 감지용
+    dca_win_low: Optional[float] = None
+    dca_win_high: Optional[float] = None
+    dca_win_ts: float = 0.0
+
+    # 리엔트리(부분 TP 체결/수량 감소) 감지용 스냅샷
+    prev_long_size: float = 0.0
+    prev_short_size: float = 0.0
+    prev_long_tp_active: bool = False
+    prev_short_tp_active: bool = False
+
+    # ------------------------------
+    # Backward-compatible alias
+    # - 운영/레거시에서 dca_touch_eps 키를 쓰는 경우가 있어 alias로 제공
+    # - 내부의 실제 진실원은 dca_near_eps 하나만 유지
+    # ------------------------------
+    @property
+    def dca_touch_eps(self) -> float:
+        return float(self.dca_near_eps)
+
+    @dca_touch_eps.setter
+    def dca_touch_eps(self, v: float) -> None:
+        try:
+            self.dca_near_eps = float(v)
+        except Exception:
+            pass
+
+
 # ==============================
 # 주문 스펙 (전략 -> 주문 엔진)
 # ==============================
@@ -222,9 +270,6 @@ class BotState:
 class OrderSpec:
     """
     전략 엔진(WaveFSM / Grid / Escape)이 주문 엔진(core.order_manager)에 넘기는 공통 스펙.
-
-    이 레벨에서는 거래소 API 세부 타입(클라이언트 오더 ID, timeInForce 문자열 등)에
-    종속되지 않도록 최대한 단순한 필드만 사용한다.
 
     - side        : "LONG" 또는 "SHORT"
     - order_type  : "LIMIT" 또는 "MARKET"
@@ -245,5 +290,4 @@ class OrderSpec:
     comment: str = ""
 
 
-# 타입 별칭 (필요 시 다른 모듈에서 사용)
 Side = Literal["LONG", "SHORT"]
