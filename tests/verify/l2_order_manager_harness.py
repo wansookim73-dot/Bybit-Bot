@@ -1,0 +1,446 @@
+from __future__ import annotations
+
+import os
+import sys
+import importlib
+from dataclasses import dataclass
+from typing import Any, Dict, List, Optional, Tuple
+
+from strategy.feed_types import StrategyFeed, OrderInfo
+from strategy.state_model import BotState
+from strategy.grid_logic import GridDecision, GridOrderSpec
+
+
+# ============================================================
+# L2: 3rd-party safety-first harness
+# - 운영/실계정 영향 0을 목표로 강제 게이트 적용
+# ============================================================
+
+SAFE_STATE_PATH = "data/verify_bot_state.json"
+SAFE_LOG_PATH = "data/verify_bot.log"
+
+
+def _force_safe_env() -> None:
+    # 실거래를 유발할 수 있는 env를 테스트에서 강제로 무력화
+    os.environ["REQUEST_LIVE"] = "0"
+    os.environ["LIVE_GATE"] = "NO"
+
+
+def _safe_import_order_manager():
+    """
+    핵심:
+    - core.order_manager 모듈은 import 시점에 global order_manager를 만들 수 있다.
+    - 따라서 import 전에 DRY_RUN 강제 + state/log 경로 분리.
+    """
+    _force_safe_env()
+
+    # 깨끗한 상태로 다시 import (config의 DRY_RUN 계산도 다시 수행)
+    for m in ["config", "core.exchange_api", "core.state_manager", "core.order_manager"]:
+        if m in sys.modules:
+            del sys.modules[m]
+
+    import config  # noqa
+
+    # import-time 값 복사를 막기 위해 'import 전에' 강제 세팅
+    config.DRY_RUN = True
+    config.STATE_FILE_PATH = SAFE_STATE_PATH
+    config.LOG_FILE_PATH = SAFE_LOG_PATH
+
+    os.makedirs("data", exist_ok=True)
+
+    om_mod = importlib.import_module("core.order_manager")
+
+    # state_manager가 있다면 디스크 저장을 최대한 억제 (있어도 SAFE_STATE_PATH로 분리됨)
+    try:
+        sm_mod = importlib.import_module("core.state_manager")
+        sm = getattr(sm_mod, "state_manager", None)
+        if sm is not None and hasattr(sm, "apply_updates"):
+            orig = sm.apply_updates
+
+            def _apply_updates_no_save(updates: Dict[str, Any], *, save: bool = True):
+                try:
+                    return orig(updates, save=False)
+                except TypeError:
+                    # 구버전 호환
+                    try:
+                        return orig(updates, False)
+                    except Exception:
+                        return orig(updates)
+
+            sm.apply_updates = _apply_updates_no_save  # type: ignore[attr-defined]
+    except Exception:
+        pass
+
+    return om_mod
+
+
+# ============================================================
+# Stub exchange (no network)
+# ============================================================
+
+@dataclass
+class ExchangeCall:
+    kind: str                       # LIMIT / TP_LIMIT / MARKET / CANCEL
+    side_in: Any
+    price: Optional[float]
+    qty: float
+    position_idx: Optional[int]
+    reduce_only: bool
+    tag: Optional[str]
+    extra: Dict[str, Any]
+
+
+class L2StubExchange:
+    """
+    OrderManager가 호출하는 Exchange 인터페이스를 "네트워크 없이" 흉내낸다.
+    - place_limit_order / place_tp_limit_order / place_market_order / cancel_order
+    - get_open_orders / get_positions / get_ticker
+    """
+
+    def __init__(self, *, symbol: str = "BTCUSDT", init_price: float = 50000.0) -> None:
+        self.symbol = symbol
+        self.dry_run = True
+        self._price = float(init_price)
+
+        self.calls: List[ExchangeCall] = []
+        self._oid_seq = 0
+
+        # 최소 오픈오더 스냅샷(원하면 사용)
+        self.open_orders: List[Dict[str, Any]] = []
+        self.cancelled: List[str] = []
+
+    def _next_id(self) -> str:
+        self._oid_seq += 1
+        return f"l2_oid_{self._oid_seq}"
+
+    @staticmethod
+    def _normalize_side_and_infer(
+        side: Any,
+        *,
+        reduce_only_override: Optional[bool],
+        position_idx_override: Optional[int],
+    ) -> Tuple[int, str, int, bool]:
+        """
+        ExchangeAPI._side_int_to_ccxt 매핑을 최대한 유사하게 흉내.
+        - side가 int면 그대로 규칙 적용
+        - side가 "BUY"/"SELL" 문자열로 들어와도 안전하게 처리
+        """
+        # 기본값
+        side_int: int
+        side_str: str
+        pidx: int
+        ro: bool
+
+        if isinstance(side, (int, float)) and str(side).strip() != "":
+            side_int = int(side)
+            side_str = "buy" if side_int in (1, 2) else "sell"
+            pidx = 1 if side_int in (1, 4) else 2
+            ro = side_int in (2, 4)
+        else:
+            s = str(side or "").upper().strip()
+            if s not in ("BUY", "SELL"):
+                s = "BUY"
+            ro = bool(reduce_only_override) if reduce_only_override is not None else False
+            pidx = int(position_idx_override) if position_idx_override in (1, 2) else (1 if s == "BUY" else 2)
+
+            if s == "BUY":
+                side_int = 2 if (ro and pidx == 2) else 1
+                side_str = "buy"
+            else:
+                side_int = 4 if (ro and pidx == 1) else 3
+                side_str = "sell"
+
+        if position_idx_override in (1, 2):
+            pidx = int(position_idx_override)
+        if reduce_only_override is not None:
+            ro = bool(reduce_only_override)
+
+        return side_int, side_str, pidx, ro
+
+    def get_ticker(self) -> float:
+        return float(self._price)
+
+    def get_positions(self) -> Dict[str, Dict[str, float]]:
+        return {
+            "LONG": {"qty": 0.0, "avg_price": 0.0},
+            "SHORT": {"qty": 0.0, "avg_price": 0.0},
+        }
+
+    def get_open_orders(self) -> List[Dict[str, Any]]:
+        return list(self.open_orders)
+
+    def place_limit_order(self, side: Any, price: float, qty: float, **kwargs: Any) -> str:
+        pos_override = kwargs.get("position_idx", kwargs.get("positionIdx", None))
+        ro_override = kwargs.get("reduce_only", kwargs.get("reduceOnly", None))
+
+        side_int, side_str, pidx, ro = self._normalize_side_and_infer(
+            side,
+            reduce_only_override=ro_override if ro_override is not None else None,
+            position_idx_override=int(pos_override) if pos_override is not None else None,
+        )
+
+        tag = (
+            kwargs.get("tag")
+            or kwargs.get("order_link_id")
+            or kwargs.get("client_order_id")
+            or kwargs.get("orderLinkId")
+        )
+        tag_s = str(tag) if tag is not None and str(tag) != "" else None
+
+        oid = self._next_id()
+
+        self.calls.append(
+            ExchangeCall(
+                kind="LIMIT",
+                side_in=side,
+                price=float(price),
+                qty=float(qty),
+                position_idx=int(pidx),
+                reduce_only=bool(ro),
+                tag=tag_s,
+                extra={k: v for k, v in kwargs.items()},
+            )
+        )
+
+        self.open_orders.append(
+            {
+                "id": oid,
+                "side": side_str,
+                "price": float(price),
+                "amount": float(qty),
+                "info": {
+                    "positionIdx": int(pidx),
+                    "reduceOnly": bool(ro),
+                    "orderLinkId": tag_s or "",
+                },
+            }
+        )
+        return oid
+
+    def place_tp_limit_order(
+        self,
+        side: Any,
+        price: float,
+        qty: float,
+        *,
+        position_idx: int,
+        reduce_only: bool = True,
+        tag: Optional[str] = None,
+    ) -> str:
+        side_int, side_str, pidx, ro = self._normalize_side_and_infer(
+            side,
+            reduce_only_override=bool(reduce_only),
+            position_idx_override=int(position_idx),
+        )
+
+        oid = self._next_id()
+        tag_s = str(tag) if tag is not None and str(tag) != "" else None
+
+        self.calls.append(
+            ExchangeCall(
+                kind="TP_LIMIT",
+                side_in=side,
+                price=float(price),
+                qty=float(qty),
+                position_idx=int(pidx),
+                reduce_only=bool(ro),
+                tag=tag_s,
+                extra={"side_int": side_int},
+            )
+        )
+
+        self.open_orders.append(
+            {
+                "id": oid,
+                "side": side_str,
+                "price": float(price),
+                "amount": float(qty),
+                "info": {
+                    "positionIdx": int(pidx),
+                    "reduceOnly": True,
+                    "orderLinkId": tag_s or "",
+                },
+            }
+        )
+        return oid
+
+    def place_market_order(
+        self,
+        side: Any,
+        qty: float,
+        *,
+        price_for_calc: Optional[float] = None,
+        tag: Optional[str] = None,
+    ) -> str:
+        px = float(price_for_calc) if price_for_calc is not None else self.get_ticker()
+        side_int, _side_str, pidx, ro = self._normalize_side_and_infer(
+            side,
+            reduce_only_override=None,
+            position_idx_override=None,
+        )
+        oid = self._next_id()
+        tag_s = str(tag) if tag is not None and str(tag) != "" else None
+
+        self.calls.append(
+            ExchangeCall(
+                kind="MARKET",
+                side_in=side,
+                price=float(px),
+                qty=float(qty),
+                position_idx=int(pidx) if pidx in (1, 2) else None,
+                reduce_only=bool(ro),
+                tag=tag_s,
+                extra={"side_int": side_int},
+            )
+        )
+        return oid
+
+    def cancel_order(self, order_id: str) -> None:
+        self.cancelled.append(str(order_id))
+        self.calls.append(
+            ExchangeCall(
+                kind="CANCEL",
+                side_in=None,
+                price=None,
+                qty=0.0,
+                position_idx=None,
+                reduce_only=False,
+                tag=None,
+                extra={"order_id": str(order_id)},
+            )
+        )
+        self.open_orders = [o for o in self.open_orders if str(o.get("id", "")) != str(order_id)]
+
+
+# ============================================================
+# Feed / Decision builders
+# ============================================================
+
+def make_min_state(*, mode: str = "NORMAL", wave_id: int = 7, price: float = 50000.0) -> BotState:
+    return BotState(
+        mode=str(mode),
+        wave_id=int(wave_id),
+        p_center=float(price),
+        p_gap=100.0,
+        atr_value=2000.0,
+        long_seed_total_effective=1000.0,
+        short_seed_total_effective=1000.0,
+        unit_seed_long=100.0,
+        unit_seed_short=100.0,
+        k_long=0,
+        k_short=0,
+        total_balance_snap=2000.0,
+        total_balance=2000.0,
+        free_balance=2000.0,
+    )
+
+
+def make_feed(*, price: float, state: BotState, open_orders: List[OrderInfo]) -> StrategyFeed:
+    return StrategyFeed(
+        price=float(price),
+        atr_4h_42=2000.0,
+        state=state,
+        open_orders=list(open_orders),
+        pnl_total=0.0,
+        pnl_total_pct=0.0,
+        trend_strength="WEAK_TREND",
+        trend_bias="NONE",
+        trend_valid=True,
+        trend_fresh=True,
+        trend_reason="L2_VERIFY",
+    )
+
+
+def build_order_info(d: Dict[str, Any]) -> OrderInfo:
+    return OrderInfo(
+        order_id=str(d["order_id"]),
+        side=str(d["side"]),
+        price=float(d["price"]),
+        qty=float(d["qty"]),
+        filled_qty=float(d.get("filled_qty", 0.0)),
+        reduce_only=bool(d.get("reduce_only", False)),
+        order_type=str(d.get("order_type", "Limit")),
+        time_in_force=str(d.get("time_in_force", "PostOnly")),
+        tag=str(d.get("tag")) if d.get("tag") is not None else None,
+        created_ts=float(d.get("created_ts", 0.0)),
+    )
+
+
+def build_grid_spec(d: Dict[str, Any]) -> GridOrderSpec:
+    return GridOrderSpec(
+        side=str(d["side"]),
+        price=float(d["price"]),
+        qty=float(d["qty"]),
+        grid_index=int(d["grid_index"]),
+        wave_id=int(d["wave_id"]),
+        mode=str(d.get("mode", "A")),
+        reduce_only=bool(d.get("reduce_only", False)),
+        position_idx=int(d["position_idx"]) if d.get("position_idx") is not None else None,
+        step_cost=int(d.get("step_cost", 2)),
+    )
+
+
+def build_decision(d: Dict[str, Any]) -> GridDecision:
+    entries = [build_grid_spec(x) for x in d.get("entries", [])]
+    replaces = [build_grid_spec(x) for x in d.get("replaces", [])]
+    cancels_raw = d.get("cancels", [])
+    cancels = [build_order_info(x) for x in cancels_raw] if cancels_raw else []
+    return GridDecision(
+        mode=str(d.get("mode", "NORMAL")),
+        grid_entries=entries,
+        grid_replaces=replaces,
+        grid_cancels=cancels,
+        state_updates=dict(d.get("state_updates", {})),
+    )
+
+
+def make_order_manager(stub_ex: L2StubExchange):
+    om_mod = _safe_import_order_manager()
+    OrderManager = getattr(om_mod, "OrderManager")
+
+    # __init__ 시그니처 차이를 흡수
+    try:
+        return OrderManager(exchange_instance=stub_ex)
+    except TypeError:
+        try:
+            return OrderManager(stub_ex)
+        except TypeError:
+            obj = OrderManager()
+            # 흔한 필드명 fallback
+            for attr in ("exchange", "exchange_api", "ex", "_exchange"):
+                if hasattr(obj, attr):
+                    setattr(obj, attr, stub_ex)
+                    break
+            return obj
+
+
+def run_l2_scenario(spec: Dict[str, Any]) -> Dict[str, Any]:
+    stub = L2StubExchange(init_price=float(spec.get("price", 50000.0)))
+    om = make_order_manager(stub)
+
+    state = make_min_state(mode="NORMAL", wave_id=7, price=float(spec.get("price", 50000.0)))
+
+    open_orders = [build_order_info(x) for x in spec.get("feed", {}).get("open_orders", [])]
+    feed = make_feed(price=float(spec.get("price", 50000.0)), state=state, open_orders=open_orders)
+
+    decision = build_decision(spec["decision"])
+
+    now_ts = 1700000000.0
+    om.apply_decision(decision, feed, now_ts)  # type: ignore[arg-type]
+
+    return {
+        "calls": stub.calls,
+        "cancelled": stub.cancelled,
+    }
+
+
+def format_calls(calls: List[ExchangeCall]) -> str:
+    lines: List[str] = []
+    for i, c in enumerate(calls, 1):
+        if c.kind == "CANCEL":
+            lines.append(f"{i:02d}. CANCEL order_id={c.extra.get('order_id')}")
+        else:
+            lines.append(
+                f"{i:02d}. {c.kind} price={c.price} qty={c.qty} pidx={c.position_idx} ro={c.reduce_only} tag={c.tag}"
+            )
+    return "\n".join(lines)
