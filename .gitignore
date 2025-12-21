@@ -158,3 +158,8 @@ wavebot_dump.txt
 .env
 .env.*
 
+
+# local backups
+*.bak_*
+*.BROKEN_*
+*.save
