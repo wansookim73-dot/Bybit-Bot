@@ -11,3 +11,6 @@ PYTHONHASHSEED=0 python3 -m pytest -q -s -x \
 
 # L2: OrderManager ↔ Exchange boundary verification
 PYTHONHASHSEED=0 python3 -m pytest -q -s -x tests/test_verify_l2_order_manager.py
+
+# --- L3 v2 (trigger-real) ---
+PYTHONHASHSEED=0 python3 -m pytest -q -s -x tests/test_verify_l3_trigger_real.py
