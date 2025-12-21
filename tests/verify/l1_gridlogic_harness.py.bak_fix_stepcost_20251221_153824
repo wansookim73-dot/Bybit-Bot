@@ -311,11 +311,7 @@ def assert_griddecision_invariants(decision: GridDecision) -> None:
             raise AssertionError(f"[verify_l1] wave_id not int: {wave_id!r}")
 
         step_cost = getattr(spec, "step_cost", None)
-        # Backward-compatible: step_cost may be missing/None in some GridOrderSpec variants.
-        # Treat None as implicit default: ENTRY=2, TP=1.
-        if step_cost is None:
-            step_cost = 1 if bool(getattr(spec, "reduce_only", False)) else 2
-        if (not isinstance(step_cost, int)) or step_cost < 1 or step_cost > 2:
+        if not isinstance(step_cost, int) or step_cost < 1 or step_cost > 2:
             raise AssertionError(f"[verify_l1] step_cost invalid (expect 1 or 2): {step_cost!r}")
 
         reduce_only = bool(getattr(spec, "reduce_only", False))

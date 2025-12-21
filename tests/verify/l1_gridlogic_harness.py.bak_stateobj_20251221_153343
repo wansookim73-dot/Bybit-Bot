@@ -7,7 +7,6 @@ import os
 from typing import Any, Dict, Iterable, List, Optional, Sequence, Tuple
 
 from strategy.feed_types import StrategyFeed, OrderInfo
-from strategy.state_model import BotState
 
 import strategy.grid_logic as gl
 from strategy.grid_logic import GridLogic, GridDecision, GridOrderSpec
@@ -64,11 +63,12 @@ def freeze_gridlogic_time(fixed_ts: float = _FIXED_TS_DEFAULT) -> Iterable[None]
             gl.time.sleep = old_sleep  # type: ignore[attr-defined]
 
 
-def make_state(overrides: Optional[Dict[str, Any]] = None) -> BotState:
+def make_state(overrides: Optional[Dict[str, Any]] = None) -> Dict[str, Any]:
     """
-    GridLogic 최신 구현은 feed.state가 dict일 때 setattr(...)에서 실패할 수 있다.
-    따라서 L1부터는 BotState 객체를 생성해 주입한다.
+    GridLogic가 state에서 참조할 가능성이 높은 키들을 '안전 기본값'으로 세팅합니다.
+    실제 BotState를 강제하지 않고 dict로도 동작하도록(GridLogic 호환 헬퍼 사용 전제) 구성합니다.
     """
+    # config에서 seed를 가져올 수 있으면 가져오고, 실패하면 안전 기본값 사용
     seed = 1200.0
     try:
         from config import INITIAL_SEED_USDT  # pylint: disable=import-error
@@ -76,64 +76,43 @@ def make_state(overrides: Optional[Dict[str, Any]] = None) -> BotState:
     except Exception:
         seed = 1200.0
 
-    # BotState 최소 필수 필드 세팅
-    st = BotState(
-        mode="NORMAL",
-        wave_id=1,
-        p_center=50000.0,
-        p_gap=300.0,
-        atr_value=2000.0,
-        long_seed_total_effective=float(seed) * 0.45,
-        short_seed_total_effective=float(seed) * 0.45,
-        unit_seed_long=float(seed) * 0.45 / 13.0,
-        unit_seed_short=float(seed) * 0.45 / 13.0,
-        k_long=0,
-        k_short=0,
-        total_balance_snap=float(seed),
-        total_balance=float(seed),
-        free_balance=float(seed),
-    )
+    st: Dict[str, Any] = {
+        # wave / line
+        "wave_id": 1,
+        "line_memory": {},
 
-    # L1에서 GridLogic가 접근/수정할 수 있는 필드들 기본값 보강
-    st.line_memory_long = {}
-    st.line_memory_short = {}
+        # capital/seed (대략치)
+        "total_balance": float(seed),
+        "available_balance": float(seed),
+        "effective_seed_total": float(seed) * 0.9,
+        "allocated_seed": 0.0,
+        "used_seed": 0.0,
 
-    # DCA/REENTRY 관련 기본값
-    st.dca_used_indices = []
-    st.dca_last_ts = 0.0
-    st.dca_last_idx = 10**9
-    st.dca_last_price = 0.0
-    st.dca_win_low = None
-    st.dca_win_high = None
-    st.dca_win_ts = 0.0
+        # positions (0 = flat)
+        "pos_long_qty": 0.0,
+        "pos_short_qty": 0.0,
+        "pos_long_avg": 0.0,
+        "pos_short_avg": 0.0,
 
-    st.prev_long_size = 0.0
-    st.prev_short_size = 0.0
-    st.prev_long_tp_active = False
-    st.prev_short_tp_active = False
+        # escape flags
+        "escape_active": False,
+        "escape_mode": False,
 
-    # 포지션 스냅샷 기본
-    st.long_size = 0.0
-    st.short_size = 0.0
-    st.long_pnl = 0.0
-    st.short_pnl = 0.0
-    st.long_pos_nonzero = False
-    st.short_pos_nonzero = False
-    st.long_pnl_sign = 0
-    st.short_pnl_sign = 0
-
-    # TP 상태
-    st.long_tp_active = False
-    st.short_tp_active = False
-    st.long_tp_max_index = 0
-    st.short_tp_max_index = 0
+        # timestamps
+        "last_grid_ts": 0.0,
+        "last_escape_ts": 0.0,
+    }
 
     if overrides:
-        for k, v in overrides.items():
-            if hasattr(st, k):
-                setattr(st, k, v)
+        st.update(overrides)
+
+    # 방어적 보정
+    if "line_memory" not in st or st["line_memory"] is None:
+        st["line_memory"] = {}
 
     return st
+
+
 def make_orderinfo(
     *,
     order_id: str = "O1",
@@ -311,11 +290,7 @@ def assert_griddecision_invariants(decision: GridDecision) -> None:
             raise AssertionError(f"[verify_l1] wave_id not int: {wave_id!r}")
 
         step_cost = getattr(spec, "step_cost", None)
-        # Backward-compatible: step_cost may be missing/None in some GridOrderSpec variants.
-        # Treat None as implicit default: ENTRY=2, TP=1.
-        if step_cost is None:
-            step_cost = 1 if bool(getattr(spec, "reduce_only", False)) else 2
-        if (not isinstance(step_cost, int)) or step_cost < 1 or step_cost > 2:
+        if not isinstance(step_cost, int) or step_cost < 1 or step_cost > 2:
             raise AssertionError(f"[verify_l1] step_cost invalid (expect 1 or 2): {step_cost!r}")
 
         reduce_only = bool(getattr(spec, "reduce_only", False))

@@ -336,15 +336,13 @@ def make_min_state(*, mode: str = "NORMAL", wave_id: int = 7, price: float = 500
 
 
 def make_feed(*, price: float, state: BotState, open_orders: List[OrderInfo]) -> StrategyFeed:
-    # Build kwargs and filter by StrategyFeed signature (compat across versions)
-    kwargs = dict(
+    return StrategyFeed(
         price=float(price),
         atr_4h_42=2000.0,
         state=state,
         open_orders=list(open_orders),
         pnl_total=0.0,
         pnl_total_pct=0.0,
-        # Optional trend-gate fields (may not exist in older StrategyFeed)
         trend_strength="WEAK_TREND",
         trend_bias="NONE",
         trend_valid=True,
@@ -352,12 +350,6 @@ def make_feed(*, price: float, state: BotState, open_orders: List[OrderInfo]) ->
         trend_reason="L2_VERIFY",
     )
 
-    import inspect
-    sig = inspect.signature(StrategyFeed)
-    accepted = set(sig.parameters.keys())
-    kwargs = {k: v for k, v in kwargs.items() if k in accepted}
-
-    return StrategyFeed(**kwargs)
 
 def build_order_info(d: Dict[str, Any]) -> OrderInfo:
     return OrderInfo(
@@ -375,8 +367,7 @@ def build_order_info(d: Dict[str, Any]) -> OrderInfo:
 
 
 def build_grid_spec(d: Dict[str, Any]) -> GridOrderSpec:
-    # Build kwargs then filter by GridOrderSpec signature (compat across versions)
-    kwargs = dict(
+    return GridOrderSpec(
         side=str(d["side"]),
         price=float(d["price"]),
         qty=float(d["qty"]),
@@ -388,12 +379,6 @@ def build_grid_spec(d: Dict[str, Any]) -> GridOrderSpec:
         step_cost=int(d.get("step_cost", 2)),
     )
 
-    import inspect
-    sig = inspect.signature(GridOrderSpec)
-    accepted = set(sig.parameters.keys())
-    kwargs = {k: v for k, v in kwargs.items() if k in accepted}
-
-    return GridOrderSpec(**kwargs)
 
 def build_decision(d: Dict[str, Any]) -> GridDecision:
     entries = [build_grid_spec(x) for x in d.get("entries", [])]
