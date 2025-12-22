@@ -20,6 +20,7 @@ from typing import Any, Dict, List, Optional, Tuple
 from core.exchange_api import exchange
 from core.state_manager import StateManager
 from core.order_manager import OrderManager
+from core.runtime_meta import RuntimeMeta
 from strategy.capital import CapitalManager
 from strategy.grid_logic import GridLogic
 from strategy.escape_logic import EscapeLogic
@@ -69,6 +70,9 @@ class WaveBot:
             capital_manager=self.capital,
         )
 
+        # bot_state.json 구조를 변경하지 않기 위한 sidecar 메타 저장소
+        self.runtime_meta = RuntimeMeta()
+
         self._last_price: Optional[float] = None
 
     # --------------------------------------------------------
@@ -100,7 +104,17 @@ class WaveBot:
                     return self._safe_float(bal.get(k))
             return 0.0
 
-        total = pick(("total", "total_equity", "total_balance", "equity", "wallet_balance", "walletBalance"))
+        # [법전 준수] 미실현 PnL 제외 잔고(walletBalance/totalWalletBalance 계열) 우선
+        total = pick((
+            "wallet_balance",
+            "walletBalance",
+            "totalWalletBalance",
+            "total_wallet_balance",
+            "total",
+            "total_balance",
+            "equity",
+            "total_equity",
+        ))
         free = pick(("free", "available", "available_balance", "free_balance", "availableBalance", "availableToWithdraw"))
 
         # 일부 거래소/래퍼에서 free를 별도로 안 주면 total로 근사
@@ -340,6 +354,18 @@ class WaveBot:
             self.logger.info("[BAL] bootstrap total_balance_snap -> %.8f (was %.8f)", total_balance, tb_snap)
             self.state_manager.update("total_balance_snap", total_balance, save=False)
 
+        # =====================================================
+        # "무체결" 감지용 런타임 메타 갱신 (bot_state.json 스키마 불변)
+        # - 포지션 사이즈(abs 합) 변화가 있으면 "체결이 있었다"로 간주
+        # =====================================================
+        try:
+            pos_abs_sum = abs(float(long_size)) + abs(float(short_size))
+            prev_sum = float(self.runtime_meta.state.last_pos_abs_sum or 0.0)
+            if abs(pos_abs_sum - prev_sum) > 1e-12:
+                self.runtime_meta.touch_fill(time.time(), pos_abs_sum)
+        except Exception:
+            pass
+
         updates = {
             "long_size": long_size,
             "short_size": short_size,
@@ -410,6 +436,55 @@ class WaveBot:
 
         for k, v in updates.items():
             self.state_manager.update(k, v, save=False)
+
+    # --------------------------------------------------------
+    # Rebase (24h +5%) - bot_state.json 스키마 변경 없이 동작
+    # --------------------------------------------------------
+
+    def _maybe_apply_rebase(self, state: Any, now_ts: float) -> None:
+        """법전: 24h +5% 조건을 만족할 때만 total_balance_snap을 현재 total_balance로 올린다.
+
+        - 기준(balance)은 미실현 PnL 제외(wallet balance)로 측정된 total_balance를 사용한다.
+        - ESCAPE / news_block / cb_block 상태에서는 스킵한다.
+        - 최근 10분 이내 체결(포지션 변화) 감지 시 스킵한다.
+        """
+        try:
+            mode = str(getattr(state, "mode", "") or "").upper()
+            if "ESCAPE" in mode:
+                return
+            if bool(getattr(state, "news_block", False)) or bool(getattr(state, "cb_block", False)):
+                return
+
+            total_now = float(getattr(state, "total_balance", 0.0) or 0.0)
+            snap = float(getattr(state, "total_balance_snap", 0.0) or 0.0)
+            if total_now <= 0.0 or snap <= 0.0:
+                return
+
+            # 최근 활동 가드: 10분 이내 체결 감지 시 스킵
+            last_fill_ts = float(getattr(self.runtime_meta.state, "last_fill_ts", 0.0) or 0.0)
+            if last_fill_ts > 0.0 and (now_ts - last_fill_ts) < 600.0:
+                return
+
+            last_rebase_ts = float(getattr(self.runtime_meta.state, "last_rebase_ts", 0.0) or 0.0)
+            if last_rebase_ts > 0.0 and (now_ts - last_rebase_ts) < 86400.0:
+                return
+
+            if total_now >= snap * 1.05:
+                self.logger.info(
+                    "[REBASE_APPLY] total_balance_snap %.8f -> %.8f (ratio=%.5f)",
+                    snap,
+                    total_now,
+                    (total_now / snap) if snap > 0 else 0.0,
+                )
+                # bot_state.json 필드 업데이트는 허용(스키마 불변)
+                self.state_manager.update("total_balance_snap", total_now, save=False)
+                try:
+                    setattr(state, "total_balance_snap", total_now)
+                except Exception:
+                    pass
+                self.runtime_meta.touch_rebase(now_ts)
+        except Exception:
+            return
 
     # --------------------------------------------------------
     # OrderInfo 매핑
@@ -536,6 +611,10 @@ class WaveBot:
         risk_decision = self.risk_manager.process(risk_inputs)
         self._apply_risk_decision_to_state(risk_decision)
 
+        # 2.5) Rebase (24h +5%, 미실현 PnL 제외 기준)
+        state_after_risk = self._get_state_obj()
+        self._maybe_apply_rebase(state_after_risk, now_ts)
+
         # 3) 최신 state로 feed 구성
         state_for_feed = self._get_state_obj()
         feed = self._build_strategy_feed(snap, state_for_feed)
@@ -570,40 +649,34 @@ def _parse_args(argv=None):
 
 def main(argv=None) -> int:
     args = _parse_args(argv)
+
     bot = WaveBot()
 
-    stop = {"flag": False}
+    stop_flag = {"stop": False}
 
-    def handle_sigterm(signum, frame):
-        stop["flag"] = True
-        bot.logger.info("Received signal %s, shutting down...", signum)
+    def _handle_sigterm(signum, frame):
+        stop_flag["stop"] = True
 
-    for sig in (signal.SIGINT, signal.SIGTERM):
-        signal.signal(sig, handle_sigterm)
+    signal.signal(signal.SIGTERM, _handle_sigterm)
+    signal.signal(signal.SIGINT, _handle_sigterm)
+
+    bot.start()
 
     try:
-        bot.start()
         if args.once:
             bot.loop_once()
             return 0
 
-        bot.logger.info("WaveBot v10.1 main loop started (interval=%.3fs)", args.loop_interval)
-        while not stop["flag"]:
+        while not stop_flag["stop"]:
+            t0 = time.time()
             bot.loop_once()
-            time.sleep(args.loop_interval)
-
-    except Exception as exc:
-        try:
-            bot.logger.exception("Fatal error in main loop: %s", exc)
-        except Exception:
-            print(f"[FATAL] WaveBot main loop error: {exc!r}", file=sys.stderr)
-        return 1
+            dt = time.time() - t0
+            sleep_sec = max(0.0, float(args.loop_interval) - dt)
+            if sleep_sec > 0:
+                time.sleep(sleep_sec)
 
     finally:
-        try:
-            bot.shutdown()
-        except Exception:
-            pass
+        bot.shutdown()
 
     return 0
 

@@ -10,8 +10,10 @@ from strategy.capital import CapitalManager
 from strategy.state_model import AccountState
 from core.order_manager import OrderManager
 from core.state_manager import StateManager
+from core.runtime_meta import RuntimeMeta
 from utils.logger import get_logger
 import os
+import time
 from decimal import Decimal
 
 from config import DRY_RUN
@@ -51,6 +53,9 @@ class WaveFSM:
         self.order_manager = order_manager
         self.state_manager = state_manager
         self.capital_manager = capital_manager
+
+        # bot_state.json 스키마 변경을 피하기 위한 sidecar 런타임 메타
+        self.runtime_meta = RuntimeMeta()
 
         # [DRY-RUN TEST ONLY] fake position injection flag
         self._fake_pos_for_test = bool(int(os.getenv("FSM_FAKE_POS", "0")))
@@ -349,33 +354,112 @@ class WaveFSM:
             and mode_ok_for_start
             and self.flat_ticks >= 2
         ):
-            self._start_new_wave(feed)
+            # [법전 준수] 센터 재설정(새 웨이브) 기준 변경:
+            # - wave_id==0(부트스트랩)은 기존처럼 바로 시작
+            # - 이후에는 "2시간 무체결" AND "센터에서 6칸 이상 이탈"일 때만 새 웨이브
+            if self._should_start_new_wave(feed):
+                self._start_new_wave(feed)
+
+    def _should_start_new_wave(self, feed: StrategyFeed) -> bool:
+        state = self.state_manager.get_state()
+
+        # 첫 부트스트랩 웨이브는 기존 동작 유지
+        try:
+            if int(getattr(state, "wave_id", 0) or 0) <= 0:
+                return True
+        except Exception:
+            return True
+
+        # 안전 가드: 뉴스/CB/ESCAPE 중이면 센터 재설정 금지
+        try:
+            if bool(getattr(state, "news_block", False)) or bool(getattr(state, "cb_block", False)):
+                return False
+        except Exception:
+            return False
+
+        mode = str(getattr(state, "mode", "") or "").upper()
+        if "ESCAPE" in mode:
+            return False
+
+        # 2시간 무체결 조건
+        now_ts = time.time()
+        last_fill_ts = float(getattr(self.runtime_meta.state, "last_fill_ts", 0.0) or 0.0)
+        if last_fill_ts > 0.0 and (now_ts - last_fill_ts) < 7200.0:
+            return False
+
+        # 센터에서 6칸 이상 이탈 조건
+        price = float(getattr(feed, "price", 0.0) or 0.0)
+        p_center = float(getattr(state, "p_center", 0.0) or 0.0)
+        p_gap = float(getattr(state, "p_gap", 0.0) or 0.0)
+        if price <= 0.0 or p_center <= 0.0 or p_gap <= 0.0:
+            return False
+
+        idx = int(round((price - p_center) / p_gap))
+        if abs(idx) < 6:
+            return False
+
+        self.logger.info(
+            "[WaveFSM] CenterReset eligible: no_fill>=2h & abs(idx)>=6 (idx=%s price=%.2f center=%.2f gap=%.2f)",
+            idx,
+            price,
+            p_center,
+            p_gap,
+        )
+        return True
 
     def _start_new_wave(self, feed: StrategyFeed) -> None:
         state_before = self.state_manager.get_state()
         price_now = float(getattr(feed, "price", 0.0) or 0.0)
         atr_4h_42 = float(getattr(feed, "atr_4h_42", 0.0) or 0.0)
 
-        # 계정 총 자산 스냅샷
-        total_balance_snap = self._get_total_balance_snapshot(feed)
+        # [법전] wave_id==0(부트스트랩)과 wave_id>0(센터 재설정) 동작 분리
+        prev_wave_id = int(getattr(state_before, "wave_id", 0) or 0)
 
-        # Seed 배분 및 unit_seed 계산
-        snap = self.capital_manager.compute_wave_snapshot(total_balance_snap)
+        if prev_wave_id <= 0:
+            # --- 부트스트랩: 기존 v10.1 동작 유지 ---
+            total_balance_snap = self._get_total_balance_snapshot(feed)
+            snap = self.capital_manager.compute_wave_snapshot(total_balance_snap)
+            p_gap = max(atr_4h_42 * 0.15, 100.0)
+            p_center = price_now
+            long_eff = snap.long_seed_total_effective
+            short_eff = snap.short_seed_total_effective
+            unit_long = snap.unit_seed_long
+            unit_short = snap.unit_seed_short
+            atr_value = atr_4h_42
+            reason = "bootstrap"
+        else:
+            # --- 센터 재설정: gap/seed/atr를 유지하고 p_center만 현재가로 교체 ---
+            total_balance_snap = float(getattr(state_before, "total_balance_snap", 0.0) or 0.0)
+            if total_balance_snap <= 0.0:
+                # 안전: 그래도 0이면 기존 함수로 복구
+                total_balance_snap = self._get_total_balance_snapshot(feed)
 
-        # P_gap / P_center
-        p_gap = max(atr_4h_42 * 0.15, 100.0)
-        p_center = price_now
+            p_gap = float(getattr(state_before, "p_gap", 0.0) or 0.0)
+            if p_gap <= 0.0:
+                p_gap = max(atr_4h_42 * 0.15, 100.0)
+
+            p_center = price_now
+
+            atr_value = float(getattr(state_before, "atr_value", 0.0) or 0.0)
+            if atr_value <= 0.0:
+                atr_value = atr_4h_42
+
+            long_eff = float(getattr(state_before, "long_seed_total_effective", 0.0) or 0.0)
+            short_eff = float(getattr(state_before, "short_seed_total_effective", 0.0) or 0.0)
+            unit_long = float(getattr(state_before, "unit_seed_long", 0.0) or 0.0)
+            unit_short = float(getattr(state_before, "unit_seed_short", 0.0) or 0.0)
+            reason = "center_reset_2h_no_fill_6_lines"
 
         # StateManager 에 Wave Reset 요청 (wave_id++, k_dir/steps/line_memory 초기화 포함)
         new_state = self.state_manager.reset_wave(
             p_center=p_center,
             p_gap=p_gap,
-            atr_value=atr_4h_42,
+            atr_value=atr_value,
             total_balance_snap=total_balance_snap,   # ✅ v10.1 핵심: 저장/영속화
-            long_seed_total_effective=snap.long_seed_total_effective,
-            short_seed_total_effective=snap.short_seed_total_effective,
-            unit_seed_long=snap.unit_seed_long,
-            unit_seed_short=snap.unit_seed_short,
+            long_seed_total_effective=long_eff,
+            short_seed_total_effective=short_eff,
+            unit_seed_long=unit_long,
+            unit_seed_short=unit_short,
             mode="NORMAL",
         )
 
@@ -392,13 +476,17 @@ class WaveFSM:
                 getattr(new_state, "wave_id", -1),
                 p_center,
                 p_gap,
-                atr_4h_42,
+                atr_value,
                 float(total_balance_snap or 0.0),
-                snap.long_seed_total_effective,
-                snap.short_seed_total_effective,
-                snap.unit_seed_long,
-                snap.unit_seed_short,
+                long_eff,
+                short_eff,
+                unit_long,
+                unit_short,
             )
+            try:
+                self.logger.info("[WaveFSM] wave_start_reason=%s", reason)
+            except Exception:
+                pass
         except Exception:
             pass
 
@@ -521,46 +609,10 @@ class WaveFSM:
                 exc,
                 exc_info=True,
             )
+            return
 
-        # 5) state_updates 반영 후 저장
+        # 최종 저장
         try:
-            final = self._merge_decisions(grid_decision=grid_dec, escape_decision=esc_dec)
-
-            state = self.state_manager.get_state()
-            for key, value in (final.state_updates or {}).items():
-                try:
-                    setattr(state, key, value)
-                except Exception:
-                    self.logger.warning(
-                        "[WaveFSM] failed to apply state_update key=%s", key
-                    )
-
             self.state_manager.save_state()
-        except Exception as exc:
-            self.logger.error(
-                "[WaveFSM] failed to apply state_updates / save_state: %s",
-                exc,
-                exc_info=True,
-            )
-
-    # ==================================================================
-    # 내부: GridDecision + EscapeDecision 통합
-    # ==================================================================
-
-    def _merge_decisions(
-        self,
-        grid_decision: GridDecision,
-        escape_decision: EscapeDecision,
-    ) -> FinalDecision:
-        orders: List[Any] = []
-        orders.extend(grid_decision.orders)
-        orders.extend(escape_decision.orders)
-
-        state_updates: Dict[str, Any] = {}
-        state_updates.update(grid_decision.state_updates or {})
-        state_updates.update(escape_decision.state_updates or {})
-
-        return FinalDecision(
-            orders=orders,
-            state_updates=state_updates,
-        )
+        except Exception:
+            pass
