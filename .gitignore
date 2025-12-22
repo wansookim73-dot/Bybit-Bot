@@ -163,3 +163,4 @@ wavebot_dump.txt
 *.bak_*
 *.BROKEN_*
 *.save
+snapshots/
